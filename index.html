@@ -67,6 +67,7 @@
       justify-content: center;
       position: relative;
       overflow: hidden;
+      touch-action: pan-y;
     }
 
     .gallery-slide {
@@ -96,6 +97,7 @@
       display: flex;
       justify-content: center;
       align-items: center;
+      position: relative;
     }
 
     .image-frame img {
@@ -110,9 +112,29 @@
       filter: brightness(1.05);
     }
 
+    /* Swipe indicator */
+    .swipe-indicator {
+      position: absolute;
+      bottom: 15px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: rgba(0,0,0,0.5);
+      color: #fff;
+      padding: 0.4rem 1rem;
+      border-radius: 999px;
+      font-size: 0.9rem;
+      letter-spacing: 0.5px;
+      opacity: 0.9;
+      animation: fadeOut 3s ease 3s forwards;
+      user-select: none;
+    }
+
+    @keyframes fadeOut {
+      to { opacity: 0; visibility: hidden; }
+    }
+
     .gallery-caption {
       margin-top: 1.6rem;
-      padding: 0 1rem;
       animation: fadeInUp 1s ease;
     }
 
@@ -139,12 +161,10 @@
       display: flex;
       justify-content: space-between;
       transform: translateY(-50%);
-      padding: 0 2rem;
-      pointer-events: none;
+      padding: 0 4rem;
     }
 
     .gallery-nav button {
-      pointer-events: all;
       background: rgba(0, 0, 0, 0.4);
       color: #fff;
       border: none;
@@ -204,79 +224,22 @@
       100% { opacity: 1; transform: translateY(0); }
     }
 
-    /* --- Responsive Adjustments --- */
     @media (max-width: 900px) {
       .image-frame {
         width: 90%;
         height: 360px;
       }
-      .gallery-nav {
-        padding: 0 1.5rem;
-      }
     }
 
     @media (max-width: 600px) {
-      nav {
-        height: 56px;
-      }
-
-      .nav-content {
-        flex-direction: column;
-        justify-content: center;
-        gap: 0.3rem;
-        padding: 0.5rem 1rem;
-      }
-
-      .nav-buy {
-        padding: 0.4rem 1rem;
-        font-size: 0.9rem;
-      }
-
-      .gallery-container {
-        margin-top: 70px;
-        height: auto;
-        padding-bottom: 2rem;
-      }
-
       .image-frame {
-        width: 92%;
-        height: 220px;
+        width: 90%;
+        height: 260px;
       }
-
-      .gallery-caption h2 { 
-        font-size: 1.3rem; 
-      }
-
-      .gallery-caption p { 
-        font-size: 0.9rem; 
-        line-height: 1.5; 
-      }
-
-      .gallery-nav {
-        padding: 0 1rem;
-      }
-
-      .gallery-nav button {
-        font-size: 1.3rem;
-        padding: 0.5rem 0.7rem;
-      }
-
-      .cta {
-        padding: 3rem 1rem;
-      }
-
-      .cta h1 {
-        font-size: 1.8rem;
-      }
-
-      .cta h2 {
-        font-size: 1rem;
-      }
-
-      .cta button {
-        width: 100%;
-        max-width: 320px;
-      }
+      .gallery-caption h2 { font-size: 1.4rem; }
+      .gallery-caption p { font-size: 0.95rem; }
+      .gallery-nav { display: none; } /* hide arrows */
+      .swipe-indicator { display: block; }
     }
   </style>
 </head>
@@ -289,9 +252,12 @@
     </div>
   </nav>
 
-  <div class="gallery-container">
+  <div class="gallery-container" id="gallery">
     <div class="gallery-slide active">
-      <div class="image-frame"><img src="Frontyard.jpeg" alt="Frontyard"></div>
+      <div class="image-frame">
+        <img src="Frontyard.jpeg" alt="Frontyard">
+        <div class="swipe-indicator">← Swipe →</div>
+      </div>
       <div class="gallery-caption">
         <h2>Frontyard</h2>
         <p>A graceful welcome where the air feels soft and alive. The frontyard greets you with sculpted hedges, gentle blossoms, and the whisper of morning light filtering through tall oaks — a promise of serenity before you even step inside.</p>
@@ -344,6 +310,7 @@
 
   <script>
     const slides = document.querySelectorAll(".gallery-slide");
+    const gallery = document.getElementById("gallery");
     let current = 0;
     let autoPlay = setInterval(nextSlide, 8000);
     let autoPlaying = true;
@@ -381,6 +348,28 @@
       prevSlide();
       stopAutoPlay();
     });
+
+    // --- Mobile swipe handling ---
+    let touchStartX = 0;
+    let touchEndX = 0;
+
+    gallery.addEventListener("touchstart", e => {
+      touchStartX = e.changedTouches[0].screenX;
+    });
+
+    gallery.addEventListener("touchend", e => {
+      touchEndX = e.changedTouches[0].screenX;
+      handleSwipe();
+    });
+
+    function handleSwipe() {
+      const diff = touchStartX - touchEndX;
+      if (Math.abs(diff) > 50) { // threshold
+        stopAutoPlay();
+        if (diff > 0) nextSlide(); // swipe left
+        else prevSlide(); // swipe right
+      }
+    }
   </script>
 </body>
 </html>
