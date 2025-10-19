@@ -74,15 +74,18 @@
     width: 100%;
     max-width: 960px;
     text-align: center;
-    opacity: 0;
-    transform: translateY(30px) scale(0.98);
-    transition: opacity 0.9s ease, transform 0.9s ease;
+    display: none; /* hide old slides instantly */
   }
 
   .gallery-slide.active {
-    opacity: 1;
-    transform: translateY(0) scale(1);
+    display: block; /* new slide appears */
+    animation: fadeIn 0.9s ease forwards; /* fade in */
     z-index: 2;
+  }
+
+  @keyframes fadeIn {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
   }
 
   .image-frame {
@@ -111,7 +114,6 @@
     filter: brightness(1.05);
   }
 
-  /* Swipe indicator, hidden by default */
   .swipe-indicator {
     position: absolute;
     bottom: 15px;
@@ -133,7 +135,6 @@
 
   .gallery-caption {
     margin-top: 1.6rem;
-    animation: fadeInUp 1s ease;
   }
 
   .gallery-caption h2 { font-size: 1.8rem; font-weight: 600; letter-spacing: 0.3px; margin-bottom: 0.4rem; }
@@ -187,8 +188,6 @@
     transition: all 0.4s ease;
   }
   .cta button:hover { background: #eee; transform: scale(1.05); box-shadow: 0 0 20px rgba(255,255,255,0.6); }
-
-  @keyframes fadeInUp { 0% { opacity: 0; transform: translateY(20px); } 100% { opacity: 1; transform: translateY(0); } }
 
   @media (max-width: 900px) { .image-frame { width: 90%; height: 360px; } }
   @media (max-width: 600px) { .image-frame { width: 90%; height: 260px; } .gallery-caption h2 { font-size: 1.4rem; } .gallery-caption p { font-size: 0.95rem; } }
@@ -255,8 +254,10 @@ let autoPlay = setInterval(nextSlide, 8000);
 let autoPlaying = true;
 
 function showSlide(index){
-  slides.forEach((slide,i)=>{slide.classList.remove("active");if(i===index) slide.classList.add("active");});
+  slides.forEach(slide => slide.classList.remove("active")); // hide old instantly
+  slides[index].classList.add("active"); // fade-in new
 }
+
 function nextSlide(){ current = (current+1)%slides.length; showSlide(current); }
 function prevSlide(){ current = (current-1+slides.length)%slides.length; showSlide(current); }
 function stopAutoPlay(){ if(autoPlaying){ clearInterval(autoPlay); autoPlaying=false; } }
@@ -264,13 +265,12 @@ function stopAutoPlay(){ if(autoPlaying){ clearInterval(autoPlay); autoPlaying=f
 document.getElementById("nextBtn").addEventListener("click",()=>{ nextSlide(); stopAutoPlay(); });
 document.getElementById("prevBtn").addEventListener("click",()=>{ prevSlide(); stopAutoPlay(); });
 
-// --- Mobile detection and swipe ---
+// Mobile swipe detection
 if('ontouchstart' in window || navigator.maxTouchPoints>0){
-  const indicators = document.querySelectorAll(".swipe-indicator");
-  indicators.forEach(i => i.style.display="block"); // show swipe hints
+  document.querySelectorAll(".swipe-indicator").forEach(i=>i.style.display="block");
   let touchStartX=0, touchEndX=0;
-  gallery.addEventListener("touchstart", e => { touchStartX=e.changedTouches[0].screenX; });
-  gallery.addEventListener("touchend", e => { touchEndX=e.changedTouches[0].screenX; handleSwipe(); });
+  gallery.addEventListener("touchstart", e=>{ touchStartX=e.changedTouches[0].screenX; });
+  gallery.addEventListener("touchend", e=>{ touchEndX=e.changedTouches[0].screenX; handleSwipe(); });
   function handleSwipe(){
     const diff = touchStartX - touchEndX;
     if(Math.abs(diff)>50){ stopAutoPlay(); diff>0?nextSlide():prevSlide(); }
