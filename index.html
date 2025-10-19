@@ -189,8 +189,15 @@
   }
   .cta button:hover { background: #eee; transform: scale(1.05); box-shadow: 0 0 20px rgba(255,255,255,0.6); }
 
-  @media (max-width: 900px) { .image-frame { width: 90%; height: 360px; } }
-  @media (max-width: 600px) { .image-frame { width: 90%; height: 260px; } .gallery-caption h2 { font-size: 1.4rem; } .gallery-caption p { font-size: 0.95rem; } }
+  @media (max-width: 900px) { 
+    .image-frame { width: 90%; height: 360px; } 
+  }
+  @media (max-width: 600px) { 
+    .image-frame { width: 90%; height: 260px; } 
+    .gallery-caption h2 { font-size: 1.4rem; } 
+    .gallery-caption p { font-size: 0.95rem; } 
+    .gallery-nav { display: none; } /* hide arrows on mobile */
+  }
 </style>
 </head>
 <body>
@@ -254,8 +261,8 @@ let autoPlay = setInterval(nextSlide, 8000);
 let autoPlaying = true;
 
 function showSlide(index){
-  slides.forEach(slide => slide.classList.remove("active")); // hide old instantly
-  slides[index].classList.add("active"); // fade-in new
+  slides.forEach(slide => slide.classList.remove("active"));
+  slides[index].classList.add("active");
 }
 
 function nextSlide(){ current = (current+1)%slides.length; showSlide(current); }
