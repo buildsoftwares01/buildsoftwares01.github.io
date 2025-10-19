@@ -148,24 +148,66 @@
     }
 
     /* Hero section */
-    .hero {
-      background: linear-gradient(to bottom, #f9f9f9, #fff);
-      flex-direction: column;
-      text-align: center;
-      padding-top: 8rem;
-    }
+ /* Hero section */
+.hero {
+  background: linear-gradient(to bottom, #f9f9f9, #fff);
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+  min-height: 100vh;
+  padding: 8rem 1.5rem 4rem;
+  box-sizing: border-box;
+}
 
-    .hero .text h1 {
-      font-size: clamp(2.5rem, 6vw, 4rem);
-      margin-bottom: 0.5rem;
-      animation: glow 2s ease-in-out infinite alternate;
-    }
+.hero .text {
+  max-width: 800px;
+  margin-bottom: 2rem;
+}
 
-    .hero .text h2 {
-      font-size: clamp(1.2rem, 3vw, 2rem);
-      color: #444;
-      font-weight: 500;
-    }
+.hero .text h1 {
+  font-size: clamp(2.5rem, 6vw, 4rem);
+  margin-bottom: 0.5rem;
+  animation: glow 2s ease-in-out infinite alternate;
+}
+
+.hero .text h2 {
+  font-size: clamp(1.2rem, 3vw, 2rem);
+  color: #444;
+  font-weight: 500;
+  margin-bottom: 1rem;
+}
+
+.hero .text p {
+  font-size: 1.1rem;
+  color: #555;
+  line-height: 1.6;
+  max-width: 700px;
+  margin: 0 auto;
+}
+
+.hero .image {
+  width: 100%;
+  max-width: 900px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.hero .image img {
+  width: 100%;
+  height: auto;
+  border-radius: 20px;
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15);
+  transition: transform 0.8s ease, filter 0.4s ease;
+}
+
+.hero .image img:hover {
+  transform: scale(1.03);
+  filter: brightness(1.05);
+}
+
 
     .cta {
       flex-direction: column;
@@ -285,7 +327,8 @@
     <ul>
       <li class="active" onclick="showPage('home', this)">Home</li>
     </ul>
-    <button class="nav-buy">Contact Agent</button>
+<button class="nav-buy" onclick="window.location.href='mailto:test@gmail.com?subject=Inquiry about Forestside Residence&body=Hello, I would like to know more about the property.'">Contact Agent</button>
+
   </nav>
 
   <div class="page active" id="home">
@@ -298,13 +341,6 @@
       <div class="image"><img src="Frontyard.jpg" alt="Frontyard"></div>
     </section>
 
-    <section class="feature">
-      <div class="text">
-        <h1>Frontyard</h1>
-        <p>A welcoming outdoor space that creates a pleasant first impression and complements the architecture.</p>
-      </div>
-      <div class="image"><img src="Frontyard.jpg" alt="Frontyard"></div>
-    </section>
 
     <section class="feature">
       <div class="text">
@@ -390,7 +426,10 @@
     <section class="cta">
       <h1>Schedule a Visit</h1>
       <h2>Experience Forestside Residence in person</h2>
-      <button>Contact Agent</button>
+<button onclick="window.location.href='mailto:test@gmail.com?subject=Property Visit Request – Forestside Residence&body=Hello, I would like to schedule a visit to the house. Please let me know your available times.'">
+  Contact Agent
+</button>
+
     </section>
   </div>
 
