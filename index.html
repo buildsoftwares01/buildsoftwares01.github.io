@@ -193,34 +193,63 @@
     .image-frame { width: 90%; height: 360px; } 
   }
 
-  /* MOBILE SPECIFIC: everything fits on one screen */
+/* MOBILE SPECIFIC */
 @media (max-width: 600px) {
-  body, html { height: 100vh; overflow: hidden; }
+  body { overflow-x: hidden; overflow-y: auto; }
   
-  /* Gallery takes remaining space */
+  /* Gallery section */
   .gallery-container { 
     margin-top: 64px; 
-    height: 87.5vh; /* 100vh - 12.5vh for CTA */
+    height: auto;
+    min-height: 70vh;
+    padding: 1rem 0;
   }
-  .image-frame { width: 90%; height: 100%; }
-  .gallery-caption { margin-top: 0.5rem; }
-  .gallery-caption h2 { font-size: 1.2rem; }
-  .gallery-caption p { font-size: 0.85rem; max-width: 90%; }
+  
+  .image-frame { 
+    width: 90%; 
+    height: 280px;
+    max-width: 500px;
+  }
+  
+  .gallery-caption { 
+    margin-top: 1rem; 
+    padding: 0 1rem;
+  }
+  
+  .gallery-caption h2 { 
+    font-size: 1.3rem; 
+    margin-bottom: 0.5rem;
+  }
+  
+  .gallery-caption p { 
+    font-size: 0.9rem; 
+    max-width: 100%; 
+    line-height: 1.5;
+  }
+  
   .gallery-nav { display: none; }
 
-  /* CTA takes half of previous size */
+  /* CTA section */
   .cta { 
-    padding: 0.5rem 1rem; 
-    height: 12.5vh; 
-    display: flex; 
-    flex-direction: column; 
-    justify-content: center; 
+    padding: 2rem 1.5rem; 
   }
-  .cta h1 { font-size: 1.2rem; margin-bottom: 0.2rem; }
-  .cta h2 { font-size: 0.7rem; margin-bottom: 0.3rem; }
-  .cta button { padding: 0.5rem 1rem; font-size: 0.8rem; }
+  
+  .cta h1 { 
+    font-size: 1.5rem; 
+    margin-bottom: 0.5rem; 
+  }
+  
+  .cta h2 { 
+    font-size: 0.9rem; 
+    margin-bottom: 1rem; 
+    line-height: 1.4;
+  }
+  
+  .cta button { 
+    padding: 0.75rem 1.5rem; 
+    font-size: 0.95rem; 
+  }
 }
-
 
 </style>
 </head>
