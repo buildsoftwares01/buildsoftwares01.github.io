@@ -74,12 +74,12 @@
     width: 100%;
     max-width: 960px;
     text-align: center;
-    display: none; /* hide old slides instantly */
+    display: none;
   }
 
   .gallery-slide.active {
-    display: block; /* new slide appears */
-    animation: fadeIn 0.9s ease forwards; /* fade in */
+    display: block;
+    animation: fadeIn 0.9s ease forwards;
     z-index: 2;
   }
 
@@ -192,11 +192,20 @@
   @media (max-width: 900px) { 
     .image-frame { width: 90%; height: 360px; } 
   }
-  @media (max-width: 600px) { 
-    .image-frame { width: 90%; height: 260px; } 
-    .gallery-caption h2 { font-size: 1.4rem; } 
-    .gallery-caption p { font-size: 0.95rem; } 
-    .gallery-nav { display: none; } /* hide arrows on mobile */
+
+  /* MOBILE SPECIFIC: everything fits on one screen */
+  @media (max-width: 600px) {
+    body, html { height: 100vh; overflow: hidden; }
+    .gallery-container { margin-top: 64px; height: 45vh; }
+    .image-frame { width: 90%; height: 100%; }
+    .gallery-caption { margin-top: 0.5rem; }
+    .gallery-caption h2 { font-size: 1.2rem; }
+    .gallery-caption p { font-size: 0.85rem; max-width: 90%; }
+    .gallery-nav { display: none; }
+    .cta { padding: 3vh 1rem; height: 50vh; display: flex; flex-direction: column; justify-content: center; }
+    .cta h1 { font-size: 1.6rem; margin-bottom: 0.5rem; }
+    .cta h2 { font-size: 0.9rem; margin-bottom: 1rem; }
+    .cta button { padding: 0.8rem 2rem; font-size: 0.9rem; }
   }
 </style>
 </head>
@@ -220,22 +229,18 @@
       <p>A graceful welcome where the air feels soft and alive. The frontyard greets you with sculpted hedges, gentle blossoms, and the whisper of morning light filtering through tall oaks — a promise of serenity before you even step inside.</p>
     </div>
   </div>
-
   <div class="gallery-slide">
     <div class="image-frame"><img src="Livingroom.jpeg" alt="Living Room"></div>
     <div class="gallery-caption"><h2>Living Room</h2><p>Sunlight unfolds across polished wood and soft linen, turning quiet moments into a celebration of calm. Designed for both reflection and conversation, this living room breathes warmth and timeless grace with every detail.</p></div>
   </div>
-
   <div class="gallery-slide">
     <div class="image-frame"><img src="Kitchen.jpeg" alt="Kitchen"></div>
     <div class="gallery-caption"><h2>Kitchen</h2><p>The heart of the home — where aromas dance and laughter lingers. The kitchen blends marble, oak, and modern precision, offering a stage for culinary creativity as well as effortless gatherings around shared meals and stories.</p></div>
   </div>
-
   <div class="gallery-slide">
     <div class="image-frame"><img src="Bedroom1.jpeg" alt="Bedroom"></div>
     <div class="gallery-caption"><h2>Master Bedroom</h2><p>Bathed in soft morning glow, the master suite whispers tranquility. Its gentle hues, layered textures, and generous windows draw the eye toward nature — transforming each dawn and dusk into a private moment of stillness and renewal.</p></div>
   </div>
-
   <div class="gallery-slide">
     <div class="image-frame"><img src="Backyard.jpeg" alt="Backyard"></div>
     <div class="gallery-caption"><h2>Backyard</h2><p>Beneath the open sky, a sanctuary unfolds. The backyard invites both quiet solitude and joyful gathering — where every sunset paints the trees gold and laughter carries into the calm of the evening breeze.</p></div>
