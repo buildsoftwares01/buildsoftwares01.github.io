@@ -6,12 +6,16 @@
   <title>Forestside Residence – Modern Home for Sale</title>
   <style>
     /* Global styles */
+    html {
+      scroll-behavior: smooth;
+      scroll-snap-type: y mandatory;
+    }
+
     body {
       margin: 0;
       font-family: -apple-system, BlinkMacSystemFont, "Helvetica Neue", sans-serif;
       background: #fff;
       color: #111;
-      scroll-behavior: smooth;
       overflow-x: hidden;
     }
 
@@ -95,8 +99,9 @@
       box-sizing: border-box;
       opacity: 0;
       transform: translateY(60px);
-      transition: opacity 1.2s ease, transform 1.2s ease;
+      transition: opacity 1s ease, transform 1s ease;
       flex-wrap: wrap;
+      scroll-snap-align: start;
     }
 
     section.visible {
@@ -147,59 +152,39 @@
       flex-direction: row-reverse;
     }
 
-    /* Hero section */
- /* Hero section */
+/* Make hero like any other section */
 .hero {
-  background: linear-gradient(to bottom, #f9f9f9, #fff);
+  min-height: 100vh;          /* same as other sections */
   display: flex;
-  flex-direction: column;
+  align-items: center;         /* vertically center content */
   justify-content: center;
-  align-items: center;
-  text-align: center;
-  min-height: 100vh;
-  padding: 8rem 1.5rem 4rem;
+  padding: 6rem 5% 4rem;      /* same padding as other sections */
+  gap: 3rem;                   /* same gap as other sections */
+  flex-wrap: wrap;
+  text-align: left;            /* match other sections */
+  background: linear-gradient(to bottom, #f9f9f9, #fff);
   box-sizing: border-box;
 }
 
 .hero .text {
-  max-width: 800px;
-  margin-bottom: 2rem;
-}
-
-.hero .text h1 {
-  font-size: clamp(2.5rem, 6vw, 4rem);
-  margin-bottom: 0.5rem;
-  animation: glow 2s ease-in-out infinite alternate;
-}
-
-.hero .text h2 {
-  font-size: clamp(1.2rem, 3vw, 2rem);
-  color: #444;
-  font-weight: 500;
-  margin-bottom: 1rem;
-}
-
-.hero .text p {
-  font-size: 1.1rem;
-  color: #555;
-  line-height: 1.6;
-  max-width: 700px;
-  margin: 0 auto;
+  flex: 1;
+  min-width: 300px;
+  max-width: 550px;
 }
 
 .hero .image {
-  width: 100%;
-  max-width: 900px;
+  flex: 1;
+  min-width: 300px;
   display: flex;
   justify-content: center;
   align-items: center;
 }
 
 .hero .image img {
-  width: 100%;
-  height: auto;
-  border-radius: 20px;
-  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15);
+  width: 100%;          /* full width of its flex box */
+  max-width: 500px;     /* optional cap */
+  border-radius: 16px;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.1);
   transition: transform 0.8s ease, filter 0.4s ease;
 }
 
@@ -207,6 +192,7 @@
   transform: scale(1.03);
   filter: brightness(1.05);
 }
+
 
 
     .cta {
@@ -289,25 +275,24 @@
       100% { text-shadow: 0 0 20px rgba(0, 0, 0, 0.3); }
     }
 
-    /* Responsive adjustments */
+/* Responsive adjustments */
 @media (max-width: 768px) {
-  section {
-    flex-direction: column;
-    padding: 2rem 1rem 2rem; /* reduce top/bottom */
-    gap: 1rem; /* reduce space between text and image */
+  .hero-content {
+    gap: 1.5rem;
   }
-  .text, .image {
-    text-align: center;
-    margin-bottom: 1rem; /* optional, reduce extra space */
+  .hero .image img {
+    width: 90%;
+    max-width: 400px;
   }
 }
 
 @media (max-width: 480px) {
-  section {
-    padding: 1.5rem 1rem 1.5rem;
-    gap: 0.8rem;
+  .hero .image img {
+    width: 100%;
+    max-width: 300px;
   }
 }
+
 
   </style>
 </head>
@@ -315,111 +300,114 @@
   <nav>
     <div class="logo">Forestside Residence</div>
     <ul>
-      <li class="active" onclick="showPage('home', this)">Home</li>
+      <li class="active" onclick="scrollToSection('home', this)">Home</li>
     </ul>
-<button class="nav-buy" onclick="window.location.href='mailto:test@gmail.com?subject=Inquiry about Forestside Residence&body=Hello, I would like to know more about the property.'">Contact Agent</button>
-
+    <button class="nav-buy" onclick="window.location.href='mailto:test@gmail.com?subject=Inquiry about Forestside Residence&body=Hello, I would like to know more about the property.'">Contact Agent</button>
   </nav>
 
   <div class="page active" id="home">
+
+
+    <!-- Hero Section -->
     <section class="hero">
-      <div class="text">
-        <h1>Forestside Residence</h1>
-        <h2>Modern Luxury Living</h2>
-        <p>A refined property offering modern comfort and elegant design, with carefully crafted spaces to suit every lifestyle.</p>
-      </div>
-      <div class="image"><img src="Frontyard.jpg" alt="Frontyard"></div>
-    </section>
-
-
-    <section class="feature">
-      <div class="text">
-        <h1>Living Room</h1>
-        <p>A comfortable and versatile area designed for relaxation and social gatherings.</p>
-      </div>
-      <div class="image"><img src="Livingroom.jpg" alt="Living Room"></div>
-    </section>
-
-    <section class="feature">
-      <div class="text">
-        <h1>Dining Room</h1>
-        <p>A bright and inviting space ideal for daily meals or special occasions.</p>
-      </div>
-      <div class="image"><img src="Dining Room.jpg" alt="Dining Room"></div>
-    </section>
-
-    <section class="feature">
-      <div class="text">
-        <h1>Kitchen</h1>
-        <p>A functional and spacious kitchen designed with practicality and ease of use in mind.</p>
-      </div>
-      <div class="image"><img src="Kitchen.jpg" alt="Kitchen"></div>
-    </section>
-
-    <section class="feature">
-      <div class="text">
-        <h1>Office</h1>
-        <p>A quiet and organized room suitable for focused work or study.</p>
-      </div>
-      <div class="image"><img src="Office.jpg" alt="Office"></div>
-    </section>
-
-    <section class="feature">
-      <div class="text">
-        <h1>Handwash Area</h1>
-        <p>A simple, clean space for everyday convenience and hygiene.</p>
-      </div>
-      <div class="image"><img src="Handwash-area.jpg" alt="Handwash Area"></div>
-    </section>
-
-    <section class="feature">
-      <div class="text">
-        <h1>Bedrooms</h1>
-        <p>Comfortable private rooms offering peace and relaxation throughout the day.</p>
-      </div>
-      <div class="image">
-        <div class="gallery" data-gallery="bedroom">
-          <img src="Bedroom1.jpg" class="active" alt="Bedroom 1">
-          <img src="Bedroom2.jpg" alt="Bedroom 2">
-          <img src="Bedroom3.jpg" alt="Bedroom 3">
-          <img src="Bedroom4.jpg" alt="Bedroom 4">
-          <button class="prev" onclick="prevImage('bedroom')">&#10094;</button>
-          <button class="next" onclick="nextImage('bedroom')">&#10095;</button>
+      <div class="hero-content">
+        <div class="text">
+          <h1>Forestside Residence</h1>
+          <h2>Modern Luxury Living</h2>
+          <p>A refined property offering modern comfort and elegant design, with carefully crafted spaces to suit every lifestyle.</p>
+        </div>
+        <div class="image">
+          <img src="Frontyard.jpg" alt="Frontyard">
         </div>
       </div>
     </section>
 
-    <section class="feature">
-      <div class="text">
-        <h1>Bathrooms</h1>
-        <p>Modern and well-maintained bathrooms designed for practicality and comfort.</p>
-      </div>
-      <div class="image">
-        <div class="gallery" data-gallery="bathroom">
-          <img src="Bathroom1.jpg" class="active" alt="Bathroom 1">
-          <img src="Bathroom2.jpg" alt="Bathroom 2">
-          <img src="Bathroom5.jpg" alt="Bathroom 3">
-          <button class="prev" onclick="prevImage('bathroom')">&#10094;</button>
-          <button class="next" onclick="nextImage('bathroom')">&#10095;</button>
-        </div>
-      </div>
-    </section>
+<!-- Features -->
+<section class="feature">
+  <div class="text">
+    <h1>Living Room</h1>
+    <p>A comfortable and versatile area designed for relaxation and social gatherings. The room features premium flooring, contemporary lighting, and ample seating arrangements, creating an inviting atmosphere for family and friends.</p>
+  </div>
+  <div class="image"><img src="Livingroom.jpg" alt="Living Room"></div>
+</section>
 
-    <section class="feature">
-      <div class="text">
-        <h1>Backyard</h1>
-        <p>An open outdoor area that provides space for relaxation, activities, or gatherings.</p>
-      </div>
-      <div class="image"><img src="Backyard.png" alt="Backyard"></div>
-    </section>
+<section class="feature">
+  <div class="text">
+    <h1>Dining Room</h1>
+    <p>A bright and inviting space ideal for daily meals or special occasions. The dining area is accented with elegant fixtures, large windows for natural light, and enough room for hosting memorable dinner parties.</p>
+  </div>
+  <div class="image"><img src="Dining Room.jpg" alt="Dining Room"></div>
+</section>
+
+<section class="feature">
+  <div class="text">
+    <h1>Kitchen</h1>
+    <p>A functional and spacious kitchen designed with practicality and ease of use in mind. Equipped with modern appliances, ample storage, and durable countertops, it is perfect for both casual cooking and gourmet meal preparation.</p>
+  </div>
+  <div class="image"><img src="Kitchen.jpg" alt="Kitchen"></div>
+</section>
+
+<section class="feature">
+  <div class="text">
+    <h1>Office</h1>
+    <p>A quiet and organized room suitable for focused work or study. The space is thoughtfully designed with ergonomic furniture, built-in shelves, and excellent lighting to support productivity and creativity.</p>
+  </div>
+  <div class="image"><img src="Office.jpg" alt="Office"></div>
+</section>
+
+<section class="feature">
+  <div class="text">
+    <h1>Handwash Area</h1>
+    <p>A simple, clean space for everyday convenience and hygiene. Features modern fixtures, easy-to-clean surfaces, and a practical layout to ensure functionality without compromising style.</p>
+  </div>
+  <div class="image"><img src="Handwash-area.jpg" alt="Handwash Area"></div>
+</section>
+
+<section class="feature">
+  <div class="text">
+    <h1>Bedrooms</h1>
+    <p>Comfortable private rooms offering peace and relaxation throughout the day. Each bedroom comes with spacious closets, plush flooring, and large windows that allow natural light and scenic views.</p>
+  </div>
+  <div class="image">
+    <div class="gallery" data-gallery="bedroom">
+      <img src="Bedroom1.jpg" class="active" alt="Bedroom 1">
+      <img src="Bedroom2.jpg" alt="Bedroom 2">
+      <img src="Bedroom3.jpg" alt="Bedroom 3">
+      <img src="Bedroom4.jpg" alt="Bedroom 4">
+      <button class="prev" onclick="prevImage('bedroom')">&#10094;</button>
+      <button class="next" onclick="nextImage('bedroom')">&#10095;</button>
+    </div>
+  </div>
+</section>
+
+<section class="feature">
+  <div class="text">
+    <h1>Bathrooms</h1>
+    <p>Modern and well-maintained bathrooms designed for practicality and comfort. Featuring sleek fixtures, high-quality tiles, and thoughtful lighting, these spaces provide both elegance and convenience.</p>
+  </div>
+  <div class="image">
+    <div class="gallery" data-gallery="bathroom">
+      <img src="Bathroom1.jpg" class="active" alt="Bathroom 1">
+      <img src="Bathroom2.jpg" alt="Bathroom 2">
+      <img src="Bathroom5.jpg" alt="Bathroom 3">
+      <button class="prev" onclick="prevImage('bathroom')">&#10094;</button>
+      <button class="next" onclick="nextImage('bathroom')">&#10095;</button>
+    </div>
+  </div>
+</section>
+
+<section class="feature">
+  <div class="text">
+    <h1>Backyard</h1>
+    <p>An open outdoor area that provides space for relaxation, activities, or gatherings. Includes landscaped gardens, a patio for entertaining, and plenty of green space for children and pets to enjoy.</p>
+  </div>
+  <div class="image"><img src="Backyard.png" alt="Backyard"></div>
+</section>
 
     <section class="cta">
       <h1>Schedule a Visit</h1>
       <h2>Experience Forestside Residence in person</h2>
-<button onclick="window.location.href='mailto:test@gmail.com?subject=Property Visit Request – Forestside Residence&body=Hello, I would like to schedule a visit to the house. Please let me know your available times.'">
-  Contact Agent
-</button>
-
+      <button onclick="window.location.href='mailto:test@gmail.com?subject=Property Visit Request – Forestside Residence&body=Hello, I would like to schedule a visit to the house. Please let me know your available times.'">Contact Agent</button>
     </section>
   </div>
 
@@ -436,14 +424,15 @@
     }, { threshold: 0.2 });
     sections.forEach(section => observer.observe(section));
 
-    function showPage(pageId, el) {
-      document.querySelectorAll(".page").forEach(p => p.classList.remove("active"));
-      document.getElementById(pageId).classList.add("active");
+    // Scroll to section function
+    function scrollToSection(id, el) {
+      const target = document.getElementById(id);
+      target.scrollIntoView({ behavior: 'smooth' });
       document.querySelectorAll("nav ul li").forEach(li => li.classList.remove("active"));
       el.classList.add("active");
-      window.scrollTo({ top: 0, behavior: "smooth" });
     }
 
+    // Gallery functions
     function nextImage(name) {
       const g = document.querySelector(`.gallery[data-gallery='${name}']`);
       const imgs = g.querySelectorAll("img");
@@ -461,4 +450,6 @@
     }
   </script>
 </body>
+
+
 </html>
