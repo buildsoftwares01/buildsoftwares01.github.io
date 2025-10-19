@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Seaview Residence – Modern Home for Sale</title>
+  <title>Forestside Residence – Modern Home for Sale</title>
   <style>
     body {
       margin: 0;
@@ -209,6 +209,48 @@
       box-shadow: 0 0 20px rgba(255, 255, 255, 0.7);
     }
 
+    /* ---- Gallery Styles ---- */
+    .gallery {
+      position: relative;
+      width: 100%;
+      max-width: 600px;
+      border-radius: 16px;
+      overflow: hidden;
+    }
+
+    .gallery img {
+      width: 100%;
+      display: none;
+      border-radius: 16px;
+      box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+      transition: opacity 0.6s ease;
+    }
+
+    .gallery img.active {
+      display: block;
+    }
+
+    .gallery button {
+      position: absolute;
+      top: 50%;
+      transform: translateY(-50%);
+      background: rgba(0,0,0,0.4);
+      color: #fff;
+      border: none;
+      font-size: 1.5rem;
+      padding: 0.5rem 1rem;
+      cursor: pointer;
+      border-radius: 50%;
+      transition: background 0.3s;
+    }
+
+    .gallery button:hover {
+      background: rgba(0,0,0,0.6);
+    }
+
+    .gallery .prev { left: 10px; }
+    .gallery .next { right: 10px; }
+
     @keyframes float {
       0% { transform: translateY(0px); }
       50% { transform: translateY(-15px); }
@@ -224,154 +266,165 @@
 <body>
 
   <nav>
-    <div class="logo">Seaview Residence</div>
+    <div class="logo">Forestside Residence</div>
     <ul>
       <li class="active" onclick="showPage('home', this)">Home</li>
-      <li onclick="showPage('details', this)">Details</li>
     </ul>
     <button class="nav-buy">Contact Agent</button>
   </nav>
 
-  <!-- HOME -->
   <div class="page active" id="home">
-    <section class="hero">
-      <div class="text">
-        <h1>Seaview Residence</h1>
-        <h2>Modern Luxury Living</h2>
-        <p>A stunning coastal property designed for elegant comfort, featuring spacious interiors, breathtaking sea views, and meticulous attention to detail.</p>
-      </div>
-      <div class="image"><img src="Frontyard.jpg" alt="Frontyard" /></div>
-    </section>
 
-    <section class="feature">
-      <div class="text">
-        <h1>Frontyard</h1>
-        <p>Welcoming landscaped entry with manicured greenery and a serene atmosphere that sets the tone for your home.</p>
-      </div>
-      <div class="image"><img src="Frontyard.jpg" alt="Frontyard" /></div>
-    </section>
+<section class="hero">
+  <div class="text">
+    <h1>Forestside Residence</h1>
+    <h2>Modern Luxury Living</h2>
+    <p>A refined property offering modern comfort and elegant design, with carefully crafted spaces to suit every lifestyle.</p>
+  </div>
+  <div class="image"><img src="Frontyard.jpg" alt="Frontyard" /></div>
+</section>
 
-    <section class="feature">
-      <div class="text">
-        <h1>Living Room</h1>
-        <p>Open and airy living space featuring floor-to-ceiling windows, perfect for natural light and relaxation.</p>
-      </div>
-      <div class="image"><img src="Livingroom.jpg" alt="Living Room" /></div>
-    </section>
+<section class="feature">
+  <div class="text">
+    <h1>Frontyard</h1>
+    <p>A welcoming outdoor space that creates a pleasant first impression and complements the architecture.</p>
+  </div>
+  <div class="image"><img src="Frontyard.jpg" alt="Frontyard" /></div>
+</section>
 
-    <section class="feature">
-      <div class="text">
-        <h1>Dining Room</h1>
-        <p>Elegant dining area with direct access to the terrace — perfect for both family dinners and entertaining guests.</p>
-      </div>
-      <div class="image"><img src="Dining Room.jpg" alt="Dining Room" /></div>
-    </section>
+<section class="feature">
+  <div class="text">
+    <h1>Living Room</h1>
+    <p>A comfortable and versatile area designed for relaxation and social gatherings.</p>
+  </div>
+  <div class="image"><img src="Livingroom.jpg" alt="Living Room" /></div>
+</section>
 
-    <section class="feature">
-      <div class="text">
-        <h1>Kitchen</h1>
-        <p>Fully fitted with modern appliances, ample counter space, and a large central island designed for both functionality and style.</p>
-      </div>
-      <div class="image"><img src="Kitchen.jpg" alt="Kitchen" /></div>
-    </section>
+<section class="feature">
+  <div class="text">
+    <h1>Dining Room</h1>
+    <p>A bright and inviting space ideal for daily meals or special occasions.</p>
+  </div>
+  <div class="image"><img src="Dining Room.jpg" alt="Dining Room" /></div>
+</section>
 
-    <section class="feature">
-      <div class="text">
-        <h1>Office</h1>
-        <p>Quiet and productive workspace surrounded by natural light — ideal for remote work or creative projects.</p>
-      </div>
-      <div class="image"><img src="Office.jpg" alt="Office" /></div>
-    </section>
+<section class="feature">
+  <div class="text">
+    <h1>Kitchen</h1>
+    <p>A functional and spacious kitchen designed with practicality and ease of use in mind.</p>
+  </div>
+  <div class="image"><img src="Kitchen.jpg" alt="Kitchen" /></div>
+</section>
 
-    <section class="feature">
-      <div class="text">
-        <h1>Handwash Area</h1>
-        <p>Clean and modern design with elegant fixtures, blending practicality and luxury in every detail.</p>
-      </div>
-      <div class="image"><img src="Handwash-area.jpg" alt="Handwash Area" /></div>
-    </section>
+<section class="feature">
+  <div class="text">
+    <h1>Office</h1>
+    <p>A quiet and organized room suitable for focused work or study.</p>
+  </div>
+  <div class="image"><img src="Office.jpg" alt="Office" /></div>
+</section>
 
-    <section class="feature">
-      <div class="text">
-        <h1>Bedrooms</h1>
-        <p>Four spacious bedrooms, each with unique character and premium finishes ensuring comfort and privacy.</p>
-      </div>
-      <div class="image"><img src="Bedroom1.jpg" alt="Bedrooms" /></div>
-    </section>
+<section class="feature">
+  <div class="text">
+    <h1>Handwash Area</h1>
+    <p>A simple, clean space for everyday convenience and hygiene.</p>
+  </div>
+  <div class="image"><img src="Handwash-area.jpg" alt="Handwash Area" /></div>
+</section>
 
-    <section class="feature">
-      <div class="text">
-        <h1>Bathrooms</h1>
-        <p>Luxurious bathrooms featuring marble details, rain showers, and refined aesthetics that elevate your daily routine.</p>
-      </div>
-      <div class="image"><img src="Bathroom1.jpg" alt="Bathrooms" /></div>
-    </section>
+<section class="feature">
+  <div class="text">
+    <h1>Bedrooms</h1>
+    <p>Comfortable private rooms offering peace and relaxation throughout the day.</p>
+  </div>
+  <div class="image">
+    <div class="gallery" data-gallery="bedroom">
+      <img src="Bedroom1.jpg" class="active" alt="Bedroom 1">
+      <img src="Bedroom2.jpg" alt="Bedroom 2">
+      <img src="Bedroom3.jpg" alt="Bedroom 3">
+      <img src="Bedroom4.jpg" alt="Bedroom 4">
+      <button class="prev" onclick="prevImage('bedroom')">&#10094;</button>
+      <button class="next" onclick="nextImage('bedroom')">&#10095;</button>
+    </div>
+  </div>
+</section>
 
-    <section class="feature">
-      <div class="text">
-        <h1>Backyard</h1>
-        <p>Private outdoor retreat complete with pool, lounge space, and lush greenery — perfect for relaxing or entertaining.</p>
-      </div>
-      <div class="image"><img src="Backyard.png" alt="Backyard" /></div>
-    </section>
+<section class="feature">
+  <div class="text">
+    <h1>Bathrooms</h1>
+    <p>Modern and well-maintained bathrooms designed for practicality and comfort.</p>
+  </div>
+  <div class="image">
+    <div class="gallery" data-gallery="bathroom">
+      <img src="Bathroom1.jpg" class="active" alt="Bathroom 1">
+      <img src="Bathroom2.jpg" alt="Bathroom 2">
+      <img src="Bathroom5.jpg" alt="Bathroom 3">
+      <button class="prev" onclick="prevImage('bathroom')">&#10094;</button>
+      <button class="next" onclick="nextImage('bathroom')">&#10095;</button>
+    </div>
+  </div>
+</section>
 
-    <section class="cta">
-      <h1>Schedule a Visit</h1>
-      <h2>Experience Seaview Residence in person</h2>
-      <button>Contact Agent</button>
-    </section>
+<section class="feature">
+  <div class="text">
+    <h1>Backyard</h1>
+    <p>An open outdoor area that provides space for relaxation, activities, or gatherings.</p>
+  </div>
+  <div class="image"><img src="Backyard.png" alt="Backyard" /></div>
+</section>
+
+<section class="cta">
+  <h1>Schedule a Visit</h1>
+  <h2>Experience Forestside Residence in person</h2>
+  <button>Contact Agent</button>
+</section>
+
   </div>
 
-  <!-- DETAILS -->
-  <div class="page" id="details">
-    <section class="specs">
-      <h1>Property Details</h1>
-      <ul>
-        <li>Location: Coastal Road, Grand Baie</li>
-        <li>Plot Size: 1,200 m²</li>
-        <li>House Size: 420 m²</li>
-        <li>Bedrooms: 4</li>
-        <li>Bathrooms: 4.5</li>
-        <li>Kitchen: Fully Equipped with Modern Appliances</li>
-        <li>Extras: Pool, Office, Handwash Area, Smart Home System</li>
-        <li>View: Full Ocean View</li>
-        <li>Price: $1,250,000</li>
-      </ul>
-    </section>
+<script>
+  const sections = document.querySelectorAll("section");
+  const observer = new IntersectionObserver((entries, obs) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        entry.target.classList.add("visible");
+        const text = entry.target.querySelector(".text");
+        const image = entry.target.querySelector(".image");
+        if (text) text.classList.add("visible");
+        if (image) image.classList.add("visible");
+        obs.unobserve(entry.target);
+      }
+    });
+  }, { threshold: 0.2 });
 
-    <section class="cta">
-      <h1>Interested?</h1>
-      <h2>Contact our real estate team to arrange a viewing</h2>
-      <button>Get in Touch</button>
-    </section>
-  </div>
+  sections.forEach(section => observer.observe(section));
 
-  <script>
-    const sections = document.querySelectorAll("section");
-    const observer = new IntersectionObserver((entries, obs) => {
-      entries.forEach(entry => {
-        if (entry.isIntersecting) {
-          entry.target.classList.add("visible");
-          const text = entry.target.querySelector(".text");
-          const image = entry.target.querySelector(".image");
-          if (text) text.classList.add("visible");
-          if (image) image.classList.add("visible");
-          obs.unobserve(entry.target);
-        }
-      });
-    }, { threshold: 0.2 });
+  function showPage(pageId, el) {
+    document.querySelectorAll(".page").forEach(p => p.classList.remove("active"));
+    document.getElementById(pageId).classList.add("active");
 
-    sections.forEach(section => observer.observe(section));
+    document.querySelectorAll("nav ul li").forEach(li => li.classList.remove("active"));
+    el.classList.add("active");
 
-    function showPage(pageId, el) {
-      document.querySelectorAll(".page").forEach(p => p.classList.remove("active"));
-      document.getElementById(pageId).classList.add("active");
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  }
 
-      document.querySelectorAll("nav ul li").forEach(li => li.classList.remove("active"));
-      el.classList.add("active");
+  function nextImage(galleryName) {
+    const gallery = document.querySelector(`.gallery[data-gallery="${galleryName}"]`);
+    const images = gallery.querySelectorAll("img");
+    let current = [...images].findIndex(img => img.classList.contains("active"));
+    images[current].classList.remove("active");
+    const nextIndex = (current + 1) % images.length;
+    images[nextIndex].classList.add("active");
+  }
 
-      window.scrollTo({ top: 0, behavior: "smooth" });
-    }
-  </script>
+  function prevImage(galleryName) {
+    const gallery = document.querySelector(`.gallery[data-gallery="${galleryName}"]`);
+    const images = gallery.querySelectorAll("img");
+    let current = [...images].findIndex(img => img.classList.contains("active"));
+    images[current].classList.remove("active");
+    const prevIndex = (current - 1 + images.length) % images.length;
+    images[prevIndex].classList.add("active");
+  }
+</script>
 </body>
 </html>
