@@ -45,3 +45,7 @@ The current event details are incomplete. You can preview the website, but the c
 ## Final live check
 
 Open the HTTPS site on your phone. Check the displayed date and time, open each game, open Maps, and confirm that the RSVP button prepares a message to your intended WhatsApp recipient. The site never sends the message itself. Website event details and the RSVP recipient are public; use your host's access controls if you need a private invitation.
+
+## Shared leaderboards
+
+Follow `LEADERBOARDS.md` to create the Supabase tables/functions and fill in `leaderboard-config.js`. GitHub Pages continues hosting the static invitation; Supabase stores the shared results. Run the database setup before deploying a configured frontend.

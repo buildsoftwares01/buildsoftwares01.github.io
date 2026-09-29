@@ -94,6 +94,7 @@ function showSplash()
 
 function startGame()
 {
+   window.invitationScore.start('flappy');
    currentstate = states.GameScreen;
 
    //fade out the splash
@@ -323,6 +324,7 @@ function playerDead()
 
    //it's time to change states. as of now we're considered ScoreScreen to disable left click/flying
    currentstate = states.ScoreScreen;
+   window.invitationScore.finish(score);
 
    //destroy our gameloops
    clearInterval(loopGameloop);

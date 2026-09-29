@@ -6,7 +6,7 @@
   <meta name="theme-color" content="#f9f7f0">
   <meta name="robots" content="noindex, nofollow, noarchive">
   <meta name="referrer" content="no-referrer">
-  <meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self'; style-src 'self'; img-src 'self' data:; font-src 'self'; connect-src 'self'; frame-src 'self'; base-uri 'none'; form-action 'none'; object-src 'none'">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self'; style-src 'self'; img-src 'self' data:; font-src 'self'; connect-src 'self' https://*.supabase.co; frame-src 'self'; base-uri 'none'; form-action 'none'; object-src 'none'">
   <meta name="description" content="One little boy. One big adventure. Join Madhav and Urvashee to celebrate Vihaan’s first birthday at Paps Restaurant.">
   <meta property="og:title" content="Vihaan is a wild ONE!">
   <meta property="og:description" content="You're invited to a little safari and a whole lot of love. Celebrate Vihaan's first birthday with us.">
@@ -59,10 +59,26 @@
         </div><p class="games-footnote"><span data-icon="phone"></span> Play right here on your phone. No downloads, just fun.</p>
       </div>
     </section>
+    <div class="leaderboard-launch wrap"><button id="open-leaderboards" class="button button-outline" type="button">See the leaderboards ↗</button><p>A little friendly competition for our adventurers.</p></div>
     <section id="rsvp" class="rsvp-section wrap section-space reveal"><span class="rsvp-spark" aria-hidden="true">✳</span><div class="eyebrow">OUR FAVOURITE PEOPLE. OUR FAVOURITE DAY.</div><h2>It wouldn't be the same<br><em>without you.</em></h2><p>Come for the cake. Stay for the cuddles.<br>Let us know if you'll be part of Vihaan's big little day.</p><button class="button" id="rsvp-button" type="button"><span data-icon="message"></span> RSVP on WhatsApp <span aria-hidden="true">↗</span></button><span class="rsvp-note" id="rsvp-note">A little message to Madhav & Urvashee</span><div class="signature">With love, always.<br><strong>Madhav, Urvashee & little Vihaan</strong><span>♡</span></div></section>
   </main>
   <footer class="site-footer wrap"><a class="brand footer-brand" href="#">vihaan<span>✳</span></a><p>One little boy. A whole world of love.</p><div><button class="footer-link" id="share-button" type="button">Share the joy ↗</button><a class="footer-link" href="./credits.html">Credits & privacy</a></div></footer>
-  <dialog id="game-dialog" aria-labelledby="game-title"><div class="game-toolbar"><div><span class="eyebrow">VIHAAN'S PLAY CORNER</span><h2 id="game-title">Let's play</h2></div><button class="icon-button" id="close-game" type="button" aria-label="Close game">×</button></div><p id="game-help"></p><div id="game-frame-container"></div><div class="game-dialog-footer"><span>Just for fun. Scores reset when you close.</span><button id="restart-game" type="button" class="footer-link">Restart ↻</button></div></dialog>
+  <dialog id="game-dialog" aria-labelledby="game-title"><div class="game-toolbar"><div><span class="eyebrow">VIHAAN'S PLAY CORNER</span><h2 id="game-title">Let's play</h2></div><button class="icon-button" id="close-game" type="button" aria-label="Close game">×</button></div><p id="game-help"></p><div id="game-frame-container"></div><div class="game-dialog-footer"><button id="game-leaderboard" type="button" class="footer-link">Leaderboard ↗</button><span>Play, then save your best!</span><button id="restart-game" type="button" class="footer-link">Restart ↻</button></div></dialog>
+  <dialog id="leaderboard-dialog" aria-labelledby="leaderboard-title">
+    <button id="close-leaderboard" class="icon-button dialog-close" type="button" aria-label="Close leaderboard">×</button>
+    <span class="eyebrow">OUR LITTLE CHAMPIONS</span><h2 id="leaderboard-title">The <em>leaderboard.</em></h2>
+    <div class="leaderboard-filters"><label for="leaderboard-game">Game<select id="leaderboard-game"><option value="taptaptap">Tap Tap Tap</option><option value="flappy">Safari Flyer</option><option value="hextris">Hextris</option><option value="ohhi">0h h1</option></select></label><label id="leaderboard-board-label" for="leaderboard-board" hidden>Board size<select id="leaderboard-board"><option value="4">4 × 4</option><option value="6">6 × 6</option><option value="8">8 × 8</option><option value="10">10 × 10</option></select></label></div>
+    <p id="leaderboard-rules"></p>
+    <form id="score-form" hidden novalidate>
+      <h3 id="score-result"></h3><label for="score-name">Your name or nickname</label><input id="score-name" name="name" maxlength="20" autocomplete="off" aria-describedby="score-privacy score-error" placeholder="e.g. Safari Sam" required>
+      <p id="score-privacy">Your name and best score will be visible to other guests. Use a nickname if you prefer. Please keep it family-friendly.</p>
+      <p id="score-error" role="status" aria-live="polite"></p>
+      <div class="score-actions"><button id="save-score" class="button" type="submit">Save my score</button><button id="skip-score" class="text-link" type="button">Back to game</button></div>
+    </form>
+    <p id="leaderboard-status" role="status" aria-live="polite"></p>
+    <table id="leaderboard-table" hidden><caption class="sr-only">Top 20 results for the selected game and board size</caption><thead><tr><th scope="col">Rank</th><th scope="col">Adventurer</th><th scope="col">Best</th></tr></thead><tbody id="leaderboard-rows"></tbody></table>
+    <button id="refresh-leaderboard" class="text-link" type="button">Refresh scores ↻</button>
+  </dialog>
   <dialog id="rsvp-dialog" aria-labelledby="rsvp-title"><button class="icon-button dialog-close" id="close-rsvp" type="button" aria-label="Close RSVP">×</button><span class="eyebrow">WE'D LOVE TO SEE YOU</span><h2 id="rsvp-title">Join the <em>adventure.</em></h2><p id="rsvp-unavailable" hidden>Our WhatsApp RSVP details are coming soon. Please check back or message Madhav & Urvashee directly.</p><form id="rsvp-form"><label for="guest-name">Your name</label><input id="guest-name" name="name" required maxlength="80" autocomplete="given-name" placeholder="Your name"><label for="guest-count">How many are joining?</label><select id="guest-count" name="count"><option value="1">Just me</option><option value="2">2 guests</option><option value="3">3 guests</option><option value="4">4 guests</option><option value="5">5 guests</option><option value="6+">6 or more guests</option></select><button class="button" type="submit">Continue to WhatsApp ↗</button><p class="form-note">You'll review and send your message in WhatsApp.<br>Your details aren't stored on this website.</p></form></dialog>
   <div id="toast" role="status" aria-live="polite"></div>
 </body>

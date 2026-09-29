@@ -1,3 +1,4 @@
+import { setupLeaderboards } from './leaderboard.js';
 import { event } from './event-config.js';
 import { getEventDate } from './event-details.js';
 const $ = (s) => document.querySelector(s);
@@ -18,7 +19,9 @@ const games = {
 };
 const gameDialog = $('#game-dialog');
 let activeGame, gameTrigger;
+const leaderboards = setupLeaderboards({ gameDialog, getGame: () => activeGame, getFrame: () => $('#game-frame-container iframe') });
 function loadGame() {
+  leaderboards.reset();
   const frame = document.createElement('iframe');
   frame.title = games[activeGame].name + ' browser game';
   // No same-origin, popups, forms, downloads, or top-level navigation privileges.
@@ -37,7 +40,7 @@ document.querySelectorAll('[data-game]').forEach(button => button.addEventListen
 }));
 $('#close-game').addEventListener('click', () => gameDialog.close());
 $('#restart-game').addEventListener('click', loadGame);
-gameDialog.addEventListener('close', () => { $('#game-frame-container').replaceChildren(); gameTrigger?.focus(); });
+gameDialog.addEventListener('close', () => { leaderboards.reset(); $('#game-frame-container').replaceChildren(); gameTrigger?.focus(); });
 const rsvpDialog = $('#rsvp-dialog');
 const rsvpReady = /^[1-9]\d{7,14}$/.test(event.whatsappNumber);
 $('#rsvp-button').addEventListener('click', () => {

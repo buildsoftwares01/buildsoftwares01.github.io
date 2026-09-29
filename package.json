@@ -7,11 +7,14 @@
     "dev": "vite --host 127.0.0.1",
     "build": "vite build",
     "preview": "vite preview --host 127.0.0.1",
-    "test": "node scripts/check-site.mjs",
+    "test": "node scripts/check-site.mjs && node scripts/leaderboard-db-check.mjs",
     "test:pages": "node scripts/pages-check.mjs",
-    "check:ready": "node scripts/check-ready.mjs"
+    "check:ready": "node scripts/check-ready.mjs",
+    "test:leaderboards": "node scripts/leaderboard-browser-check.mjs",
+    "leaderboards:sql": "node scripts/generate-leaderboard-sql.mjs"
   },
   "devDependencies": {
+    "@electric-sql/pglite": "0.5.8",
     "playwright": "^1.58.0",
     "sharp": "^0.35.5",
     "vite": "^7.3.0"

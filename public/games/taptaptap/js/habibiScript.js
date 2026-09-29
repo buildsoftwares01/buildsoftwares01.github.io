@@ -402,6 +402,7 @@ var gameEngine = {
     gameEngine.evilCirclesCount = levelsEngine.levels[0].evilCirclesCount;
   },
   start: function(score, level, time, tapsGoal, tapValue, goodCirclesCount, evilCirclesCount) {
+    if (level === 1) window.invitationScore.start('taptaptap');
     // Inatial level setup & adding data to the game engine
     gameEngine.updateScore(score);
     gameEngine.updateLevel(level);
@@ -464,6 +465,7 @@ var gameEngine = {
     gameEngine.reset();
   },
   gameLost: function() {
+    window.invitationScore.finish(gameEngine.score);
     lvlLostScore.innerHTML = gameEngine.score;
     toolsBox.hidePage(pagePlayArea);
     toolsBox.showPage(pageYouLost);

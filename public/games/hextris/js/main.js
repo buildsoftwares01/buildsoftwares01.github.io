@@ -87,8 +87,9 @@ function hideUIElements() {
 	$('#startBtn').hide();
 }
 
-function init(b) {
+function init(b, preview) {
 	if(settings.ending_block && b == 1){return;}
+	if (!preview) window.invitationScore.start('hextris');
 	if (b) {
 		$("#pauseBtn").attr('src',"./images/btn_pause.svg");
 		if ($('#helpScreen').is(":visible")) {
@@ -212,7 +213,7 @@ function exportHistory() {
 
 function setStartScreen() {
 	$('#startBtn').show();
-	init();
+	init(false, true);
 	if (isStateSaved()) {
 		importing = 0;
 	} else {
@@ -341,6 +342,7 @@ function checkGameOver() {
 				highscores.push(score);
 			}
 			writeHighScores();
+			window.invitationScore.finish(score);
 			gameOverDisplay();
 			return true;
 		}

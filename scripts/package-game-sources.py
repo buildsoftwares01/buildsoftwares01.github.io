@@ -7,5 +7,5 @@ for name in ['taptaptap', 'hextris', 'ohhi', 'flappy']:
         for path in sorted((root / name).rglob('*')):
             if path.is_file():
                 archive.write(path, path.relative_to(root))
-        for shared in ['session.js', 'touch-events.js']:
+        for shared in ['session.js', 'touch-events.js', 'leaderboard-bridge.js']:
             archive.write(root / shared, shared)
