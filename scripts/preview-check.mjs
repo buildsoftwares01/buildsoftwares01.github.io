@@ -1,0 +1,13 @@
+import { chromium } from 'playwright';
+import { mkdir } from 'node:fs/promises';
+await mkdir('test-results', { recursive: true });
+const browser = await chromium.launch({ executablePath: '/Applications/Google Chrome.app/Contents/MacOS/Google Chrome', headless: true });
+const page = await browser.newPage({ viewport: { width: 1440, height: 1000 }, deviceScaleFactor: 1 });
+page.on('pageerror', e => console.log('ERROR', e.message));
+await page.goto('http://127.0.0.1:5173');
+await page.waitForTimeout(1200);
+await page.screenshot({ path: 'test-results/desktop.png', fullPage: true });
+await page.setViewportSize({ width: 390, height: 844 });
+await page.screenshot({ path: 'test-results/mobile.png', fullPage: true });
+console.log('Overflow:', await page.evaluate(() => document.documentElement.scrollWidth > innerWidth));
+await browser.close();

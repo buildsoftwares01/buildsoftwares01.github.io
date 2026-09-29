@@ -1,0 +1,19 @@
+{
+  "name": "vihaan-wild-one",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "vite --host 127.0.0.1",
+    "build": "vite build",
+    "preview": "vite preview --host 127.0.0.1",
+    "test": "node scripts/check-site.mjs",
+    "test:pages": "node scripts/pages-check.mjs",
+    "check:ready": "node scripts/check-ready.mjs"
+  },
+  "devDependencies": {
+    "playwright": "^1.58.0",
+    "sharp": "^0.35.5",
+    "vite": "^7.3.0"
+  }
+}

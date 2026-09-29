@@ -1,1 +1,53 @@
-None
+# Vihaan's Wild One invitation
+
+A responsive, static birthday invitation with custom safari artwork, local fonts, an illustrated venue card, Maps directions, WhatsApp RSVP preparation, share button, and sandboxed open-source games.
+
+## Preview and build
+
+See `HOSTING.md` for the complete publishing steps. `npm run check:ready` identifies missing event details before launch.
+
+Requires Node.js 20.19+ or 22.12+.
+
+```
+npm ci
+npm run dev
+npm run build
+```
+
+Publish only `dist/` to a static HTTPS host. Do not publish the project directory, dependencies, development server, or environment files. Netlify and Vercel configurations are included; Cloudflare Pages can use `npm run build`, output `dist`, and the included `_headers`. For another host, configure the equivalent headers from `public/_headers`. Confirm response headers after deployment because static hosts differ in header support.
+
+## GitHub Pages
+
+A deployment workflow is included in `.github/workflows/deploy.yml`. Push to `main` and select **GitHub Actions** in the repository’s **Settings → Pages**. See `HOSTING.md` for setup and local checks. The same build supports repository subpaths and custom domains.
+
+## Details awaiting confirmation
+
+Edit `event-config.js`:
+- Date: supplied as Sunday 7 December 2026, but 7 December is Monday. Awaiting Sunday 6 vs Monday 7 confirmation.
+- Start time: not yet provided, use HH:mm, Mauritius UTC+04:00.
+- WhatsApp recipient: not yet provided, use international digits without `+`.
+The final four games are Tap Tap Tap, Hextris, 0h h1, and Safari Flyer (an adaptation of Floppy Bird). 2048 has been removed.
+
+The invitation labels missing details honestly. RSVP opens an explanatory dialog until a number is configured. The countdown and calendar download appear only after a valid date and time are configured. No invented event end time is added to the calendar.
+
+## Security and privacy
+
+No production npm dependencies, backend, database, credentials, analytics or advertising. Fonts and game assets are local. Games use `sandbox="allow-scripts"` with no same-origin, top navigation, forms, popups or downloads permissions. Games cannot read the invitation DOM or storage. A memory-only compatibility layer supports old games without allowing cookies or persistent browser storage. Their CSP blocks fetch/XHR/WebSocket connections and external scripts. Parent scripts use a local-only CSP without inline-script or eval permissions. Third-party game CSS requires inline styles inside the isolated frames.
+
+Only fixed game identifiers can select an iframe path. The WhatsApp number is validated, names are length-limited, and the entire RSVP message is URL-encoded. No message is sent automatically. External links use `noopener noreferrer`.
+
+The site asks search engines not to index it, but this is not access control. A public invitation and configured WhatsApp recipient can be read by anyone with access to the site. Use host-level access control if the invitation must be private. The host may keep request logs.
+
+The two new games are silent. Safari Flyer retains the upstream Floppy Bird mechanics with original CSS artwork, text scores, and no original Flappy Bird art or audio. Tap Tap Tap uses pointer events to avoid duplicate touch/click actions. Game sources were reviewed and stripped of telemetry; they are older upstream projects, not a guarantee of vulnerability-free code. Keep sandbox restrictions and CSP in place. No server security claims can be verified until a host is configured.
+
+## Attribution
+
+`public/credits.html` includes licenses, attribution and complete downloadable source archives for the modified games. When changing vendored games, run `python3 scripts/package-game-sources.py` before `npm run build` to regenerate these archives. `scripts/harden-games.py` documents the one-time adaptation of pristine upstream game sources; do not repeatedly apply it to already adapted files.
+
+The venue card is an original SVG illustration. The Google Maps link provides real venue photos; no third-party venue photograph is redistributed. See `design/asset-notes.md` for image-generation details.
+
+## Verification
+
+`npm test` checks game assets and source security settings. For touch integration checks, run `npm run build`, start `npm run preview -- --port 4173`, then run `node scripts/game-check.mjs`. The browser check uses installed Chrome on macOS by default; set `CHROME_PATH` to your browser executable on another system. It exercises scoring, rotation, tile changes, flapping, replay, closing and frame isolation, rejects external requests and console errors, and checks page overflow at 320, 768 and 1440 pixels. These are browser-emulated phone tests, not physical-device certification.
+
+`node scripts/invitation-check.mjs` tests the pending and configured RSVP states, URL encoding, the Mauritius calendar timezone, and sharing against `npm run dev`. Temporary event settings and a mocked WhatsApp navigation are used only inside the test browser; no messages are sent.

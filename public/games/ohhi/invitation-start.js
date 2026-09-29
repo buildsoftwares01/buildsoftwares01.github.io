@@ -1,0 +1,1 @@
+document.fonts.ready.then(function(){ app.startTheGameIfWeCan(); });

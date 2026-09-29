@@ -1,0 +1,26 @@
+import assert from 'node:assert/strict';
+import { readFile, access } from 'node:fs/promises';
+import { getEventDate, getReadinessIssues } from '../event-details.js';
+const sample = { date: '2026-12-06', time: '12:30', utcOffset: '+04:00', whatsappNumber: '23000000000' };
+assert.equal(getEventDate(sample).toISOString(), '2026-12-06T08:30:00.000Z');
+assert.equal(getEventDate({ ...sample, date: '2026-02-30' }), null, 'Reject silently normalized invalid dates');
+assert.equal(getEventDate({ ...sample, time: '24:70' }), null, 'Reject invalid party times');
+assert.equal(getEventDate({ ...sample, time: null }).toISOString(), '2026-12-06T08:00:00.000Z');
+assert.deepEqual(getReadinessIssues(sample), []);
+assert.equal(getReadinessIssues({}).length, 3);
+const html = await readFile('index.html', 'utf8');
+assert.equal((html.match(/data-game=/g) || []).length, 4, 'All four selected games are available');
+assert(!html.includes('data-game="2048"'), '2048 has been removed');
+const js = await readFile('main.js', 'utf8');
+assert(js.includes("setAttribute('sandbox', 'allow-scripts')"));
+assert(!js.includes('allow-same-origin'));
+assert(js.includes('encodeURIComponent(message)'));
+for (const game of ['taptaptap', 'hextris', 'ohhi', 'flappy']) {
+  const source = await readFile(`public/games/${game}/index.html`, 'utf8');
+  assert(source.includes("connect-src 'none'"));
+  assert(!/<script[^>]+src=["']https?:/.test(source));
+  assert(!/<script\b(?![^>]*\bsrc=)[^>]*>/.test(source), `${game} contains an inline script`);
+  await access(`public/games/${game}-source.zip`);
+}
+for (const file of ['public/assets/safari.webp', 'public/assets/venue-garden.svg', 'public/assets/DM-Sans-OFL.txt', 'public/assets/Playfair-Display-OFL.txt', 'public/_headers', 'vercel.json']) await access(file);
+console.log('Four-game source security and asset checks passed. Event details remain pending.');
