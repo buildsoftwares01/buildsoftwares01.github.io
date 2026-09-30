@@ -102,7 +102,7 @@ var Levels = new (function(){
 
     puzzle.empty = grid.getValues();
     puzzle.ms = new Date() - d;
-    puzzle.quality = quality;
+    puzzle.quality = grid.quality;
 
     return puzzle;
   }

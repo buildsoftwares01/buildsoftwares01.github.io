@@ -56,19 +56,20 @@ var Game = new (function() {
   }
 
   function start() {
+    // Respond immediately; the decorative intro must not delay input.
+    addEventListeners();
     // kick in the bgservice in a few ms (fixes non-working iOS5)
     setTimeout(function() {
       BackgroundService.kick();
     }, 100);
     if (debug) {
-      addEventListeners();
       showMenu();
       return;
     }
     setTimeout(function(){$('.hide0').removeClass('hide0')}, 300);
     setTimeout(function(){$('.hide1').removeClass('hide1')}, 1300);
     setTimeout(function(){$('.show01').removeClass('hidehs')}, 2300);
-    setTimeout(function(){$('.show01').removeClass('show01').addClass('hidehs'); addEventListeners();}, 4200);
+    setTimeout(function(){$('.show01').removeClass('show01').addClass('hidehs');}, 4200);
   }
 
   function resize() {

@@ -1,1 +1,4 @@
 #socialShare,#buttonCont{display:none!important}body{font-family:Arial,sans-serif}
+/* Keep the score and replay control inside even a short embedded phone screen. */
+#gameoverscreen #container{top:38%!important;margin-top:0!important;width:90%;max-width:360px}
+#restart{position:fixed;left:50%;bottom:32px;margin:0;transform:translateX(-50%);-webkit-transform:translateX(-50%);z-index:100}

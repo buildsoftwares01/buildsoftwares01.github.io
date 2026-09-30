@@ -93,18 +93,25 @@ try {
 
   const hex = await open('hextris');
   await hex.locator('#startBtn').tap();
-  await hex.evaluate(() => { score = 42; isInfringing = () => true; });
+  await hex.evaluate(() => { score = 42; const original = isInfringing; isInfringing = () => { isInfringing = original; return true; }; });
   await save('Hex Hero');
   await page.locator('#close-leaderboard').tap();
   // Exercise the game's own replay, which uses a different init path.
+  await hex.waitForFunction(() => canRestart && gameState === 2);
+  await page.screenshot({ path: 'test-results/hextris-score-mobile.png' });
   await hex.locator('#restart').tap();
-  await hex.evaluate(() => { score = 51; isInfringing = () => true; });
+  await hex.waitForFunction(() => gameState === 1);
+  await hex.evaluate(() => { score = 51; const original = isInfringing; isInfringing = () => { isInfringing = original; return true; }; });
   await save('Hex Hero');
   await page.locator('#close-leaderboard').tap();
   await page.locator('#close-game').tap();
 
   const logic = await open('ohhi');
   await logic.waitForFunction(() => typeof Game !== 'undefined' && Game.startGame);
+  const generated = await logic.evaluate(() => Levels.create(4));
+  assert.equal(generated.full.length, 16);
+  assert.equal(generated.empty.length, 16);
+  assert(Number.isFinite(generated.quality), 'Fallback puzzle generation reports valid quality');
   await logic.evaluate(() => {
     const full = [1,1,2,2,2,1,2,1,2,2,1,1,1,2,1,2];
     Game.startGame({ size: 4, full, empty: full.map((v, i) => i === 0 ? 0 : v), isTutorial: true });

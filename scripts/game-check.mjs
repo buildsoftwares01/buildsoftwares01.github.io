@@ -15,9 +15,10 @@ await page.locator('[data-game="taptaptap"]').scrollIntoViewIfNeeded();
 assert.equal(await page.locator('[data-game]').count(), 4);
 assert.equal(await page.evaluate(() => document.documentElement.scrollWidth > innerWidth), false);
 for (const game of ['taptaptap', 'hextris', 'ohhi', 'flappy']) {
+  const loaded = page.waitForEvent('framenavigated', frame => frame.url().includes(`/games/${game}/`));
   await page.locator(`[data-game="${game}"]`).tap();
-  await page.waitForTimeout(game === 'ohhi' ? 4500 : 1900);
-  const frame = page.frames().find(f => f.url().includes(`/games/${game}/`));
+  const frame = await loaded;
+  await frame.waitForLoadState('load');
   assert(frame, `${game}: iframe loaded`);
   assert.equal(await page.locator('iframe').getAttribute('sandbox'), 'allow-scripts');
   assert.equal(await frame.evaluate(() => { try { void parent.document.body; return false; } catch { return true; } }), true, `${game}: cannot read parent document`);
@@ -40,8 +41,8 @@ for (const game of ['taptaptap', 'hextris', 'ohhi', 'flappy']) {
     assert.notEqual(await frame.evaluate(() => MainHex.position), position, 'Hextris rotates with touch');
   } else if (game === 'ohhi') {
     await frame.locator('#title').tap();
-    await page.waitForTimeout(600);
-    assert(await frame.locator('#board').isVisible(), 'Logic tutorial opens');
+    await frame.locator('#board').waitFor({ state: 'visible' });
+    assert(await frame.locator('#board').isVisible(), 'Logic tutorial opens immediately');
     const tile = frame.locator('#board .tile:not(.tile-1):not(.tile-2)').first();
     console.log('Oh hi board tiles', await frame.locator('#board .tile').count());
     if (await tile.count()) { const before = await tile.getAttribute('class'); await tile.tap(); assert.notEqual(await tile.getAttribute('class'), before, 'Logic tile responds to touch'); }
@@ -53,12 +54,14 @@ for (const game of ['taptaptap', 'hextris', 'ohhi', 'flappy']) {
     assert((await frame.evaluate(() => velocity)) < 0, 'Bird flaps on touch');
     await page.waitForTimeout(3000);
     assert.equal(await frame.evaluate(() => currentstate), 2, 'Bird reaches game over');
+    if (await page.locator('#leaderboard-dialog[open]').count()) await page.locator('#close-leaderboard').tap();
     await frame.locator('#replay').tap();
     await page.waitForTimeout(1200);
     assert.equal(await frame.evaluate(() => currentstate), 0, 'Bird replay returns to ready screen');
   }
   await page.waitForTimeout(650);
   await page.screenshot({ path: `test-results/${game}.png` });
+  if (await page.locator('#leaderboard-dialog[open]').count()) await page.locator('#close-leaderboard').tap();
   await page.locator('#restart-game').tap();
   await page.waitForTimeout(300);
   await page.locator('#close-game').tap();
