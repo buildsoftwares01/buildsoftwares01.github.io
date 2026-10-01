@@ -78,6 +78,9 @@ document.querySelectorAll('h1 em, h2 em, .word-accent, .brand-icon span, .footer
     animation.onfinish = finish;
     animation.oncancel = finish;
   };
+  // A mouse touching the word should feel as playful as a finger touching it.
+  // Touch pointers enter before scrolling too, so only hover with a mouse.
+  accent.addEventListener('pointerenter', e => { if (e.pointerType === 'mouse') pop(); });
   accent.addEventListener('pointerdown', e => { if (e.isPrimary && e.button === 0) pop(); });
   accent.addEventListener('click', pop);
   if (accent.getAttribute('role') === 'button' && !hasControl) {
