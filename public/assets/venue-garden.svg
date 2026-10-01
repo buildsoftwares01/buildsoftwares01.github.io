@@ -1,31 +1,44 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1000 940" fill="none">
   <defs>
     <linearGradient id="bg" x2="1000" y2="940" gradientUnits="userSpaceOnUse"><stop stop-color="#e7edda"/><stop offset="1" stop-color="#cedbbd"/></linearGradient>
-    <linearGradient id="leaf" x2="200" y2="200" gradientUnits="userSpaceOnUse"><stop stop-color="#7a956d"/><stop offset="1" stop-color="#34583e"/></linearGradient>
-    <pattern id="grain" width="11" height="11" patternUnits="userSpaceOnUse"><circle cx="3" cy="6" r=".7" fill="#4c6545" opacity=".12"/></pattern>
-    <g id="sprig"><path d="M0 280Q100 110 155 0" stroke="#54754f" stroke-width="5"/><path d="M24 239Q-40 140 8 111Q75 162 24 239Z" fill="#6f8961"/><path d="M40 215Q131 225 149 155Q85 146 40 215Z" fill="#466c4d"/><path d="M74 161Q12 90 54 60Q111 91 74 161Z" fill="#80966d"/><path d="M96 122Q181 122 189 62Q134 59 96 122Z" fill="#527952"/><path d="M133 53Q100 14 155 0Q172 34 133 53Z" fill="#426746"/></g>
+    <linearGradient id="glass" x1="0" y1="0" x2="0" y2="1"><stop stop-color="#71866b"/><stop offset="1" stop-color="#304e3e"/></linearGradient>
+    <pattern id="grain" width="11" height="11" patternUnits="userSpaceOnUse"><circle cx="3" cy="6" r=".7" fill="#4c6545" opacity=".1"/></pattern>
+    <g id="plant"><path d="M0 0v-105" stroke="#54754f" stroke-width="5"/><path d="M0-37Q-75-55-57-97Q-8-98 0-37Z" fill="#80966d"/><path d="M0-61Q65-78 56-122Q10-114 0-61Z" fill="#527952"/><path d="M0-96Q-37-126-14-156Q19-140 0-96Z" fill="#426746"/><path d="M-31-8h62L23 48h-46Z" fill="#b9754e"/><path d="M-34-8h68v12h-68Z" fill="#cc956b"/></g>
+    <g id="table">
+      <g stroke="#526b4d" stroke-width="9" stroke-linecap="round"><path d="M-111 32v78m0-37h51v37m-51-88v-45m0 0h40v55M111 32v78m0-37H60v37m51-88v-45m0 0H71v55"/></g>
+      <path d="M-6 28v83m-36 0h84" stroke="#846e50" stroke-width="10" stroke-linecap="round"/>
+      <ellipse cy="27" rx="87" ry="25" fill="#b48b60"/>
+      <ellipse cy="19" rx="87" ry="25" fill="#faf4df"/>
+      <ellipse cx="-43" cy="18" rx="20" ry="9" fill="#e1dfc9"/><ellipse cx="43" cy="18" rx="20" ry="9" fill="#e1dfc9"/>
+      <path d="M-8 9h16l-3-25H-5Z" fill="#ba7a53"/><path d="M0-15v-22m0 10q-20-15-15-24 19 0 15 24m0 0q17-21 23-13-4 17-23 13" stroke="#617e57" stroke-width="3" fill="#80966d"/>
+    </g>
   </defs>
   <path fill="url(#bg)" d="M0 0h1000v940H0z"/>
-  <circle cx="740" cy="220" r="122" fill="#faf1d3" opacity=".85"/>
-  <path d="M0 620Q220 480 440 608T1000 510V940H0Z" fill="#b9cba7"/>
-  <path d="M0 777Q315 563 575 745T1000 623V940H0Z" fill="#a5bd94"/>
-  <path d="M540 940C1030 803 383 681 560 581" stroke="#ecdfbd" stroke-width="90"/>
-  <path d="M540 940C1030 803 383 681 560 581" stroke="#b9a47b" stroke-width="2" stroke-dasharray="7 13"/>
+  <circle cx="804" cy="167" r="91" fill="#faf1d3" opacity=".85"/>
+  <path d="M0 601Q205 523 420 595T1000 533V940H0Z" fill="#b9cba7"/>
+  <path d="M95 681h810l95 259H0Z" fill="#ded3b5"/>
+  <path d="M104 821h791M65 910h870M355 682l-52 258m342-258 52 258" stroke="#c5b995" stroke-width="2"/>
+  <rect x="156" y="238" width="688" height="444" rx="10" fill="#f9f3df"/>
+  <path d="M133 244l58-96h618l58 96Z" fill="#526e50"/>
+  <path d="M174 216h652M191 184h618" stroke="#6f8961" stroke-width="3"/>
+  <rect x="310" y="255" width="380" height="101" rx="8" fill="#304e3e"/>
+  <rect x="320" y="265" width="360" height="81" rx="4" stroke="#9eaa84"/>
+  <text x="500" y="308" text-anchor="middle" font-family="Georgia,serif" font-size="43" fill="#faf3dc">Paps</text>
+  <text x="500" y="333" text-anchor="middle" font-family="Arial,sans-serif" font-size="12" letter-spacing="3" fill="#e5dfc3">BAR · LOUNGE · RESTAURANT</text>
+  <path d="M204 441h167v193H204Zm425 0h167v193H629Z" fill="url(#glass)"/>
+  <path d="M420 441h160v241H420Z" fill="#304e3e"/>
+  <path d="M434 455h132v201H434Z" fill="url(#glass)" stroke="#b8b798" stroke-width="3"/>
+  <g stroke="#f5e8ca" stroke-width="7"><path d="M287 441v193m-83-91h167m342-102v193m-84-91h167M500 455v201"/></g>
+  <g fill="#f4d58e"><path d="M279 462h16l14 23h-44Zm426 0h16l14 23h-44Z"/><ellipse cx="287" cy="489" rx="25" ry="5" opacity=".2"/><ellipse cx="713" cy="489" rx="25" ry="5" opacity=".2"/></g>
+  <path d="M486 560v20m28-20v20" stroke="#e2c48d" stroke-width="5" stroke-linecap="round"/>
+  <path d="M180 372h640l37 66H143Z" fill="#f1e6c9"/>
+  <path d="M180 372h80l-24 66h-93Zm160 0h80l-8 66h-88Zm160 0h80l8 66h-88Zm160 0h80l24 66h-88Z" fill="#819575"/>
+  <path d="M143 438h714v17q-22 22-45 0-23 22-45 0-22 22-45 0-23 22-45 0-22 22-45 0-23 22-45 0-22 22-45 0-23 22-45 0-22 22-45 0-23 22-45 0-22 22-45 0-23 22-45 0-22 22-45 0-23 22-45 0-22 22-39 0Z" fill="#819575"/>
+  <path d="M148 682h704" stroke="#b6ae8d" stroke-width="13"/>
+  <use href="#plant" transform="translate(174 647)"/><use href="#plant" transform="translate(826 647)"/>
+  <use href="#table" transform="translate(309 735)"/><use href="#table" transform="translate(692 735)"/>
+  <path d="M78 263Q500 378 922 263" stroke="#657858" stroke-width="3"/>
+  <g fill="#fff3c8" stroke="#b2a47a" stroke-width="2"><circle cx="133" cy="280" r="8"/><circle cx="252" cy="305" r="8"/><circle cx="375" cy="319" r="8"/><circle cx="500" cy="323" r="8"/><circle cx="625" cy="319" r="8"/><circle cx="748" cy="305" r="8"/><circle cx="867" cy="280" r="8"/></g>
+  <use href="#plant" transform="translate(49 807) scale(1.7)"/><use href="#plant" transform="translate(956 827) scale(1.8)"/>
   <path fill="url(#grain)" d="M0 0h1000v940H0z"/>
-  <use href="#sprig" transform="translate(-10 218) rotate(-24) scale(1.6)"/>
-  <use href="#sprig" transform="translate(950 870) rotate(185) scale(1.3)"/>
-  <use href="#sprig" transform="translate(34 894) rotate(-14) scale(.95)"/>
-  <g transform="translate(270 125)">
-    <rect x="12" y="18" width="460" height="476" rx="220" fill="#5b7252" opacity=".08"/>
-    <rect width="460" height="476" rx="220" fill="#f9f6eb"/>
-    <rect x="17" y="17" width="426" height="442" rx="205" stroke="#c4ccb2"/>
-    <text x="230" y="136" text-anchor="middle" font-family="Arial,sans-serif" font-size="14" letter-spacing="4" fill="#7a866d">THE ADVENTURE LEADS TO</text>
-    <text x="230" y="224" text-anchor="middle" font-family="Georgia,serif" font-size="78" fill="#304e3e">Paps</text>
-    <text x="230" y="267" text-anchor="middle" font-family="Georgia,serif" font-size="26" font-style="italic" fill="#ad6e48">a place to celebrate</text>
-    <path d="M187 304h86" stroke="#c4ccb2"/>
-    <text x="230" y="344" text-anchor="middle" font-family="Arial,sans-serif" font-size="16" letter-spacing="2" fill="#637458">VACOAS-PHOENIX</text>
-    <text x="230" y="374" text-anchor="middle" font-family="Arial,sans-serif" font-size="13" letter-spacing="4" fill="#8c967e">MAURITIUS</text>
-  </g>
-  <g transform="translate(501 551)"><ellipse cx="49" cy="93" rx="48" ry="12" fill="#5f7753" opacity=".18"/><path d="M49 0C-2 0-10 52 14 79L49 113 84 79C108 52 100 0 49 0Z" fill="#b9754e"/><circle cx="49" cy="43" r="17" fill="#f8ebd0"/><path d="M49 22v42M28 43h42" stroke="#f8ebd0" stroke-width="2" opacity=".4"/></g>
-  <g stroke="#fcf6dc" stroke-width="3"><path d="M192 403v34m-17-17h34"/><path d="M819 501v25m-13-12h26"/></g>
 </svg>
