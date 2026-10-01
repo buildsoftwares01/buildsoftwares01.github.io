@@ -9,6 +9,19 @@ if (!matchMedia('(prefers-reduced-motion: reduce)').matches && 'IntersectionObse
   const observer = new IntersectionObserver(entries => entries.forEach(entry => { if (entry.isIntersecting) { entry.target.classList.add('in-view'); observer.unobserve(entry.target); } }), { threshold: .08 });
   document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
 }
+// One control pauses the decorative movement and the scrolling message strap.
+const motionPreference = matchMedia('(prefers-reduced-motion: reduce)');
+const motionToggle = $('#motion-toggle');
+function syncMotionControl() { motionToggle.hidden = motionPreference.matches; }
+syncMotionControl();
+motionPreference.addEventListener('change', syncMotionControl);
+motionToggle.addEventListener('click', () => {
+  const paused = document.body.classList.toggle('motion-paused');
+  motionToggle.setAttribute('aria-pressed', String(paused));
+  motionToggle.setAttribute('aria-label', paused ? 'Resume animations' : 'Pause animations');
+  motionToggle.firstElementChild.textContent = paused ? '▷' : 'Ⅱ';
+  motionToggle.querySelector('.motion-label').textContent = paused ? 'Play' : 'Pause';
+});
 let toastTimer;
 function toast(message) { $('#toast').textContent = message; $('#toast').classList.add('visible'); clearTimeout(toastTimer); toastTimer = setTimeout(() => $('#toast').classList.remove('visible'), 4000); }
 const games = {
@@ -56,13 +69,13 @@ $('#rsvp-form').addEventListener('submit', e => {
   const name = $('#guest-name').value.trim();
   if (!name) { $('#guest-name').setCustomValidity('Please enter your name.'); $('#guest-name').reportValidity(); return; }
   const count = $('#guest-count').value;
-  const message = `Hi Madhav & Urvashee! It's ${name}. We'd love to celebrate Vihaan's first birthday at Paps Restaurant. RSVP: ${count} ${count === '1' ? 'guest' : 'guests'}. Looking forward to the adventure!`;
+  const message = `Hi Madhav & Urvashee! It's ${name}. We'd love to celebrate Vihaan's first birthday at Paps Restaurant. RSVP: ${count} ${count === '1' ? 'guest' : 'guests'}. Can’t wait for cake and cuddles!`;
   window.open(`https://wa.me/${event.whatsappNumber}?text=${encodeURIComponent(message)}`, '_blank', 'noopener,noreferrer');
 });
 $('#guest-name').addEventListener('input', () => $('#guest-name').setCustomValidity(''));
 $('#share-button').addEventListener('click', async () => {
   const url = new URL(location.href); url.hash = ''; url.search = '';
-  try { if (navigator.share) await navigator.share({ title: 'Vihaan is a wild ONE!', text: "You're invited to Vihaan's first birthday!", url: url.href }); else { await navigator.clipboard.writeText(url.href); toast('Invitation link copied. Share a little joy!'); } } catch (error) { if (error.name !== 'AbortError') toast('Copy the address from your browser to share this invitation.'); }
+  try { if (navigator.share) await navigator.share({ title: 'Our sweet pea Vihaan is turning ONE!', text: "You're invited to Vihaan's first birthday!", url: url.href }); else { await navigator.clipboard.writeText(url.href); toast('Invitation link copied. Share a little joy!'); } } catch (error) { if (error.name !== 'AbortError') toast('Copy the address from your browser to share this invitation.'); }
 });
 if (event.date) {
   const date = getEventDate(event);
@@ -78,12 +91,15 @@ if (event.date) {
         $('#countdown-values').replaceChildren(...values.map((value, i) => { const box = document.createElement('div'); const number = document.createElement('b'); number.textContent = String(value).padStart(2, '0'); const label = document.createElement('span'); label.textContent = ['days', 'hours', 'minutes'][i]; box.append(number, label); return box; }));
       };
       updateCountdown(); setInterval(updateCountdown, 30000);
-      $('#calendar-button').addEventListener('click', () => {
-        const stamp = d => d.toISOString().replace(/[-:]/g, '').replace(/\.\d{3}/, '');
-        const escape = s => s.replace(/\\/g, '\\\\').replace(/,/g, '\\,').replace(/;/g, '\\;').replace(/\n/g, '\\n');
-        const ics = ['BEGIN:VCALENDAR','VERSION:2.0','PRODID:-//Vihaan Birthday//Invitation//EN','BEGIN:VEVENT',`UID:vihaan-first-birthday-${event.date}@invitation.local`,`DTSTAMP:${stamp(new Date())}`,`DTSTART:${stamp(date)}`,'SUMMARY:Vihaan’s first birthday',`LOCATION:${escape(event.venue)}`,'DESCRIPTION:Celebrate with Madhav and Urvashee.','END:VEVENT','END:VCALENDAR',''].join('\r\n');
-        const url = URL.createObjectURL(new Blob([ics], { type: 'text/calendar;charset=utf-8' }));
-        const link = document.createElement('a'); link.href = url; link.download = 'vihaan-first-birthday.ics'; link.click(); setTimeout(() => URL.revokeObjectURL(url), 1000);
+      document.querySelectorAll('[data-calendar]').forEach(button => {
+        button.hidden = false;
+        button.addEventListener('click', () => {
+          const stamp = d => d.toISOString().replace(/[-:]/g, '').replace(/\.\d{3}/, '');
+          const escape = s => s.replace(/\\/g, '\\\\').replace(/,/g, '\\,').replace(/;/g, '\\;').replace(/\n/g, '\\n');
+          const ics = ['BEGIN:VCALENDAR','VERSION:2.0','PRODID:-//Vihaan Birthday//Invitation//EN','BEGIN:VEVENT',`UID:vihaan-first-birthday-${event.date}@invitation.local`,`DTSTAMP:${stamp(new Date())}`,`DTSTART:${stamp(date)}`,'SUMMARY:Vihaan’s first birthday',`LOCATION:${escape(event.venue)}`,'DESCRIPTION:Celebrate with Madhav and Urvashee.','END:VEVENT','END:VCALENDAR',''].join('\r\n');
+          const url = URL.createObjectURL(new Blob([ics], { type: 'text/calendar;charset=utf-8' }));
+          const link = document.createElement('a'); link.href = url; link.download = 'vihaan-first-birthday.ics'; link.click(); setTimeout(() => URL.revokeObjectURL(url), 1000);
+        });
       });
     }
   }

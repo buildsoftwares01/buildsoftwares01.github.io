@@ -1,4 +1,4 @@
-# Vihaan's Wild One invitation
+# Vihaan's Sweet Pea invitation
 
 A responsive, static birthday invitation with custom safari artwork, local fonts, an illustrated venue card, Maps directions, WhatsApp RSVP preparation, share button, and sandboxed open-source games.
 
@@ -20,13 +20,16 @@ Publish only `dist/` to a static HTTPS host. Do not publish the project director
 
 A deployment workflow is included in `.github/workflows/deploy.yml`. Push to `main` and select **GitHub Actions** in the repository’s **Settings → Pages**. See `HOSTING.md` for setup and local checks. The same build supports repository subpaths and custom domains.
 
-## Details awaiting confirmation
+## Event details
 
 Edit `event-config.js`:
-- Date: supplied as Sunday 7 December 2026, but 7 December is Monday. Awaiting Sunday 6 vs Monday 7 confirmation.
-- Start time: not yet provided, use HH:mm, Mauritius UTC+04:00.
-- WhatsApp recipient: not yet provided, use international digits without `+`.
+- Date: Sunday 6 December 2026.
+- Start time: 11:00 am, Mauritius UTC+04:00.
+- WhatsApp recipient: +230 5786 4984 (stored as international digits without `+`).
+
 The final four games are Tap Tap Tap, Hextris, 0h h1, and Safari Flyer (an adaptation of Floppy Bird). 2048 has been removed.
+
+Calendar download buttons are available in the hero, countdown and RSVP sections. The message strap loops continuously; a pause control stops decorative animations, and reduced-motion settings show all strap text without scrolling.
 
 The invitation labels missing details honestly. RSVP opens an explanatory dialog until a number is configured. The countdown and calendar download appear only after a valid date and time are configured. No invented event end time is added to the calendar.
 
@@ -50,7 +53,9 @@ The venue card is an original SVG illustration. The Google Maps link provides re
 
 `npm test` checks game assets and source security settings. For touch integration checks, run `npm run build`, start `npm run preview -- --port 4173`, then run `node scripts/game-check.mjs`. The browser check uses installed Chrome on macOS by default; set `CHROME_PATH` to your browser executable on another system. It exercises scoring, rotation, tile changes, flapping, replay, closing and frame isolation, rejects external requests and console errors, and checks page overflow at 320, 768 and 1440 pixels. These are browser-emulated phone tests, not physical-device certification.
 
-`node scripts/invitation-check.mjs` tests the pending and configured RSVP states, URL encoding, the Mauritius calendar timezone, and sharing against `npm run dev`. Temporary event settings and a mocked WhatsApp navigation are used only inside the test browser; no messages are sent.
+`node scripts/motion-check.mjs` checks mobile and desktop overflow, visibility of every scrolling phrase, pause/resume, and the reduced-motion layout against `npm run dev`.
+
+`node scripts/invitation-check.mjs` tests the actual, pending and configured RSVP states, URL encoding, the Mauritius calendar timezone, and sharing against `npm run dev`. Temporary event settings and a mocked WhatsApp navigation are used only inside the test browser; no messages are sent.
 
 ## Shared game leaderboards
 

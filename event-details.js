@@ -10,7 +10,7 @@ export function getEventDate(event) {
 
 export function getReadinessIssues(event) {
   const issues = [];
-  if (!event.date) issues.push('Confirm the party date: Sunday 6 or Monday 7 December 2026.');
+  if (!event.date) issues.push('Enter the party date in YYYY-MM-DD format.');
   else if (!getEventDate({ ...event, time: null })) issues.push('Enter a valid calendar date in YYYY-MM-DD format (Mauritius UTC+04:00).');
   if (!/^(?:[01]\d|2[0-3]):[0-5]\d$/.test(event.time || '')) issues.push('Enter the start time in HH:mm format, Mauritius time.');
   if (!/^[1-9]\d{7,14}$/.test(event.whatsappNumber || '')) issues.push('Enter the WhatsApp RSVP number with country code, digits only.');

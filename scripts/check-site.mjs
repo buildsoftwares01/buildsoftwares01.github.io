@@ -23,4 +23,4 @@ for (const game of ['taptaptap', 'hextris', 'ohhi', 'flappy']) {
   await access(`public/games/${game}-source.zip`);
 }
 for (const file of ['public/assets/safari.webp', 'public/assets/venue-garden.svg', 'public/assets/DM-Sans-OFL.txt', 'public/assets/Playfair-Display-OFL.txt', 'public/_headers', 'vercel.json']) await access(file);
-console.log('Four-game source security and asset checks passed. Event details remain pending.');
+console.log('Four-game source security and asset checks passed. Event validation checks passed.');
