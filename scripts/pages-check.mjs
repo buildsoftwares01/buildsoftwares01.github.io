@@ -37,6 +37,36 @@ try {
     await page.goto(base, { waitUntil: 'networkidle' });
     await page.evaluate(() => document.fonts.ready);
     assert(await page.locator('.hero-art img').evaluate(img => img.complete && img.naturalWidth > 0));
+    const friends = page.locator('.safari-friend');
+    assert.equal(await friends.count(), 4);
+    for (let i = 0; i < 4; i++) {
+      const friend = friends.nth(i);
+      const bounds = await friend.boundingBox();
+      assert(Math.abs(bounds.width - 48) < .01);
+      assert(Math.abs(bounds.height - 48) < .01);
+      assert(bounds.x >= 0 && bounds.x + 48 <= page.viewportSize().width);
+      await friend.click({ force: true });
+      assert(await friend.getAttribute('data-gesture'));
+    }
+    await page.waitForTimeout(1200);
+    await page.mouse.move(200, 0);
+    const beforeScroll = await friends.first().getAttribute('style');
+    await page.evaluate(() => window.scrollBy(0, 500));
+    await page.waitForTimeout(350);
+    assert.notEqual(await friends.first().getAttribute('style'), beforeScroll);
+    await page.evaluate(() => document.querySelector('#motion-toggle').click());
+    await page.waitForTimeout(50);
+    const pausedPosition = await friends.first().getAttribute('style');
+    await page.waitForTimeout(150);
+    assert.equal(await friends.first().getAttribute('style'), pausedPosition);
+    await page.evaluate(() => document.querySelector('#motion-toggle').click());
+    await page.emulateMedia({ reducedMotion: 'reduce' });
+    await friends.first().focus();
+    await page.keyboard.press('Enter');
+    assert.equal(await friends.first().getAttribute('data-gesture'), 'quiet');
+    await page.emulateMedia({ reducedMotion: 'no-preference' });
+    await page.evaluate(() => { document.activeElement.blur(); window.scrollTo(0, 0); });
+    await page.screenshot({ path: `test-results/safari-${prefix === '/' ? 'desktop' : 'mobile'}.png` });
     for (const game of ['taptaptap', 'hextris', 'ohhi', 'flappy']) {
       let releaseScript;
       const scriptGate = new Promise(resolve => { releaseScript = resolve; });
