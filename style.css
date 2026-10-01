@@ -58,10 +58,10 @@
 /* A little birthday mischief: springy type and soft, changing paper shapes. */
 .hero-copy h1 em{display:inline-block;transform-origin:50% 80%;animation:word-wiggle 6s ease-in-out infinite}
 .one{display:inline-block;white-space:nowrap}
-.one>span{display:inline-block;transform-origin:center bottom;animation:letter-hop 3.6s infinite}
-.one>span:nth-child(2){animation-delay:.14s}
-.one>span:nth-child(3){animation-delay:.28s}
-.one>span:nth-child(4){animation-delay:.42s;color:var(--orange)}
+.one>span{display:inline-block;transform-origin:center bottom;animation:letter-hop 3.6s ease-in-out infinite}
+.one>span:nth-child(2){animation-delay:-.14s}
+.one>span:nth-child(3){animation-delay:-.28s}
+.one>span:nth-child(4){animation-delay:-.42s;color:var(--orange)}
 .one:after{animation:underline-squish 3.6s ease-in-out infinite}
 .hero-art{padding:22px 12px 0}
 .safari-frame{position:relative;padding:12px;background:#e3e9d5;border-radius:15% 20% 16% 22%;box-shadow:8px 10px 0 #ecd9bd;animation:frame-morph 9s ease-in-out infinite;isolation:isolate}
@@ -88,19 +88,18 @@
 .ohhi-grid i:nth-child(3n){animation-delay:.5s}
 .preview-doodle{animation:sparkle 4s ease-in-out infinite}
 .button:active{transform:translateY(2px) scale(.96)}
+/* Keep text moving throughout each loop, with no resting keyframe ranges. */
 @keyframes letter-hop{
-  0%,10%,42%,100%{transform:translateY(0) scale(1)}
-  17%{transform:translateY(3px) scale(1.12,.86)}
-  26%{transform:translateY(-13px) rotate(-7deg) scale(.94,1.08)}
-  34%{transform:translateY(2px) rotate(3deg) scale(1.08,.94)}
+  0%,100%{transform:translateY(2px) rotate(3deg) scale(1.08,.94)}
+  50%{transform:translateY(-13px) rotate(-7deg) scale(.94,1.08)}
 }
-@keyframes word-wiggle{0%,12%,42%,100%{transform:rotate(0)}22%{transform:rotate(-3deg)}30%{transform:rotate(2deg)}36%{transform:rotate(-1deg)}}
-@keyframes underline-squish{0%,15%,45%,100%{transform:rotate(-5deg) scaleX(1)}27%{transform:rotate(-2deg) scaleX(.85)}}
+@keyframes word-wiggle{0%,100%{transform:rotate(-3deg)}50%{transform:rotate(2deg)}}
+@keyframes underline-squish{0%,100%{transform:rotate(-5deg) scaleX(1)}50%{transform:rotate(-2deg) scaleX(.85)}}
 @keyframes frame-morph{0%,100%{border-radius:15% 20% 16% 22%}50%{border-radius:22% 14% 23% 15%}}
 @keyframes party-morph{0%,100%{border-radius:35% 65% 60% 40%;transform:rotate(-12deg) scale(.9)}50%{border-radius:60% 40% 30% 70%;transform:rotate(35deg) scale(1.08)}}
 @keyframes icon-morph{0%,100%{border-radius:38% 62% 54% 46%;transform:rotate(-6deg)}50%{border-radius:60% 40% 36% 64%;transform:rotate(7deg)}}
-@keyframes happy-tilt{0%,15%,45%,100%{transform:rotate(0) translateY(0)}25%{transform:rotate(-2deg) translateY(-4px)}35%{transform:rotate(1deg) translateY(0)}}
-@keyframes tap-word{0%,20%,55%,100%{transform:rotate(-12deg) scale(1)}35%{transform:rotate(5deg) scale(1.18)}}
+@keyframes happy-tilt{0%,100%{transform:rotate(1deg) translateY(0)}50%{transform:rotate(-2deg) translateY(-4px)}}
+@keyframes tap-word{0%,100%{transform:rotate(-12deg) scale(1)}50%{transform:rotate(5deg) scale(1.18)}}
 @keyframes tile-pop{0%,15%,55%,100%{transform:translateY(0);border-radius:7px}30%{transform:translateY(-6px) rotate(-6deg);border-radius:50%}42%{transform:translateY(1px);border-radius:16px}}
 @media(max-width:760px){
   .hero{gap:36px}
@@ -123,9 +122,9 @@
 .games-heading .word-accent{animation-delay:-1.6s}
 .rsvp-section .word-accent{animation-delay:-3.2s}
 .round-stamp strong{font-size:11px;letter-spacing:.3px}
-@keyframes accent-bounce{0%,12%,40%,100%{transform:translateY(0) scale(1)}20%{transform:translateY(-4px) scale(1.05)}28%{transform:translateY(1px) scale(1.03,.95)}34%{transform:translateY(-1px) scale(1)}}
-@keyframes accent-glow{0%,12%,50%,100%{transform:rotate(0);color:var(--orange)}28%{transform:rotate(-4deg);color:var(--green)}38%{transform:rotate(2deg);color:var(--orange)}}
-@keyframes accent-underline{0%,12%,55%,100%{transform:scaleX(.35);opacity:.35}28%,38%{transform:scaleX(1);opacity:1}}
+@keyframes accent-bounce{0%,100%{transform:translateY(1px) scale(1.03,.95)}50%{transform:translateY(-4px) scale(1.05)}}
+@keyframes accent-glow{0%,100%{transform:rotate(2deg);color:var(--orange)}50%{transform:rotate(-4deg);color:var(--green)}}
+@keyframes accent-underline{0%,100%{transform:scaleX(.35);opacity:.35}50%{transform:scaleX(1);opacity:1}}
 @media(max-width:1050px){.round-stamp strong{font-size:9px}}
 @media(max-width:760px){.round-stamp strong{font-size:8px;letter-spacing:0}.brand-small{font-size:6px;letter-spacing:1.4px}}
 
