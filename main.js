@@ -22,6 +22,68 @@ motionToggle.addEventListener('click', () => {
   motionToggle.firstElementChild.textContent = paused ? '▷' : 'Ⅱ';
   motionToggle.querySelector('.motion-label').textContent = paused ? 'Play' : 'Pause';
 });
+// Keep each accent's space in the layout while it pops away for one second.
+const poppingAccents = new WeakSet();
+function sparkleAccent(accent) {
+  const rect = accent.getBoundingClientRect();
+  const burst = document.createElement('span');
+  burst.className = 'accent-magic-burst';
+  burst.setAttribute('aria-hidden', 'true');
+  burst.style.left = `${rect.left + rect.width / 2}px`;
+  burst.style.top = `${rect.top + rect.height / 2}px`;
+  // Stay above the backdrop when an accent belongs to an open dialog.
+  (accent.closest('dialog') || document.body).append(burst);
+  const radius = Math.min(90, Math.max(35, rect.width * .4));
+  const animations = Array.from({ length: 10 }, (_, i) => {
+    const spark = document.createElement('span');
+    spark.textContent = ['✦', '✧', '·'][i % 3];
+    burst.append(spark);
+    const angle = i * Math.PI * 2 / 10;
+    const distance = radius * (i % 2 ? 1 : .7);
+    return spark.animate([
+      { transform: 'translate(-50%, -50%) scale(0)', opacity: 0 },
+      { opacity: 1, offset: .18 },
+      { transform: `translate(calc(-50% + ${Math.cos(angle) * distance}px), calc(-50% + ${Math.sin(angle) * distance}px)) rotate(${i % 2 ? 100 : -100}deg) scale(.3)`, opacity: 0 },
+    ], { duration: 650, easing: 'ease-out' }).finished;
+  });
+  Promise.allSettled(animations).then(() => burst.remove());
+}
+document.querySelectorAll('h1 em, h2 em, .word-accent, .brand-icon span, .footer-brand span, .heart-mark, .signature > span, .floating-heart, .rsvp-heart, .art-spark, .title-star, .one > span:last-child, .preview-doodle, .hex-inner, #score-error').forEach(accent => {
+  accent.classList.add('pop-accent');
+  if (getComputedStyle(accent).display === 'inline') accent.classList.add('pop-accent-inline');
+  const hasControl = accent.closest('a, button');
+  if (!hasControl && !accent.closest('[aria-hidden="true"]') && !accent.matches('[role="status"]')) {
+    accent.tabIndex = 0;
+    accent.setAttribute('role', 'button');
+  }
+  const pop = () => {
+    if (poppingAccents.has(accent)) return;
+    poppingAccents.add(accent);
+    const still = motionPreference.matches || document.body.classList.contains('motion-paused');
+    if (!still) sparkleAccent(accent);
+    const frames = still
+      ? [{ opacity: 0 }, { opacity: 0, offset: .85 }, { opacity: 1 }]
+      : [
+          { scale: '1', opacity: 1, filter: 'brightness(1) drop-shadow(0 0 0 transparent)' },
+          { scale: '1.25', opacity: 1, filter: 'brightness(1.5) drop-shadow(0 0 8px #e5b65c)', offset: .12 },
+          { scale: '.65', opacity: 0, filter: 'brightness(1.5) drop-shadow(0 0 8px #e5b65c)', offset: .25 },
+          { scale: '.65', opacity: 0, filter: 'brightness(1.5) drop-shadow(0 0 8px #e5b65c)', offset: .8 },
+          { scale: '1', opacity: 1, filter: 'brightness(1) drop-shadow(0 0 0 transparent)' },
+        ];
+    // Separate scale from the existing decorative transforms; no layout shift.
+    const animation = accent.animate(frames, { duration: 1000, easing: 'ease-out' });
+    const finish = () => poppingAccents.delete(accent);
+    animation.onfinish = finish;
+    animation.oncancel = finish;
+  };
+  accent.addEventListener('pointerdown', e => { if (e.isPrimary && e.button === 0) pop(); });
+  accent.addEventListener('click', pop);
+  if (accent.getAttribute('role') === 'button' && !hasControl) {
+    accent.addEventListener('keydown', e => {
+      if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); if (!e.repeat) pop(); }
+    });
+  }
+});
 const games = {
   taptaptap: { name: 'Tap Tap Tap', help: 'Tap the blue circles before time runs out. Avoid red circles. Start with New Game.' },
   flappy: { name: 'Safari Flyer', help: 'Tap to flap through the green branches. On a computer, click or press Space.' },

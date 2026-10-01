@@ -128,6 +128,15 @@
 @media(max-width:1050px){.round-stamp strong{font-size:9px}}
 @media(max-width:760px){.round-stamp strong{font-size:8px;letter-spacing:0}.brand-small{font-size:6px;letter-spacing:1.4px}}
 
+/* Tap accents without removing their space or interrupting nearby controls. */
+.pop-accent{cursor:pointer;pointer-events:auto;touch-action:manipulation}
+.pop-accent-inline{display:inline-block}
+.pop-accent:focus-visible{outline:2px solid var(--orange);outline-offset:5px;border-radius:3px}
+.accent-magic-burst{position:fixed;width:0;height:0;z-index:100;pointer-events:none}
+.accent-magic-burst>span{position:absolute;left:0;top:0;font:22px var(--sans);line-height:1;color:#c7993e;text-shadow:0 0 6px #e5b65c80;pointer-events:none}
+.accent-magic-burst>span:nth-child(3n){color:var(--orange);font-size:30px}
+.accent-magic-burst>span:nth-child(3n + 2){color:#b7653e;font-size:16px}
+
 /* Safari welcome while the embedded game initializes. */
 #game-frame-container{position:relative;isolation:isolate}
 #game-frame-container iframe.is-loading{opacity:0;pointer-events:none}
