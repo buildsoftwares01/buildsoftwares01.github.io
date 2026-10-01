@@ -66,11 +66,10 @@ try {
     assert(!ics.includes('DTEND'),'No fabricated ending time');
    }
   }
-  await page.locator('#share-button').tap();
-  assert.equal(await page.evaluate(()=>window.testCopiedText),base+'/');
+  assert.equal(await page.locator('#share-button').count(),0);
   assert.deepEqual(blocked,[],'No external requests');
   assert.deepEqual(errors,[],'No runtime errors');
-  console.log(`${test.name}: RSVP, calendar, sharing and privacy passed`);
+  console.log(`${test.name}: RSVP, calendar and privacy passed`);
   await context.close();
  }
 } finally { await browser.close(); }

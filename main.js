@@ -22,8 +22,6 @@ motionToggle.addEventListener('click', () => {
   motionToggle.firstElementChild.textContent = paused ? '▷' : 'Ⅱ';
   motionToggle.querySelector('.motion-label').textContent = paused ? 'Play' : 'Pause';
 });
-let toastTimer;
-function toast(message) { $('#toast').textContent = message; $('#toast').classList.add('visible'); clearTimeout(toastTimer); toastTimer = setTimeout(() => $('#toast').classList.remove('visible'), 4000); }
 const games = {
   taptaptap: { name: 'Tap Tap Tap', help: 'Tap the blue circles before time runs out. Avoid red circles. Start with New Game.' },
   flappy: { name: 'Safari Flyer', help: 'Tap to flap through the green branches. On a computer, click or press Space.' },
@@ -73,10 +71,6 @@ $('#rsvp-form').addEventListener('submit', e => {
   window.open(`https://wa.me/${event.whatsappNumber}?text=${encodeURIComponent(message)}`, '_blank', 'noopener,noreferrer');
 });
 $('#guest-name').addEventListener('input', () => $('#guest-name').setCustomValidity(''));
-$('#share-button').addEventListener('click', async () => {
-  const url = new URL(location.href); url.hash = ''; url.search = '';
-  try { if (navigator.share) await navigator.share({ title: 'Our sweet pea Vihaan is turning ONE!', text: "You're invited to Vihaan's first birthday!", url: url.href }); else { await navigator.clipboard.writeText(url.href); toast('Invitation link copied. Share a little joy!'); } } catch (error) { if (error.name !== 'AbortError') toast('Copy the address from your browser to share this invitation.'); }
-});
 if (event.date) {
   const date = getEventDate(event);
   if (date) {

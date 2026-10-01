@@ -54,3 +54,62 @@
 @media(max-width:370px){h1{font-size:48px}.title-star{font-size:27px;margin-left:8px}}
 /* Without animation, every phrase stays readable instead of being clipped. */
 @media(prefers-reduced-motion:reduce){.ticker-track{width:100%;transform:none}.ticker-group{width:100%;justify-content:center;flex-wrap:wrap;white-space:normal;gap:12px 20px;padding:8px 18px;text-align:center}.ticker-group[aria-hidden="true"]{display:none}.ticker-group i{display:none}.motion-toggle{display:none}}
+
+/* A little birthday mischief: springy type and soft, changing paper shapes. */
+.hero-copy h1 em{display:inline-block;transform-origin:50% 80%;animation:word-wiggle 6s ease-in-out infinite}
+.one{display:inline-block;white-space:nowrap}
+.one>span{display:inline-block;transform-origin:center bottom;animation:letter-hop 3.6s infinite}
+.one>span:nth-child(2){animation-delay:.14s}
+.one>span:nth-child(3){animation-delay:.28s}
+.one>span:nth-child(4){animation-delay:.42s;color:var(--orange)}
+.one:after{animation:underline-squish 3.6s ease-in-out infinite}
+.hero-art{padding:22px 12px 0}
+.safari-frame{position:relative;padding:12px;background:#e3e9d5;border-radius:15% 20% 16% 22%;box-shadow:8px 10px 0 #ecd9bd;animation:frame-morph 9s ease-in-out infinite;isolation:isolate}
+.hero-art .safari-frame img{display:block;width:100%;max-width:100%;height:auto;margin:0;mix-blend-mode:normal;border-radius:12% 17% 13% 19%;animation:none}
+.party-shape{position:absolute;z-index:-1;width:84px;height:84px;border-radius:35% 65% 60% 40%;animation:party-morph 7s ease-in-out infinite;pointer-events:none}
+.shape-peach{background:#dfac79;left:-8px;top:0}
+.shape-sage{background:#9eaf83;right:-6px;bottom:45px;animation-delay:-3s}
+.round-stamp{top:-12px;right:0;background:#f8e5b8;border:2px dashed #c69d60;box-shadow:0 4px 0 #b7854320;z-index:2}
+.art-caption{margin-top:24px;color:#68765d}
+.spark-one{left:-5px;top:22%;z-index:2}
+.spark-two{right:0;bottom:12%;z-index:2}
+.floating-heart{right:5%;bottom:2%;z-index:2}
+.section-heading h2 em,.games-heading h2 em,.rsvp-section h2 em{display:inline-block;animation:happy-tilt 7s ease-in-out infinite;transform-origin:50% 80%}
+.games-heading h2 em{animation-delay:-2s}
+.rsvp-section h2 em{animation-delay:-4s}
+.detail-icon{width:52px;height:52px;margin-inline:auto;display:grid;place-items:center;background:#e8edda;border-radius:38% 62% 54% 46%;animation:icon-morph 7s ease-in-out infinite}
+.detail:nth-child(2) .detail-icon{background:#f2e2c8;animation-delay:-2s}
+.detail:nth-child(3) .detail-icon{background:#eddbce;animation-delay:-4s}
+.hex-outer{animation:hex-wiggle 5s ease-in-out infinite}
+.tap-rings>span{animation:tap-word 2.8s ease-in-out infinite}
+.tap-dot,.hex-dot{animation:party-morph 6s ease-in-out infinite}
+.ohhi-grid i{animation:tile-pop 4.5s ease-in-out infinite}
+.ohhi-grid i:nth-child(2n){animation-delay:.25s}
+.ohhi-grid i:nth-child(3n){animation-delay:.5s}
+.preview-doodle{animation:sparkle 4s ease-in-out infinite}
+.button:active{transform:translateY(2px) scale(.96)}
+@keyframes letter-hop{
+  0%,10%,42%,100%{transform:translateY(0) scale(1)}
+  17%{transform:translateY(3px) scale(1.12,.86)}
+  26%{transform:translateY(-13px) rotate(-7deg) scale(.94,1.08)}
+  34%{transform:translateY(2px) rotate(3deg) scale(1.08,.94)}
+}
+@keyframes word-wiggle{0%,12%,42%,100%{transform:rotate(0)}22%{transform:rotate(-3deg)}30%{transform:rotate(2deg)}36%{transform:rotate(-1deg)}}
+@keyframes underline-squish{0%,15%,45%,100%{transform:rotate(-5deg) scaleX(1)}27%{transform:rotate(-2deg) scaleX(.85)}}
+@keyframes frame-morph{0%,100%{border-radius:15% 20% 16% 22%}50%{border-radius:22% 14% 23% 15%}}
+@keyframes party-morph{0%,100%{border-radius:35% 65% 60% 40%;transform:rotate(-12deg) scale(.9)}50%{border-radius:60% 40% 30% 70%;transform:rotate(35deg) scale(1.08)}}
+@keyframes icon-morph{0%,100%{border-radius:38% 62% 54% 46%;transform:rotate(-6deg)}50%{border-radius:60% 40% 36% 64%;transform:rotate(7deg)}}
+@keyframes happy-tilt{0%,15%,45%,100%{transform:rotate(0) translateY(0)}25%{transform:rotate(-2deg) translateY(-4px)}35%{transform:rotate(1deg) translateY(0)}}
+@keyframes tap-word{0%,20%,55%,100%{transform:rotate(-12deg) scale(1)}35%{transform:rotate(5deg) scale(1.18)}}
+@keyframes tile-pop{0%,15%,55%,100%{transform:translateY(0);border-radius:7px}30%{transform:translateY(-6px) rotate(-6deg);border-radius:50%}42%{transform:translateY(1px);border-radius:16px}}
+@media(max-width:760px){
+  .hero{gap:36px}
+  .hero-art{width:100%;max-width:440px;padding:20px 8px 0}
+  .safari-frame{padding:9px;box-shadow:5px 7px 0 #ecd9bd}
+  .round-stamp{width:72px;height:72px;top:-6px;right:2px;gap:4px}
+  .round-stamp strong{font-size:10px}.round-stamp span{font-size:5px}
+  .party-shape{width:64px;height:64px}
+  .shape-peach{left:0}.shape-sage{right:0}
+  .art-caption{font-size:14px;margin-top:21px}
+  .spark-one{left:0;font-size:27px}.spark-two{right:0}
+}
