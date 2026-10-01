@@ -44,6 +44,7 @@ $(document).ready(function() {
 
    //start with the splash screen
    showSplash();
+   window.invitationGameReady();
 });
 
 function getCookie(cname)

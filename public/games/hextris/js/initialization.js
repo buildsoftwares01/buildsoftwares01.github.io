@@ -1,5 +1,6 @@
 $(document).ready(function() {
 	initialize();
+	window.invitationGameReady();
 });
 function initialize(a) {
 	window.rush = 1;

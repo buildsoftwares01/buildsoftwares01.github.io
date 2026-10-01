@@ -128,3 +128,20 @@
 @keyframes accent-underline{0%,12%,55%,100%{transform:scaleX(.35);opacity:.35}28%,38%{transform:scaleX(1);opacity:1}}
 @media(max-width:1050px){.round-stamp strong{font-size:9px}}
 @media(max-width:760px){.round-stamp strong{font-size:8px;letter-spacing:0}.brand-small{font-size:6px;letter-spacing:1.4px}}
+
+/* Safari welcome while the embedded game initializes. */
+#game-frame-container{position:relative;isolation:isolate}
+#game-frame-container iframe.is-loading{opacity:0;pointer-events:none}
+.game-loading{position:absolute;inset:0;z-index:1;display:flex;flex-direction:column;align-items:center;justify-content:center;overflow:hidden;padding:20px;text-align:center;background:radial-gradient(ellipse at 50% 35%,#e5eadb 0,transparent 65%),var(--cream)}
+.game-loading img{width:min(310px,65%);height:min(30dvh,250px);object-fit:contain;mix-blend-mode:multiply}
+.game-loading .eyebrow{font-size:8px;letter-spacing:2px;margin:10px 0}
+.game-loading h3{font-family:var(--serif);font-size:clamp(25px,5vw,36px);font-weight:500}
+.game-loading p{font-size:12px;max-width:300px;margin-top:10px}
+.game-loading-dots{display:flex;gap:8px;margin-top:20px}
+.game-loading-dots i{width:7px;height:7px;border-radius:50%;background:var(--orange);animation:loading-hop 1.2s ease-in-out infinite}
+.game-loading-dots i:nth-child(2){animation-delay:.15s;background:#879577}
+.game-loading-dots i:nth-child(3){animation-delay:.3s}
+@keyframes loading-hop{0%,60%,100%{transform:translateY(0);opacity:.45}30%{transform:translateY(-6px);opacity:1}}
+.motion-paused .game-loading-dots i{animation-play-state:paused}
+@media(prefers-reduced-motion:reduce){.game-loading-dots i{animation:none}}
+@media(max-height:550px){.game-loading img{height:16dvh}.game-loading{padding:10px}.game-loading-dots{margin-top:10px}}

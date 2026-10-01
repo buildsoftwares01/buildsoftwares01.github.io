@@ -156,6 +156,7 @@ toolsBox = {
     toolsBox.delay(function() {
       toolsBox.showPage(pageGameMenu);
       toolsBox.hidePage(pageSplash);
+      window.invitationGameReady();
     }, 1500); // Show after 1.5s because the fadeOut-animation takes 0.5s and has 1s delay
   },
   onClickNTouchstart: function(element, fun) { // add click and touchstart event listeners

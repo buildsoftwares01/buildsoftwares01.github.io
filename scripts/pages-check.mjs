@@ -29,7 +29,7 @@ try {
   for (const prefix of ['/', '/Birthday/']) {
     mount = prefix;
     const base = `http://127.0.0.1:${server.address().port}${prefix}`;
-    const page = await browser.newPage();
+    const page = await browser.newPage(prefix === '/Birthday/' ? { viewport: { width: 390, height: 844 } } : {});
     const failures = [];
     page.on('pageerror', error => failures.push(error.message));
     page.on('response', response => { if (response.status() >= 400) failures.push(`${response.status()} ${response.url()}`); });
@@ -38,13 +38,38 @@ try {
     await page.evaluate(() => document.fonts.ready);
     assert(await page.locator('.hero-art img').evaluate(img => img.complete && img.naturalWidth > 0));
     for (const game of ['taptaptap', 'hextris', 'ohhi', 'flappy']) {
+      let releaseScript;
+      const scriptGate = new Promise(resolve => { releaseScript = resolve; });
+      const scriptPattern = `**/games/${game}/**/*.js`;
+      await page.route(scriptPattern, async route => { await scriptGate; await route.continue(); });
       const loaded = page.waitForEvent('framenavigated', frame => frame.url() === `${base}games/${game}/index.html`);
       await page.locator(`[data-game="${game}"]`).click();
+      await page.locator('.game-loading').waitFor({ state: 'visible' });
+      assert.equal(await page.locator('#game-frame-container').getAttribute('aria-busy'), 'true');
+      assert(await page.locator('iframe').evaluate(frame => frame.inert));
+      // An unrelated window must not be able to dismiss the loading hero.
+      await page.evaluate(() => window.postMessage({ type: 'invitation:game-ready' }, '*'));
+      assert(await page.locator('.game-loading').isVisible());
+      if (game === 'taptaptap' && prefix === '/Birthday/') {
+        await page.screenshot({ path: 'test-results/game-loading-mobile.png' });
+      }
+      releaseScript();
       const frame = await loaded;
       await frame.waitForLoadState('networkidle');
+      await page.locator('.game-loading').waitFor({ state: 'detached' });
+      assert.equal(await page.locator('#game-frame-container').getAttribute('aria-busy'), null);
+      assert.equal(await page.locator('iframe').evaluate(frame => frame.inert), false);
+      await page.unroute(scriptPattern);
       assert(frame, `${prefix}: ${game} loaded under the correct path`);
       assert(await page.locator('iframe').isVisible());
       assert(await frame.locator('body').evaluate(body => body.children.length > 0));
+      if (game === 'taptaptap') {
+        await page.locator('#restart-game').click();
+        await page.locator('.game-loading').waitFor({ state: 'visible' });
+        await page.locator('.game-loading').waitFor({ state: 'detached' });
+        await page.locator('#restart-game').click();
+        await page.locator('.game-loading').waitFor({ state: 'visible' });
+      }
       await page.locator('#close-game').click();
       await page.waitForFunction(() => !document.querySelector('iframe'));
     }

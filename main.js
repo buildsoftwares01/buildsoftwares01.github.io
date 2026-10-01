@@ -29,17 +29,43 @@ const games = {
   ohhi: { name: '0h h1', help: 'Tap tiles to change colour. Start with “How to play” for a friendly tutorial.' },
 };
 const gameDialog = $('#game-dialog');
-let activeGame, gameTrigger;
+let activeGame, gameTrigger, loadingTimer;
+const gameContainer = $('#game-frame-container');
+function clearGameLoading() {
+  clearTimeout(loadingTimer);
+  gameContainer.removeAttribute('aria-busy');
+}
+window.addEventListener('message', event => {
+  const frame = gameContainer.querySelector('iframe');
+  if (!frame || event.source !== frame.contentWindow || event.data?.type !== 'invitation:game-ready') return;
+  clearGameLoading();
+  gameContainer.querySelector('.game-loading')?.remove();
+  frame.removeAttribute('inert');
+  frame.removeAttribute('aria-hidden');
+  frame.classList.remove('is-loading');
+});
 const leaderboards = setupLeaderboards({ gameDialog, getGame: () => activeGame, getFrame: () => $('#game-frame-container iframe') });
 function loadGame() {
   leaderboards.reset();
+  clearGameLoading();
+  gameContainer.setAttribute('aria-busy', 'true');
+  const hero = document.createElement('div');
+  hero.className = 'game-loading';
+  hero.innerHTML = `<img src="./assets/safari.webp" alt="" width="360" height="300"><span class="eyebrow">A LITTLE WILD ADVENTURE</span><h3></h3><p role="status">Getting your adventure ready…</p><span class="game-loading-dots" aria-hidden="true"><i></i><i></i><i></i></span>`;
+  hero.querySelector('h3').textContent = games[activeGame].name;
   const frame = document.createElement('iframe');
   frame.title = games[activeGame].name + ' browser game';
   // No same-origin, popups, forms, downloads, or top-level navigation privileges.
   frame.setAttribute('sandbox', 'allow-scripts');
   frame.setAttribute('referrerpolicy', 'no-referrer');
+  frame.className = 'is-loading';
+  frame.setAttribute('inert', '');
+  frame.setAttribute('aria-hidden', 'true');
   frame.src = `./games/${activeGame}/index.html`;
-  $('#game-frame-container').replaceChildren(frame);
+  gameContainer.replaceChildren(hero, frame);
+  loadingTimer = setTimeout(() => {
+    hero.querySelector('[role="status"]').textContent = 'Taking a little longer. You can wait or try Restart below.';
+  }, 15000);
 }
 document.querySelectorAll('[data-game]').forEach(button => button.addEventListener('click', () => {
   activeGame = button.dataset.game;
@@ -51,7 +77,7 @@ document.querySelectorAll('[data-game]').forEach(button => button.addEventListen
 }));
 $('#close-game').addEventListener('click', () => gameDialog.close());
 $('#restart-game').addEventListener('click', loadGame);
-gameDialog.addEventListener('close', () => { leaderboards.reset(); $('#game-frame-container').replaceChildren(); gameTrigger?.focus(); });
+gameDialog.addEventListener('close', () => { clearGameLoading(); leaderboards.reset(); $('#game-frame-container').replaceChildren(); gameTrigger?.focus(); });
 const rsvpDialog = $('#rsvp-dialog');
 const rsvpReady = /^[1-9]\d{7,14}$/.test(event.whatsappNumber);
 $('#rsvp-button').addEventListener('click', () => {

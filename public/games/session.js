@@ -5,3 +5,22 @@
  Object.defineProperty(window, 'localStorage', {value:storage});
  Object.defineProperty(document, 'cookie', {get:()=>'',set:()=>{},configurable:true});
 })();
+
+// Each game calls this after its interactive start screen has initialized.
+// Keep the parent hero visible until assets, fonts and the first paint are ready.
+window.invitationGameReady = (() => {
+ let sent = false;
+ const loaded = new Promise(resolve => {
+  if (document.readyState === 'complete') resolve();
+  else window.addEventListener('load', resolve, {once:true});
+ });
+ return async () => {
+  if (sent) return;
+  sent = true;
+  await loaded;
+  if (document.fonts) await document.fonts.ready;
+  requestAnimationFrame(() => requestAnimationFrame(() => {
+   window.parent.postMessage({type:'invitation:game-ready'}, '*');
+  }));
+ };
+})();
