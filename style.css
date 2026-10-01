@@ -113,3 +113,18 @@
   .art-caption{font-size:14px;margin-top:21px}
   .spark-one{left:0;font-size:27px}.spark-two{right:0}
 }
+
+/* Small accents keep the surrounding sentence steady and readable. */
+.word-accent{display:inline-block;position:relative;color:var(--orange);font-weight:600;white-space:nowrap;transform-origin:50% 85%}
+.accent-bounce{animation:accent-bounce 5.5s ease-in-out infinite}
+.accent-wiggle{animation:word-wiggle 6.5s ease-in-out infinite;animation-delay:-2s}
+.accent-shimmer{animation:accent-glow 6s ease-in-out infinite}
+.accent-shimmer:after{content:'';position:absolute;left:0;right:0;bottom:0;height:3px;background:#d9b570;border-radius:50%;transform-origin:left;animation:accent-underline 6s ease-in-out infinite}
+.games-heading .word-accent{animation-delay:-1.6s}
+.rsvp-section .word-accent{animation-delay:-3.2s}
+.round-stamp strong{font-size:11px;letter-spacing:.3px}
+@keyframes accent-bounce{0%,12%,40%,100%{transform:translateY(0) scale(1)}20%{transform:translateY(-4px) scale(1.05)}28%{transform:translateY(1px) scale(1.03,.95)}34%{transform:translateY(-1px) scale(1)}}
+@keyframes accent-glow{0%,12%,50%,100%{transform:rotate(0);color:var(--orange)}28%{transform:rotate(-4deg);color:var(--green)}38%{transform:rotate(2deg);color:var(--orange)}}
+@keyframes accent-underline{0%,12%,55%,100%{transform:scaleX(.35);opacity:.35}28%,38%{transform:scaleX(1);opacity:1}}
+@media(max-width:1050px){.round-stamp strong{font-size:9px}}
+@media(max-width:760px){.round-stamp strong{font-size:8px;letter-spacing:0}.brand-small{font-size:6px;letter-spacing:1.4px}}

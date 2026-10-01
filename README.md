@@ -1,4 +1,4 @@
-# Vihaan's Sweet Pea invitation
+# Vihaan's Little Explorer invitation
 
 A responsive, static birthday invitation with custom safari artwork, local fonts, an illustrated venue card, Maps directions, WhatsApp RSVP preparation, share button, and sandboxed open-source games.
 
