@@ -2,7 +2,7 @@ import assert from 'node:assert/strict';
 import { mkdir } from 'node:fs/promises';
 import { chromium, devices } from 'playwright';
 import { createServer } from 'vite';
-import { pg, rpc, ageRun } from './leaderboard-db-check.mjs';
+import { mf, rpc, ageRun } from './leaderboard-worker-check.mjs';
 
 const server = await createServer({ server: { host: '127.0.0.1', port: 0 } });
 await server.listen();
@@ -14,17 +14,16 @@ try {
   const failures = [];
   async function newGuest(mobile = false) {
     const context = await browser.newContext(mobile ? { ...devices['iPhone 13'], reducedMotion: 'reduce' } : { reducedMotion: 'reduce' });
-    await context.route('**/leaderboard-config.js*', route => route.fulfill({ contentType: 'application/javascript', body: `export const leaderboardConfig = { url: 'https://test.supabase.co', publishableKey: 'sb_publishable_test' };` }));
-    await context.route('https://test.supabase.co/rest/v1/rpc/*', async route => {
+    await context.route('**/leaderboard-config.js*', route => route.fulfill({ contentType: 'application/javascript', body: `export const leaderboardConfig = { url: 'https://vihaan-leaderboard.test.workers.dev' };` }));
+    await context.route('https://vihaan-leaderboard.test.workers.dev/api/*', async route => {
       if (offline) return route.fulfill({ status: 503, contentType: 'application/json', body: '{}' });
       const method = new URL(route.request().url()).pathname.split('/').pop();
       const params = route.request().postDataJSON();
       assert(['leaderboard_start','leaderboard_list','leaderboard_submit'].includes(method));
       try {
-        const rows = await rpc(method, params);
+        const data = await rpc(method, params);
         if (method === 'leaderboard_start') await ageRun(params.p_run);
         if (method === 'leaderboard_submit') submissions++;
-        const data = method === 'leaderboard_list' ? rows : rows[0][method];
         await route.fulfill({ contentType: 'application/json', body: JSON.stringify(data) });
       } catch (error) {
         await route.fulfill({ status: 400, contentType: 'application/json', body: JSON.stringify({ message: error.message }) });
@@ -141,5 +140,5 @@ try {
   await second.context.close();
   await context.close();
   assert.deepEqual(failures, []);
-  console.log('Browser + PostgreSQL: all game finishes, replay, tutorial exclusion, moderation, retry, mobile layout and cross-guest rankings passed.');
-} finally { await browser?.close(); await server.close(); await pg.close(); }
+  console.log('Browser + Cloudflare Worker/D1: all game finishes, replay, tutorial exclusion, moderation, retry, mobile layout and cross-guest rankings passed.');
+} finally { await browser?.close(); await server.close(); await mf.dispose(); }

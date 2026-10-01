@@ -1,4 +1,4 @@
-// Shared with the SQL generator so client and database moderation stay in sync.
+// Imported by both the browser and Cloudflare Worker. The server always checks names.
 export const blockedFragments = [
   'fuck', 'fuk', 'fck', 'fcuk', 'fucc', 'motherf', 'bitch', 'asshole', 'arsehole', 'bullshit', 'shithead',
   'nigger', 'nigga', 'faggot', 'whore', 'porn', 'putain', 'pute', 'salope',

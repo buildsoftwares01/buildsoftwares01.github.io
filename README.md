@@ -6,7 +6,7 @@ A responsive, static birthday invitation with custom safari artwork, local fonts
 
 See `HOSTING.md` for the complete publishing steps. `npm run check:ready` identifies missing event details before launch.
 
-Requires Node.js 20.19+ or 22.12+.
+Requires Node.js 22.12+ (including the Cloudflare tooling).
 
 ```
 npm ci
@@ -32,7 +32,7 @@ The invitation labels missing details honestly. RSVP opens an explanatory dialog
 
 ## Security and privacy
 
-No production npm dependencies, analytics or advertising. Optional shared leaderboards use Supabase PostgreSQL; see `LEADERBOARDS.md` for setup, moderation, data retention and limitations. Only a public publishable key belongs in the frontend. Fonts and game assets are local. Games use `sandbox="allow-scripts"` with no same-origin, top navigation, forms, popups or downloads permissions. Games cannot read the invitation DOM or storage. A memory-only compatibility layer supports old games without allowing cookies or persistent browser storage. Their CSP blocks fetch/XHR/WebSocket connections and external scripts. Parent scripts use a CSP without inline-script or eval permissions. Only the invitation can connect to the configured Supabase service; games cannot. Third-party game CSS requires inline styles inside the isolated frames.
+No production npm dependencies, analytics or advertising. Optional shared leaderboards use Cloudflare Workers and D1; see `LEADERBOARDS.md` for setup, moderation, data retention and limitations. Only the public Worker URL belongs in the frontend; no Cloudflare credentials are shipped. Fonts and game assets are local. Games use `sandbox="allow-scripts"` with no same-origin, top navigation, forms, popups or downloads permissions. Games cannot read the invitation DOM or storage. A memory-only compatibility layer supports old games without allowing cookies or persistent browser storage. Their CSP blocks fetch/XHR/WebSocket connections and external scripts. Parent scripts use a CSP without inline-script or eval permissions. Only the invitation can connect to the configured Cloudflare Worker; games cannot. Third-party game CSS requires inline styles inside the isolated frames.
 
 Only fixed game identifiers can select an iframe path. The WhatsApp number is validated, names are length-limited, and the entire RSVP message is URL-encoded. No message is sent automatically. External links use `noopener noreferrer`.
 
@@ -56,4 +56,4 @@ The venue card is an original SVG illustration. The Google Maps link provides re
 
 Each finished round offers optional nickname entry. Arcade games rank points; 0h h1 ranks solve time separately for 4, 6, 8 and 10 tiles per side, excluding tutorials. Only the best result per browser and board is kept. See `LEADERBOARDS.md` to connect the database. Rankings are explicitly unavailable until configured; no pretend shared/local fallback is used.
 
-`npm test` also runs the real PostgreSQL schema in PGlite to check database permissions, name filtering, ranking and duplicate submissions. `npm run test:leaderboards` exercises all four games in Chrome and uses that database through intercepted test API requests, including a separate browser guest.
+`npm test` also runs the Worker and D1 locally in Miniflare to check API access, name filtering, ranking and duplicate submissions. `npm run test:leaderboards` exercises all four games in Chrome and uses that Worker and database through intercepted test API requests, including a separate browser guest.

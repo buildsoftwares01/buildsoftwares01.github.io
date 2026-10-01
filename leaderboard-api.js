@@ -1,7 +1,7 @@
 import { leaderboardConfig } from './leaderboard-config.js';
 
 export function createLeaderboardAPI(config = leaderboardConfig) {
-  const ready = /^https:\/\/[a-z0-9-]+\.supabase\.co$/.test(config.url) && /^sb_publishable_[A-Za-z0-9_-]+$/.test(config.publishableKey);
+  const ready = /^https:\/\/[a-z0-9-]+\.[a-z0-9-]+\.workers\.dev$/.test(config.url);
   let player;
   function playerId() {
     if (player) return player;
@@ -14,8 +14,8 @@ export function createLeaderboardAPI(config = leaderboardConfig) {
     if (!ready) throw new Error('Shared rankings are not available yet. You can still enjoy every game.');
     let response;
     try {
-      response = await fetch(`${config.url}/rest/v1/rpc/${method}`, {
-        method: 'POST', headers: { apikey: config.publishableKey, 'Content-Type': 'application/json' },
+      response = await fetch(`${config.url}/api/${method}`, {
+        method: 'POST', headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(params), signal: AbortSignal.timeout(12000), credentials: 'omit',
       });
     } catch { throw new Error('Could not connect. Check your connection and try again.'); }

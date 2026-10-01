@@ -48,4 +48,4 @@ Open the HTTPS site on your phone. Check the displayed date and time, open each 
 
 ## Shared leaderboards
 
-Follow `LEADERBOARDS.md` to create the Supabase tables/functions and fill in `leaderboard-config.js`. GitHub Pages continues hosting the static invitation; Supabase stores the shared results. Run the database setup before deploying a configured frontend.
+Follow `LEADERBOARDS.md` to deploy the Cloudflare Worker and D1 database and fill in `leaderboard-config.js`. GitHub Pages continues hosting the static invitation; Cloudflare D1 stores the shared results. Run the database setup before deploying a configured frontend.

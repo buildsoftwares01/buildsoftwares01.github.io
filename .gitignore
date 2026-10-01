@@ -3,4 +3,6 @@ dist/
 test-results/
 .DS_Store
 .env*
+.dev.vars*
+.wrangler/
 vihaan-invitation.zip

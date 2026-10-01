@@ -1,0 +1,18 @@
+{
+  "$schema": "../node_modules/wrangler/config-schema.json",
+  "name": "vihaan-leaderboard",
+  "main": "worker.js",
+  "compatibility_date": "2026-09-30",
+  "workers_dev": true,
+  "vars": {
+    "ALLOWED_ORIGINS": "https://buildsoftwares01.github.io"
+  },
+  "d1_databases": [{
+    "binding": "DB",
+    "database_name": "vihaan-leaderboard",
+    "database_id": "00000000-0000-0000-0000-000000000000",
+    "migrations_dir": "migrations"
+  }],
+  "triggers": { "crons": ["17 3 * * *"] },
+  "observability": { "enabled": false }
+}

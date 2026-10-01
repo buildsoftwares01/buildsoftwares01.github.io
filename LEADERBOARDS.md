@@ -1,18 +1,25 @@
 # Shared game leaderboards
 
-GitHub Pages hosts the invitation. Supabase PostgreSQL stores shared results. Until configured, games work and the leaderboard explains that shared rankings are unavailable. Nothing is silently saved as a device-only substitute.
+GitHub Pages hosts the static invitation and browser games. A Cloudflare Worker validates results and D1 stores rankings shared by every guest. Until the Worker URL is configured, games work and rankings are shown as unavailable.
 
-## Connect the database
+## Cloudflare setup
 
-1. Sign in at https://supabase.com/dashboard and create a project (or use a project you already own). Keep its database password private.
-2. Open **SQL Editor → New query**, paste the complete contents of `supabase/leaderboard.sql`, and run it. This creates a private schema and exactly three public RPC functions; it can be rerun without deleting scores. The `unaccent` extension is expected in the standard `extensions` schema.
-3. From the project's Connect/API settings, copy its project URL and **publishable** key (`sb_publishable_…`). These two values are public browser configuration. Never provide the database password, secret key or service-role key.
-4. Put those values into `leaderboard-config.js` as `url` and `publishableKey`. The URL must be the HTTPS project origin, such as `https://your-project.supabase.co`, with no trailing slash. The client intentionally rejects secret keys and unsupported endpoints.
-5. Run `npm test`, `npm run test:leaderboards`, `npm run build`, and `npm run test:pages`. Push/deploy the site. Finish one game and save a test nickname, then open the leaderboard on another device to verify the hosted connection.
+No paid plan, domain purchase, DNS transfer, or browser API key is required. Use a Cloudflare account with Workers Free; usage remains subject to Cloudflare's free quotas.
 
-No extra Supabase Auth, Realtime or Storage setup is needed. Keep `invitation_private` out of the Data API exposed schemas. Use the default exposed `public` schema for the three RPC functions. Public table access is never granted.
+1. Create or sign in to your account at https://dash.cloudflare.com/.
+2. In a terminal in this project, run `npm run cloudflare:login`. A browser opens Cloudflare's authorization page; approve Wrangler there. Keep passwords, tokens and recovery codes private. Run `npm run cloudflare:whoami` to confirm the correct account. If you belong to multiple accounts, set `account_id` in `cloudflare/wrangler.jsonc` to the intended account ID.
+3. Run `npm run cloudflare:db:create`. Copy the returned **database_id** into the existing D1 binding in `cloudflare/wrangler.jsonc`, replacing the all-zero placeholder. The database ID is not a secret. If the name already exists, select that database in the dashboard and use its ID instead of creating a duplicate.
+4. Run `npm run cloudflare:db:migrate` to create tables, then `npm run cloudflare:deploy` to deploy the Worker. If Cloudflare asks you to choose a workers.dev subdomain, follow its prompt/dashboard instructions. These commands use your locally stored Wrangler authorization.
+5. Copy the deployed HTTPS URL, for example `https://vihaan-leaderboard.your-subdomain.workers.dev`, into `url` in `leaderboard-config.js` without a trailing slash. This URL is public and is the only backend setting the browser needs. Opening its `/health` path should show `ok: true`.
+6. Run the checks below, then commit/push the site configuration to deploy GitHub Pages. Finish a game, save a nickname, and check that result from another device.
 
-Documentation: [API keys](https://supabase.com/docs/guides/getting-started/api-keys), [database functions](https://supabase.com/docs/guides/database/functions), [database access controls](https://supabase.com/docs/guides/database/row-level-security).
+The configured allowed origin is `https://buildsoftwares01.github.io`. If the invitation domain changes, update `ALLOWED_ORIGINS` in `cloudflare/wrangler.jsonc` and redeploy. The frontend currently accepts standard HTTPS workers.dev URLs; using a custom Worker domain requires updating its URL validation and the invitation CSP.
+
+For local Worker development, first run `npx wrangler d1 migrations apply vihaan-leaderboard --local --config cloudflare/wrangler.jsonc`, then `npm run cloudflare:dev`. Local data stays separate from the remote database. Automated tests create their own temporary database.
+
+The GitHub workflow deploys the static site only. Worker or moderation changes require `npm run cloudflare:deploy`; database changes require a new migration and `npm run cloudflare:db:migrate`. Never commit Wrangler authorization files, `.dev.vars`, or API tokens. No Cloudflare GitHub secret is needed for this manual backend deployment.
+
+Official documentation: [Wrangler login](https://developers.cloudflare.com/workers/wrangler/commands/general/), [D1 setup](https://developers.cloudflare.com/d1/get-started/), [D1 limits](https://developers.cloudflare.com/d1/platform/limits/).
 
 ## Ranking and identity
 
@@ -25,31 +32,31 @@ Documentation: [API keys](https://supabase.com/docs/guides/getting-started/api-k
 
 ## Name checks and maintenance
 
-The browser and database independently validate 2–20 character names with at least two letters. Latin letters (including supported accents), digits, spaces, hyphens and apostrophes are accepted. Markup, invisible characters and unsupported character sets are rejected. The filter normalizes case, accents, repeated letters, separators, common number substitutions and numeric padding. It covers a curated set of English, French and regional insults/slurs. Short words use whole-word checks to reduce accidental rejection of ordinary names such as Cassandra and Scunthorpe.
+The browser and Worker independently validate 2–20 character names with at least two letters. Latin letters (including supported accents), digits, spaces, hyphens and apostrophes are accepted. Markup, invisible characters and unsupported character sets are rejected. The filter normalizes case, accents, repeated letters, separators, common number substitutions and numeric padding. It covers a curated set of English, French and regional insults/slurs. Short words use whole-word checks to reduce accidental rejection of ordinary names such as Cassandra and Scunthorpe.
 
-No automated word list can catch every language, spelling trick or offensive phrase, and some legitimate names can be rejected. Guests can choose another nickname. Expand `leaderboard-policy.js` when needed, then run `npm run leaderboards:sql` and rerun `supabase/leaderboard.sql`. Existing entries that fail the updated database filter are excluded from public rankings. The browser also checks returned names and renders text without HTML injection.
+No automated word list can catch every language, spelling trick or offensive phrase, and some legitimate names can be rejected. Guests can choose another nickname. Expand `leaderboard-policy.js` when needed, then redeploy the Worker and rebuild the site. Existing entries that fail the updated Worker filter are excluded from public rankings. The browser also checks returned names and renders text without HTML injection.
 
-The owner can inspect entries from Supabase's SQL editor:
+The owner can inspect entries from Cloudflare dashboard under **Storage & databases → D1 → vihaan-leaderboard → Console**:
 
 ```sql
 select game, board, name, score, achieved_at
-from invitation_private.scores
+from scores
 order by achieved_at desc;
 ```
 
 To remove an inappropriate entry, use the exact nickname/game/board in the private table (or use its player UUID after inspection):
 
 ```sql
-delete from invitation_private.scores
+delete from scores
 where game = 'flappy' and board = 0 and name = 'EXACT NICKNAME';
 ```
 
-Deleting a score does not ban its author. Scores remain until the host deletes them. To clear the party's rankings after the event, the owner may run `truncate invitation_private.scores, invitation_private.runs;`. Round tokens older than a day are pruned when a new round begins; if play stops, the host can clear them manually. Hosting/Supabase providers may retain request logs.
+Deleting a score does not ban its author. Scores remain until the host deletes them. To clear the party's rankings after the event, the owner may run `DELETE FROM scores; DELETE FROM runs;`. A daily Worker cron deletes round tokens older than a day. Hosting and Cloudflare providers may retain request logs.
 
 ## Boundaries and verification
 
-Scores come from browser games, so a determined guest can forge them. Source-window checks, one-use round tokens, database score bounds, expiry and per-identity request limits prevent common mistakes/replays; they do not prove gameplay or prevent someone creating new anonymous identities. These boards are suitable for a casual party, not prizes or a secure competition. Authentication and server-verified gameplay would be needed for stronger controls. Backend rate limits are 120 new rounds/hour and 12 submissions/minute per browser identity.
+Scores come from browser games, so a determined guest can forge them. Source-window checks, one-use round tokens, server score bounds, expiry and per-identity request limits prevent common mistakes/replays; they do not prove gameplay or prevent someone creating new anonymous identities. These boards are suitable for a casual party, not prizes or a secure competition. Authentication and server-verified gameplay would be needed for stronger controls. Backend rate limits are 120 new rounds/hour and 12 submissions/minute per browser identity.
 
-Only narrowly scoped `SECURITY DEFINER` functions expose access, with an empty search path and explicit execute grants. Tables live in a private schema with RLS enabled and no anonymous policies/grants. The server applies name moderation even if JavaScript is bypassed. Idempotent submissions protect against lost responses and double clicks. Games retain their opaque sandbox and no-network CSP; only the parent connects to Supabase.
+Only three API operations expose access to the private D1 binding. The Worker applies name moderation even if browser JavaScript is bypassed. Atomic database transactions and idempotent submissions protect against concurrent requests, lost responses and double clicks. CORS allows the invitation origin, but is not authentication. Games retain their opaque sandbox and no-network CSP; only the parent connects to the Worker.
 
-Tests use PGlite (real PostgreSQL in WebAssembly) and a temporary local browser server. The browser API requests are routed to that test database; they do not contact a hosted project. Hosted credentials, API exposure and service availability still require the final two-device live check in step 5.
+Tests use Miniflare's local Cloudflare runtime and D1 emulator. Browser API requests are routed through that Worker; they do not contact a hosted database. Run `npm test`, `npm run test:leaderboards`, `npm run cloudflare:check`, `npm run build`, and `npm run test:pages`. The final hosted connection still needs a two-device live check after deployment.

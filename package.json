@@ -7,16 +7,23 @@
     "dev": "vite --host 127.0.0.1",
     "build": "vite build",
     "preview": "vite preview --host 127.0.0.1",
-    "test": "node scripts/check-site.mjs && node scripts/leaderboard-db-check.mjs",
+    "test": "node scripts/check-site.mjs && node scripts/leaderboard-worker-check.mjs",
     "test:pages": "node scripts/pages-check.mjs",
     "check:ready": "node scripts/check-ready.mjs",
     "test:leaderboards": "node scripts/leaderboard-browser-check.mjs",
-    "leaderboards:sql": "node scripts/generate-leaderboard-sql.mjs"
+    "cloudflare:login": "wrangler login",
+    "cloudflare:whoami": "wrangler whoami",
+    "cloudflare:db:create": "wrangler d1 create vihaan-leaderboard --config cloudflare/wrangler.jsonc",
+    "cloudflare:db:migrate": "node scripts/cloudflare-remote.mjs migrate",
+    "cloudflare:deploy": "node scripts/cloudflare-remote.mjs deploy",
+    "cloudflare:dev": "wrangler dev --config cloudflare/wrangler.jsonc",
+    "cloudflare:check": "wrangler deploy --config cloudflare/wrangler.jsonc --dry-run --outdir ../test-results/worker-build"
   },
   "devDependencies": {
-    "@electric-sql/pglite": "0.5.8",
+    "miniflare": "5.20260926.1-alpha",
     "playwright": "^1.58.0",
     "sharp": "^0.35.5",
-    "vite": "^7.3.0"
+    "vite": "^7.3.0",
+    "wrangler": "4.144.0"
   }
 }
