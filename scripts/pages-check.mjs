@@ -1,4 +1,5 @@
 import assert from 'node:assert/strict';
+import { createHash } from 'node:crypto';
 import { createServer } from 'node:http';
 import { readFile, stat } from 'node:fs/promises';
 import { resolve, extname, sep } from 'node:path';
@@ -41,51 +42,54 @@ try {
     assert(await page.locator('.hero-art img').evaluate(img => img.complete && img.naturalWidth > 0));
     const friends = page.locator('.safari-friend');
     const homes = page.locator('.safari-home');
-    assert.equal(await friends.count(), 4);
-    assert.deepEqual(await homes.evaluateAll(homes => homes.map(home => home.dataset.state)), ['walk', 'eat', 'sleep', 'play']);
-    assert.equal(await page.locator('.safari-friends').evaluate(el => getComputedStyle(el).position), 'absolute');
+    assert.equal(await friends.count(), 10);
+    assert.equal(await page.locator('.safari-stop').count(), 5);
+    assert.equal(await homes.evaluateAll(homes => new Set(homes.map(home => home.dataset.animal)).size), 8, 'Eight different 3D species');
+    await page.waitForFunction(() => document.querySelector('.safari-home').dataset.renderer === 'webgl');
+    assert.deepEqual(await homes.evaluateAll(homes => homes.map(home => home.dataset.state)), Array.from({ length: 10 }, (_, i) => ['walk', 'eat', 'sleep', 'play'][i % 4]));
+    assert.equal(await page.locator('.safari-friends').first().evaluate(el => getComputedStyle(el).position), 'relative');
     await page.mouse.move(200, 0);
     await page.clock.runFor(32);
-    const start = await friends.first().getAttribute('style');
+    const pixels = async friend => createHash('sha256').update(await friend.locator('canvas').evaluate(canvas => canvas.toDataURL())).digest('hex');
+    const start = await pixels(friends.first());
     await page.clock.runFor(1250);
-    assert.notEqual(await friends.first().getAttribute('style'), start, 'Walking follows a local circular path');
+    assert.notEqual(await pixels(friends.first()), start, 'Real 3D walking changes the rendered pose');
     await page.clock.runFor(8750);
     assert.equal(await homes.first().getAttribute('data-state'), 'eat');
     await page.clock.runFor(6000);
     assert.equal(await homes.first().getAttribute('data-state'), 'sleep');
-    assert.equal(await friends.first().locator('.safari-sleep-eyes').evaluate(el => getComputedStyle(el).display), 'block');
+    assert.notEqual(await pixels(friends.first()), start, 'Sleeping has a different 3D pose');
+    await page.screenshot({ path: `test-results/safari-3d-sleep-${prefix === '/' ? 'desktop' : 'mobile'}.png` });
     await page.clock.runFor(8500);
     assert.equal(await homes.first().getAttribute('data-state'), 'play');
     await page.clock.runFor(6500);
     assert.equal(await homes.first().getAttribute('data-state'), 'walk', 'Routine repeats');
     await page.evaluate(() => document.querySelector('#motion-toggle').click());
-    const beforePause = await friends.first().getAttribute('style');
+    const beforePause = await pixels(friends.first());
     await page.clock.runFor(12000);
-    assert.equal(await friends.first().getAttribute('style'), beforePause, 'Pause freezes position and routine');
+    assert.equal(await pixels(friends.first()), beforePause, 'Pause freezes 3D animation and routine');
     const anchorBefore = await homes.first().evaluate(home => home.getBoundingClientRect().top + scrollY);
     await page.evaluate(() => window.scrollTo({ top: 500, behavior: 'instant' }));
     const anchorAfter = await homes.first().evaluate(home => home.getBoundingClientRect().top + scrollY);
     assert(Math.abs(anchorBefore - anchorAfter) < .01, 'Home stays in its document spot while scrolling');
     assert((await homes.first().boundingBox()).y < 0, 'Top animal scrolls out of the viewport');
     await page.evaluate(() => document.querySelector('#motion-toggle').click());
-    for (let i = 0; i < 4; i++) {
+    for (let i = 0; i < 10; i++) {
       const friend = friends.nth(i);
       await friend.scrollIntoViewIfNeeded();
+      await page.waitForFunction(i => document.querySelectorAll('.safari-home')[i].dataset.renderer === 'webgl', i);
       const bounds = await friend.boundingBox();
-      const size = page.viewportSize().width > 760 ? 56 : 48;
-      assert(Math.abs(bounds.width - size) < .01);
-      assert(Math.abs(bounds.height - size) < .01);
-      assert(bounds.x >= 0 && bounds.x + size <= page.viewportSize().width);
+      assert(bounds.width >= 120 && bounds.height >= 120, 'Large stable touch target');
+      assert(bounds.x >= 0 && bounds.x + bounds.width <= page.viewportSize().width);
+      const beforeTap = await pixels(friend);
       await friend.click();
       assert.equal(await friend.getAttribute('data-gesture'), 'boo');
-      assert.equal(await friend.locator('.safari-surprise').evaluate(el => getComputedStyle(el).display), 'block');
+
       await page.clock.runFor(336);
       // Browser CSS animations use the rendering clock, not the mocked JS clock.
       await new Promise(resolve => setTimeout(resolve, 336));
       assert(Number(await friend.locator('.safari-boo').evaluate(el => getComputedStyle(el).opacity)) > .9);
-      const mainTop = await page.locator('#main').evaluate(el => el.getBoundingClientRect().top);
-      assert((await friend.locator('.safari-boo').boundingBox()).y >= mainTop, 'Surprise bubble is not clipped by its layer');
-      assert((await friend.locator('.safari-friend-art').boundingBox()).y >= mainTop, 'Bouncing animal is not clipped by its layer');
+      assert.notEqual(await pixels(friend), beforeTap, 'Tap produces an animated 3D leap');
       if (i === 0) await page.screenshot({ path: `test-results/safari-boo-${prefix === '/' ? 'desktop' : 'mobile'}.png` });
       await page.clock.runFor(880);
       assert.equal(await friend.getAttribute('data-gesture'), null, 'Surprise ends and the routine resumes');
@@ -96,14 +100,62 @@ try {
     await friends.first().focus();
     await page.keyboard.press('Enter');
     assert.equal(await friends.first().getAttribute('data-gesture'), 'quiet');
-    assert.equal(await friends.first().locator('.safari-friend-art').evaluate(el => getComputedStyle(el).animationName), 'none');
+    assert.equal(await friends.first().locator('.safari-boo').evaluate(el => getComputedStyle(el).animationName), 'none');
     await page.clock.runFor(1200);
+    const reducedPose = await pixels(friends.first());
+    await page.clock.runFor(5000);
+    assert.equal(await pixels(friends.first()), reducedPose, 'Reduced motion freezes 3D rendering');
     await page.emulateMedia({ reducedMotion: 'no-preference' });
     await page.evaluate(() => { document.activeElement.blur(); window.scrollTo({ top: 0, behavior: 'instant' }); });
     await page.clock.runFor(32);
     assert(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth), 'No horizontal overflow');
     await page.screenshot({ path: `test-results/safari-${prefix === '/' ? 'desktop' : 'mobile'}.png` });
+    if (prefix === '/Birthday/') {
+      await page.setViewportSize({ width: 320, height: 740 });
+      assert(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth), '320px has no overflow');
+      for (const home of await homes.all()) {
+        const box = await home.boundingBox();
+        assert(box.x >= 0 && box.x + box.width <= 320, 'All animals fit on a narrow phone');
+      }
+      await page.setViewportSize({ width: 390, height: 844 });
+    }
     await page.clock.resume();
+    if (prefix === '/') {
+      const gallery = await browser.newPage({ viewport: { width: 1400, height: 850 } });
+      await gallery.goto(base, { waitUntil: 'networkidle' });
+      await gallery.evaluate(() => {
+        document.body.classList.add('motion-paused');
+        for (const child of document.body.children) if (child.id !== 'main') child.style.display = 'none';
+        const main = document.querySelector('#main');
+        main.style.display = 'grid'; main.style.gridTemplateColumns = '1fr 1fr';
+        for (const child of main.children) if (!child.classList.contains('safari-stop')) child.style.display = 'none';
+      });
+      await gallery.waitForFunction(() => [...document.querySelectorAll('.safari-home')].every(home => home.dataset.renderer === 'webgl'));
+      await gallery.screenshot({ path: 'test-results/safari-3d-cast.png' });
+      // IntersectionObserver follows real rendering frames, so test it without a mocked clock.
+      await gallery.setViewportSize({ width: 1400, height: 300 });
+      await gallery.evaluate(() => document.body.classList.remove('motion-paused'));
+      await gallery.waitForFunction(() => document.querySelectorAll('.safari-home')[9].dataset.visible === 'false');
+      const hidden = gallery.locator('.safari-friend').last();
+      const active = gallery.locator('.safari-friend').first();
+      const hiddenPose = await pixels(hidden), activePose = await pixels(active);
+      await new Promise(resolve => setTimeout(resolve, 300));
+      assert.equal(await pixels(hidden), hiddenPose, 'Offscreen 3D animation stops');
+      assert.notEqual(await pixels(active), activePose, 'Visible 3D animation continues');
+      await gallery.close();
+      const fallback = await browser.newPage();
+      await fallback.addInitScript(() => {
+        const getContext = HTMLCanvasElement.prototype.getContext;
+        HTMLCanvasElement.prototype.getContext = function(type, ...args) {
+          return type === 'webgl2' ? null : getContext.call(this, type, ...args);
+        };
+      });
+      await fallback.goto(base, { waitUntil: 'networkidle' });
+      await fallback.waitForFunction(() => document.querySelector('.safari-home').dataset.renderer === 'fallback');
+      await fallback.locator('.safari-friend').first().click();
+      assert.equal(await fallback.locator('.safari-friend').first().getAttribute('data-gesture'), 'boo', 'No-WebGL fallback remains interactive');
+      await fallback.close();
+    }
     for (const game of ['taptaptap', 'hextris', 'ohhi', 'flappy']) {
       let releaseScript;
       const scriptGate = new Promise(resolve => { releaseScript = resolve; });

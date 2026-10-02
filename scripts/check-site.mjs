@@ -22,5 +22,5 @@ for (const game of ['taptaptap', 'hextris', 'ohhi', 'flappy']) {
   assert(!/<script\b(?![^>]*\bsrc=)[^>]*>/.test(source), `${game} contains an inline script`);
   await access(`public/games/${game}-source.zip`);
 }
-for (const file of ['public/assets/safari.webp', 'public/assets/venue-garden.svg', 'public/assets/DM-Sans-OFL.txt', 'public/assets/Playfair-Display-OFL.txt', 'public/_headers', 'vercel.json']) await access(file);
+for (const file of ['public/assets/three-LICENSE.txt', 'public/assets/safari.webp', 'public/assets/venue-garden.svg', 'public/assets/DM-Sans-OFL.txt', 'public/assets/Playfair-Display-OFL.txt', 'public/_headers', 'vercel.json']) await access(file);
 console.log('Four-game source security and asset checks passed. Event validation checks passed.');

@@ -156,59 +156,25 @@
 @media(prefers-reduced-motion:reduce){.game-loading-dots i{animation:none}}
 @media(max-height:550px){.game-loading img{height:16dvh}.game-loading{padding:10px}.game-loading-dots{margin-top:10px}}
 
-/* Four little homes are anchored to the invitation's document corners. */
-#main.safari-inhabited{position:relative}
-.safari-inhabited>.hero{padding-top:160px}
-.safari-inhabited>.rsvp-section{padding-bottom:150px}
-.safari-friends{position:absolute;inset:0;z-index:20;pointer-events:none;overflow:hidden}
-.safari-home{position:absolute;width:104px;height:104px;--safari-facing:1}
-.safari-home-0{top:52px;left:8px}.safari-home-1{top:52px;right:8px}
-.safari-home-2{bottom:16px;left:8px}.safari-home-3{bottom:16px;right:8px}
-.safari-trail{position:absolute;left:5px;right:5px;top:47px;height:27px;border:1px dashed #a6b39466;border-radius:50%;background:radial-gradient(ellipse,#dfe6cd77,transparent 70%)}
-.safari-friend{position:absolute;left:24px;top:15px;width:56px;height:56px;padding:0;border:0;border-radius:50%;background:transparent;pointer-events:auto;touch-action:pan-y;cursor:pointer;-webkit-tap-highlight-color:transparent;isolation:isolate}
-.safari-friend-art{display:block;width:100%;height:100%;transform-origin:50% 85%;filter:drop-shadow(0 3px 2px #463f2926)}
-.safari-friend svg{display:block;width:100%;height:100%;overflow:visible;transform:scaleX(var(--safari-facing))}
-.safari-friend:focus-visible{outline:2px dashed var(--orange);outline-offset:3px;background:#fff8e3}
-.safari-caption{position:absolute;bottom:8px;left:0;right:0;text-align:center;font-size:9px;font-weight:500;letter-spacing:.3px;color:#777b6e}
-.safari-food{position:absolute;left:45px;top:59px;font-size:19px;opacity:0;transform-origin:50% 100%}
-.safari-ball{position:absolute;right:11px;top:55px;width:16px;height:16px;border:1px solid #b57746;border-radius:50%;background:conic-gradient(#d7a25f 0deg 90deg,#f8e9bd 90deg 180deg,#97aa83 180deg 270deg,#f8e9bd 270deg);opacity:0}
-.safari-zzz{position:absolute;top:-10px;right:-2px;opacity:0;color:#70896d;font-family:var(--serif);font-size:15px;letter-spacing:3px}
-.safari-boo{position:absolute;z-index:3;top:-38px;left:50%;padding:3px 7px;border:1px solid #b7653e;border-radius:9px 9px 9px 1px;background:#fff3cd;color:#a34f2f;font-size:11px;font-weight:700;letter-spacing:1px;opacity:0;transform:translateX(-50%);pointer-events:none}
-.safari-sleep-eyes,.safari-surprise{display:none}
-.safari-eyes{transform-origin:32px 25px;animation:safari-blink 6s infinite}
-.safari-tail{transform-origin:44px 43px;animation:safari-tail 2.4s ease-in-out infinite}
-.safari-head{transform-origin:32px 38px}
-.safari-home[data-state="walk"] .safari-friend-art{animation:safari-step .65s ease-in-out infinite}
-.safari-home[data-state="walk"] .safari-leg{transform-origin:32px 43px;animation:safari-leg .65s ease-in-out infinite}
-.safari-home[data-state="walk"] .safari-leg-front{animation-delay:-.325s}
-.safari-home[data-state="eat"] .safari-head{animation:safari-nibble .7s ease-in-out infinite}
-.safari-home[data-state="eat"] .safari-food{opacity:1;animation:safari-snack .7s ease-in-out infinite}
-.safari-home[data-state="sleep"] .safari-friend-art{transform:translateY(7px) rotate(-12deg) scale(1.08,.85);animation:safari-breathe 3s ease-in-out infinite}
-.safari-home[data-state="sleep"] .safari-eyes,.safari-home[data-state="sleep"] .safari-smile{display:none}
-.safari-home[data-state="sleep"] .safari-sleep-eyes{display:block}
-.safari-home[data-state="sleep"] .safari-tail{animation:none}
+/* Original 3D safari companions roam in safe spaces along both page edges. */
+.safari-stop{position:relative;height:204px;pointer-events:none;isolation:isolate;overflow:hidden}
+.safari-home{position:absolute;top:var(--safari-top);width:176px;height:164px;pointer-events:none}
+.safari-home-left{left:var(--safari-inset)}.safari-home-right{right:var(--safari-inset)}
+.safari-friend{position:relative;display:block;width:176px;height:138px;padding:0;border:0;border-radius:35%;background:transparent;pointer-events:auto;touch-action:pan-y;cursor:pointer;-webkit-tap-highlight-color:transparent}
+.safari-canvas{display:block;width:176px;height:138px;pointer-events:none}
+.safari-friend:focus-visible{outline:2px dashed var(--orange);outline-offset:-8px;background:#e9eddf55}
+.safari-caption{text-align:center;font-size:10px;line-height:1.5;color:var(--muted)}
+.safari-caption strong{display:block;font-weight:500;color:#50654e;font-size:11px}.safari-caption>span{display:block;font-size:9px}
+.safari-fallback{position:absolute;inset:20px 0 0;font-size:56px;line-height:1.4;filter:drop-shadow(0 4px 2px #463f2926)}
+.safari-home[data-renderer="webgl"] .safari-fallback{display:none}
+.safari-boo{position:absolute;z-index:1;top:10px;left:76%;padding:4px 9px;border:1px solid #b7653e;border-radius:9px 9px 9px 1px;background:#fff3cd;color:#a34f2f;font-size:12px;font-weight:700;letter-spacing:1px;opacity:0;transform:translateX(-50%);pointer-events:none}
+.safari-zzz{position:absolute;top:35px;right:35px;opacity:0;color:#70896d;font-family:var(--serif);font-size:17px;letter-spacing:4px;pointer-events:none}
 .safari-home[data-state="sleep"] .safari-zzz{animation:safari-dream 2.8s ease-out infinite}
-.safari-home[data-state="play"] .safari-friend-art{animation:safari-play 1.5s ease-in-out infinite}
-.safari-home[data-state="play"] .safari-ball{opacity:1;animation:safari-ball 1.5s ease-in-out infinite}
-.safari-home[data-startled] .safari-eyes,.safari-home[data-startled] .safari-smile,.safari-home[data-startled] .safari-sleep-eyes,.safari-home[data-startled] .safari-zzz{display:none}
-.safari-home[data-startled] .safari-surprise{display:block}
-.safari-home[data-startled] .safari-head,.safari-home[data-startled] .safari-leg,.safari-home[data-startled] .safari-tail{animation:none}
-.safari-friend[data-gesture="boo"] .safari-friend-art{animation:safari-jumpscare 1.2s both;position:relative;z-index:2}
+.safari-home[data-startled] .safari-zzz{display:none}
 .safari-friend[data-gesture="boo"] .safari-boo{animation:safari-boo 1.2s both}
-.safari-friend[data-gesture="quiet"] .safari-friend-art{animation:none;transform:none}
 .safari-friend[data-gesture="quiet"] .safari-boo{opacity:1}
-.safari-home[data-visible="false"] *,.safari-friends[data-paused="true"] *{animation-play-state:paused!important}
-@keyframes safari-step{0%,100%{transform:translateY(0) rotate(-3deg)}50%{transform:translateY(-3px) rotate(3deg)}}
-@keyframes safari-leg{0%,100%{transform:rotate(-9deg)}50%{transform:rotate(9deg)}}
-@keyframes safari-tail{50%{transform:rotate(14deg)}}
-@keyframes safari-blink{0%,43%,47%,100%{transform:scaleY(1)}45%{transform:scaleY(.1)}}
-@keyframes safari-nibble{50%{transform:translateY(3px) rotate(8deg)}}
-@keyframes safari-snack{50%{transform:scale(.85) rotate(-12deg)}}
-@keyframes safari-breathe{50%{transform:translateY(7px) rotate(-12deg) scale(1.1,.89)}}
+.safari-home[data-visible="false"] *,.safari-stop[data-paused="true"] *{animation-play-state:paused!important}
 @keyframes safari-dream{0%{opacity:0;transform:translateY(3px) scale(.8)}30%,70%{opacity:.9}100%{opacity:0;transform:translateY(-12px) scale(1.1)}}
-@keyframes safari-play{0%,100%{transform:rotate(-7deg)}35%{transform:translateY(-12px) rotate(9deg) scale(.95,1.07)}65%{transform:translateY(2px) scale(1.06,.94)}}
-@keyframes safari-ball{0%,100%{transform:translateX(0) rotate(0)}50%{transform:translate(-24px,-9px) rotate(-180deg)}}
-@keyframes safari-jumpscare{0%{transform:scale(1)}12%{transform:translateY(5px) scale(1.18,.72)}28%{transform:translateY(-17px) rotate(-9deg) scale(1.65)}42%{transform:translateY(-19px) rotate(9deg) scale(1.55)}58%{transform:translateY(3px) scale(1.18,.8)}75%{transform:translateY(-8px) scale(.98,1.12)}100%{transform:scale(1)}}
-@keyframes safari-boo{0%{opacity:0;transform:translateX(-50%) scale(.5)}18%,65%{opacity:1;transform:translate(-50%,-9px) rotate(-7deg) scale(1.1)}100%{opacity:0;transform:translate(-50%,-18px)}}
-@media(max-width:760px){.safari-home{width:78px;height:96px}.safari-friend{width:48px;height:48px;left:15px;top:20px}.safari-trail{left:3px;right:3px;top:49px;height:20px}.safari-food{left:32px;top:57px}.safari-ball{right:4px;top:54px}.safari-caption{font-size:8px}.safari-home-0,.safari-home-2{left:2px}.safari-home-1,.safari-home-3{right:2px}}
+@keyframes safari-boo{0%{opacity:0;transform:translateX(-50%) scale(.5)}18%,65%{opacity:1;transform:translate(-50%,0) rotate(-7deg) scale(1.1)}100%{opacity:0;transform:translate(-50%,-4px)}}
+@media(max-width:760px){.safari-stop{height:180px}.safari-home{width:136px;height:146px}.safari-friend,.safari-canvas{width:136px;height:120px}.safari-home-left{left:calc(var(--safari-inset)/2)}.safari-home-right{right:calc(var(--safari-inset)/2)}.safari-caption strong{font-size:10px}.safari-caption>span{font-size:8px}.safari-boo{font-size:11px}.safari-zzz{right:24px;top:28px;font-size:15px}}
 @media(prefers-reduced-motion:reduce){.safari-home *{animation:none!important}.safari-home[data-state="sleep"] .safari-zzz{opacity:1}}
