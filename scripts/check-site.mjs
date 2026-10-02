@@ -23,5 +23,5 @@ for (const game of ['taptaptap', 'hextris', 'ohhi', 'flappy']) {
   await access(`public/games/${game}-source.zip`);
 }
 for (const file of ['public/assets/safari.webp', 'public/assets/venue-garden.svg', 'public/assets/DM-Sans-OFL.txt', 'public/assets/Playfair-Display-OFL.txt', 'public/_headers', 'vercel.json']) await access(file);
-for (const animal of ['lion', 'elephant', 'giraffe', 'monkey', 'tiger']) await access(`public/assets/animals/${animal}.webp`);
+for (const animal of ['lion', 'elephant', 'giraffe', 'monkey', 'tiger', 'tiger-roll']) await access(`public/assets/animals/${animal}.webp`);
 console.log('Four-game source security and asset checks passed. Event validation checks passed.');

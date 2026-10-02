@@ -12,9 +12,10 @@ if (!matchMedia('(prefers-reduced-motion: reduce)').matches && 'IntersectionObse
   const observer = new IntersectionObserver(entries => entries.forEach(entry => { if (entry.isIntersecting) { entry.target.classList.add('in-view'); observer.unobserve(entry.target); } }), { threshold: .08 });
   document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
 }
-// One control pauses the decorative movement and the scrolling message strap.
+// Guests can soften continuous movement or pause it while retaining touch controls.
 const motionPreference = matchMedia('(prefers-reduced-motion: reduce)');
 const motionToggle = $('#motion-toggle');
+const lessMotionToggle = $('#less-motion');
 const activeAccentAnimations = new Set();
 function stopAccentPops() {
   clearComicBursts();
@@ -22,10 +23,17 @@ function stopAccentPops() {
 }
 function syncMotionControl() {
   motionToggle.hidden = motionPreference.matches;
+  lessMotionToggle.disabled = motionPreference.matches;
+  lessMotionToggle.setAttribute('aria-pressed', String(motionPreference.matches || document.body.classList.contains('motion-gentle')));
   if (motionPreference.matches) stopAccentPops();
 }
 syncMotionControl();
 motionPreference.addEventListener('change', syncMotionControl);
+lessMotionToggle.addEventListener('click', () => {
+  document.body.classList.toggle('motion-gentle');
+  stopAccentPops();
+  syncMotionControl();
+});
 motionToggle.addEventListener('click', () => {
   const paused = document.body.classList.toggle('motion-paused');
   if (paused) stopAccentPops();
@@ -49,7 +57,7 @@ document.querySelectorAll('h1 em, h2 em, .word-accent, .brand-icon span, .footer
   const pop = () => {
     if (poppingAccents.has(accent)) return;
     poppingAccents.add(accent);
-    const still = motionPreference.matches || document.body.classList.contains('motion-paused');
+    const still = motionPreference.matches || document.body.classList.contains('motion-paused') || document.body.classList.contains('motion-gentle');
     if (!still) comicBurst(accent);
     const frames = still
       ? [{ opacity: 0 }, { opacity: 0, offset: .85 }, { opacity: 1 }]

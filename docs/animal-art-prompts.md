@@ -38,3 +38,12 @@ Input image is ONLY a STYLE AND GRID reference. Replace the lion with one adorab
 Draw exactly SIX separate poses of the SAME TIGER CUB, in the same strict THREE columns by TWO rows grid of equal square cells, landscape canvas. Top row left to right: walking left feet forward, walking right feet forward (genuinely different gait), eating a tiny leafy snack. Bottom row: curled asleep with closed eyes, playing with a small sage-green ball, surprised joyful hop with hands or front feet up.
 Same identity, color, and scale across six cells. Whole body visible, centered in each cell with 15% transparent padding and consistent foot baseline. Leave clear gutters. No other animal, no lions. No scenery, ground, shadows, text, labels, borders, or grid lines. Genuinely transparent background.
 
+
+## Tiger floor roll
+
+Generated with the built-in image_gen tool using the tiger sheet as an identity/style reference. Saved as `public/assets/animals/tiger-roll.webp`, resized to 320 × 320 with transparency preserved.
+
+Use case: illustration-story. Asset type: one transparent 2D animation character for a first-birthday safari webpage.
+Input image is a STYLE AND IDENTITY reference for the tiger cub. Draw exactly one same adorable warm apricot tiger cub, with brown stripes, cream muzzle and tummy, pink rosy cheeks, little round ears, friendly dark eyes, soft hand-painted gouache texture and warm-brown outlines.
+New pose: playful awake tiger curled into a compact ROUND ball on its back/side, cuddling its own tucked paws, smiling with happy open eyes, tail curled tightly around its body. Show the cream tummy and tiny paw pads. This curled circular silhouette will be animated rotating gently along the floor, so keep all paws and tail tucked within the rounded silhouette, with the face readable and balanced. No sleeping closed eyes. No toy or food.
+Beautiful flat 2D children's picture-book drawing, matching the reference, no 3D rendering. Square canvas, whole tiger centered with generous 18% transparent padding on all sides. One character only, not a sprite sheet. No scenery, ground, shadow, text, labels, borders or additional objects. Genuinely transparent background.

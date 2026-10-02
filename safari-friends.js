@@ -1,18 +1,10 @@
 const cast = [
-  { kind: 'lion', name: 'Lion cub', icon: '🦁' },
-  { kind: 'elephant', name: 'Baby elephant', icon: '🐘' },
-  { kind: 'giraffe', name: 'Little giraffe', icon: '🦒' },
-  { kind: 'monkey', name: 'Little monkey', icon: '🐒' },
-  { kind: 'tiger', name: 'Tiger cub', icon: '🐯' },
+  { kind: 'lion', name: 'Lion cub', icon: '🦁', state: 'walk', duration: 14000 },
+  { kind: 'elephant', name: 'Baby elephant', icon: '🐘', state: 'sleep', duration: 8500 },
+  { kind: 'giraffe', name: 'Little giraffe', icon: '🦒', state: 'eat', duration: 6000 },
+  { kind: 'monkey', name: 'Little monkey', icon: '🐒', state: 'play', duration: 6500 },
+  { kind: 'tiger', name: 'Tiger cub', icon: '🐯', state: 'roll', duration: 8000 },
 ];
-const routine = [
-  { state: 'walk', duration: 10000 },
-  { state: 'eat', duration: 6000 },
-  { state: 'sleep', duration: 8500 },
-  { state: 'play', duration: 6500 },
-];
-const cycle = routine.reduce((total, step) => total + step.duration, 0);
-
 export function setupSafariFriends() {
   const main = document.querySelector('#main');
   if (!main || main.querySelector('.safari-friends')) return;
@@ -33,11 +25,11 @@ export function setupSafariFriends() {
     const home = document.createElement('span');
     home.className = 'safari-home';
     home.dataset.animal = animal.kind;
-    home.dataset.state = routine[i % 4].state;
+    home.dataset.state = animal.state;
     home.innerHTML = `<button type="button" class="safari-friend" aria-label="${animal.name}: tap for a playful jumpscare" title="Tap ${animal.name} for a surprise!"><canvas class="safari-canvas" aria-hidden="true"></canvas><span class="safari-fallback" aria-hidden="true">${animal.icon}</span><span class="safari-boo" aria-hidden="true">BOO!</span><span class="safari-zzz" aria-hidden="true">z Z z</span></button>`;
     stops[i].append(home);
     const button = home.querySelector('button');
-    const friend = { home, button, canvas: home.querySelector('canvas'), elapsed: routine.slice(0, i % 4).reduce((total, step) => total + step.duration, 0), visible: false, busy: false, reaction: 0, habitat: null, loading: false };
+    const friend = { home, button, canvas: home.querySelector('canvas'), activity: animal.state, duration: animal.duration, elapsed: 0, visible: false, busy: false, reaction: 0, habitat: null, loading: false };
     button.addEventListener('click', () => {
       if (friend.busy) return;
       friend.busy = true;
@@ -55,19 +47,9 @@ export function setupSafariFriends() {
     });
     return friend;
   });
-  function activity(friend) {
-    let phase = friend.elapsed % cycle;
-    const step = routine.find(step => {
-      if (phase < step.duration) return true;
-      phase -= step.duration;
-      return false;
-    });
-    return { ...step, phase: phase / step.duration };
-  }
   function render(friend) {
-    const step = activity(friend);
-    friend.home.dataset.state = step.state;
-    friend.habitat?.render(step.state, friend.elapsed, step.phase, friend.busy ? (still() ? .4 : Math.min(1, friend.reaction / 1200)) : null);
+    const phase = friend.elapsed % friend.duration / friend.duration;
+    friend.habitat?.render(friend.activity, friend.elapsed, phase, friend.busy ? (still() ? .4 : Math.min(1, friend.reaction / 1200)) : null, document.body.classList.contains('motion-gentle'));
   }
   async function load(friend) {
     if (friend.loading) return;
@@ -99,8 +81,9 @@ export function setupSafariFriends() {
     last = null;
     const paused = still() || document.hidden;
     stops.forEach(stop => { stop.dataset.paused = String(paused); });
-    if (still()) friends.forEach(friend => {
-      if (friend.busy) { friend.button.dataset.gesture = 'quiet'; render(friend); }
+    friends.forEach(friend => {
+      if (friend.busy) friend.button.dataset.gesture = still() ? 'quiet' : 'boo';
+      if (friend.visible) render(friend);
     });
     if (!paused && friends.some(friend => friend.visible)) frame = requestAnimationFrame(tick);
   }
