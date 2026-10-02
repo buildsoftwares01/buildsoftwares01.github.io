@@ -45,10 +45,13 @@ try {
     assert.equal(await friends.count(), 5);
     assert.deepEqual(await page.locator('#main > section').evaluateAll(sections => sections.map(section => section.querySelectorAll('.safari-home').length)), [1, 1, 1, 1, 1], 'Exactly one animal belongs to each section');
     assert.equal(await page.locator('.safari-stop').count(), 5);
+    assert.equal(await page.locator('.safari-caption').count(), 0, 'Animal captions are removed');
+    assert.deepEqual(await page.locator('[data-safari-anchor]').evaluateAll(anchors => anchors.map(anchor => anchor.firstElementChild.textContent.trim())), ['explorer', 'little sunshine.', 'Good food.', 'fun begin.', 'without you.']);
+    assert(await homes.evaluateAll(homes => homes.every(home => home.closest('h1, h2'))), 'All animals sit beside their heading phrases');
     assert.equal(await homes.evaluateAll(homes => new Set(homes.map(home => home.dataset.animal)).size), 5, 'Five different illustrated animals');
     await page.waitForFunction(() => document.querySelector('.safari-home').dataset.renderer === '2d');
     assert.deepEqual(await homes.evaluateAll(homes => homes.map(home => home.dataset.state)), Array.from({ length: 5 }, (_, i) => ['walk', 'eat', 'sleep', 'play'][i % 4]));
-    assert.equal(await page.locator('.safari-friends').first().evaluate(el => getComputedStyle(el).position), 'absolute');
+    assert.equal(await page.locator('.safari-friends').first().evaluate(el => getComputedStyle(el).position), 'relative');
     await page.mouse.move(200, 0);
     await page.clock.runFor(32);
     const pixels = async friend => createHash('sha256').update(await friend.locator('canvas').evaluate(canvas => canvas.toDataURL())).digest('hex');
@@ -80,7 +83,7 @@ try {
       await friend.scrollIntoViewIfNeeded();
       await page.waitForFunction(i => document.querySelectorAll('.safari-home')[i].dataset.renderer === '2d', i);
       const bounds = await friend.boundingBox();
-      assert(bounds.width >= 120 && bounds.height >= 120, 'Large stable touch target');
+      assert(bounds.width >= 44 && bounds.height >= 44, 'Heading animals retain accessible touch targets');
       assert(bounds.x >= 0 && bounds.x + bounds.width <= page.viewportSize().width);
       const beforeTap = await pixels(friend);
       await friend.click();
@@ -133,14 +136,10 @@ try {
         document.body.classList.add('motion-paused');
         for (const child of document.body.children) if (child.id !== 'main') child.style.display = 'none';
         const main = document.querySelector('#main');
-        main.style.display = 'grid'; main.style.gridTemplateColumns = '1fr 1fr';
-        for (const child of main.children) {
-          if (!child.classList.contains('safari-section')) child.style.display = 'none';
-          else {
-            child.style.cssText = 'display:block;position:relative;width:100%;height:180px;min-height:0;padding:0;margin:0;background:transparent;opacity:1;transform:none;transition:none';
-            for (const content of child.children) if (!content.classList.contains('safari-stop')) content.style.display = 'none';
-          }
-        }
+        const stops = [...document.querySelectorAll('.safari-stop')];
+        main.replaceChildren(...stops);
+        main.style.cssText = 'display:grid;grid-template-columns:1fr 1fr;gap:20px';
+        stops.forEach(stop => { stop.style.cssText = 'display:block;position:relative;width:164px;height:164px;margin:0'; });
       });
       await gallery.waitForFunction(() => [...document.querySelectorAll('.safari-home')].every(home => home.dataset.renderer === '2d'));
       await gallery.screenshot({ path: 'test-results/safari-2d-cast.png' });

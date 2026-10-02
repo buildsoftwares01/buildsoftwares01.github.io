@@ -26,11 +26,12 @@ export async function createHabitat(canvas, kind) {
     draw.setTransform(ratio, 0, 0, ratio, 0, 0);
     draw.clearRect(0, 0, width, height);
     const seconds = elapsed / 1000;
+    const motion = Math.min(width, height) / 130;
     let frame = 0, x = 0, y = 0, angle = 0, scaleX = 1, scaleY = 1;
     if (state === 'walk') {
       const circle = phase * Math.PI * 4;
       frame = Math.floor(seconds * 4) % 2;
-      x = Math.sin(circle) * 12; y = Math.cos(circle) * 3 - Math.abs(Math.sin(seconds * 8)) * 2;
+      x = Math.sin(circle) * 12 * motion; y = (Math.cos(circle) * 3 - Math.abs(Math.sin(seconds * 8)) * 2) * motion;
       scaleX = Math.cos(circle) < 0 ? -1 : 1;
       angle = Math.sin(seconds * 8) * .025;
     } else if (state === 'eat') {
@@ -39,14 +40,14 @@ export async function createHabitat(canvas, kind) {
     } else if (state === 'sleep') {
       frame = 3; scaleY = 1 + Math.sin(seconds * 2) * .025;
     } else if (state === 'play') {
-      frame = 4; y = -Math.max(0, Math.sin(seconds * 4)) * 9;
+      frame = 4; y = -Math.max(0, Math.sin(seconds * 4)) * 9 * motion;
       angle = Math.sin(seconds * 3) * .065;
     }
     if (surprise !== null) {
       frame = 5;
       const leap = Math.max(0, Math.sin(Math.PI * Math.min(1, surprise / .74)));
       const bounce = surprise > .74 ? Math.sin((surprise - .74) / .26 * Math.PI) : 0;
-      x = 0; y = -leap * 12 - bounce * 3;
+      x = 0; y = (-leap * 12 - bounce * 3) * motion;
       angle = Math.sin(surprise * 28) * .06;
       scaleX = 1 + leap * .12; scaleY = 1 + leap * .12;
     }
