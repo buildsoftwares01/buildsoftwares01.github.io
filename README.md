@@ -31,6 +31,8 @@ The final four games are Tap Tap Tap, Hextris, 0h h1, and Safari Flyer (an adapt
 
 Calendar download buttons are available in the hero, countdown and RSVP sections. The message strap loops continuously; a pause control stops decorative animations, and reduced-motion settings show all strap text without scrolling.
 
+Four SVG safari animals live in the invitation’s top and bottom corners, anchored to the page so they scroll out of view. Each repeats a walk → eat → sleep → play routine, with a small circular walk, moving limbs, blinking eyes, snacks and a toy ball. Tap or activate an animal with the keyboard for a surprised face, a bouncing jumpscare and a ‘BOO!’ bubble. The pause control and reduced-motion preference stop movement; offscreen routines pause too.
+
 The invitation labels missing details honestly. RSVP opens an explanatory dialog until a number is configured. The countdown and calendar download appear only after a valid date and time are configured. No invented event end time is added to the calendar.
 
 ## Security and privacy
@@ -52,6 +54,8 @@ The venue card is an original SVG illustration. The Google Maps link provides re
 ## Verification
 
 `npm test` checks game assets and source security settings. For touch integration checks, run `npm run build`, start `npm run preview -- --port 4173`, then run `node scripts/game-check.mjs`. The browser check uses installed Chrome on macOS by default; set `CHROME_PATH` to your browser executable on another system. It exercises scoring, rotation, tile changes, flapping, replay, closing and frame isolation, rejects external requests and console errors, and checks page overflow at 320, 768 and 1440 pixels. These are browser-emulated phone tests, not physical-device certification.
+
+`npm run test:pages` checks root/subpath loading, document-anchored animal homes, complete animal routines, tap/keyboard surprises, pause and reduced motion, mobile overflow, and game loading.
 
 `node scripts/motion-check.mjs` checks mobile and desktop overflow, visibility of every scrolling phrase, pause/resume, and the reduced-motion layout against `npm run dev`.
 
