@@ -1,9 +1,9 @@
 const cast = [
-  { kind: 'lion', name: 'Lion', icon: '🦁' }, { kind: 'giraffe', name: 'Giraffe', icon: '🦒' },
-  { kind: 'tiger', name: 'Tiger', icon: '🐯' }, { kind: 'elephant', name: 'Elephant', icon: '🐘' },
-  { kind: 'zebra', name: 'Zebra', icon: '🦓' }, { kind: 'monkey', name: 'Monkey', icon: '🐒' },
-  { kind: 'hippo', name: 'Hippo', icon: '🦛' }, { kind: 'rhino', name: 'Rhino', icon: '🦏' },
-  { kind: 'lion', name: 'Lion cub', icon: '🦁' }, { kind: 'elephant', name: 'Baby elephant', icon: '🐘' },
+  { kind: 'lion', name: 'Lion cub', icon: '🦁', section: '.hero' },
+  { kind: 'elephant', name: 'Baby elephant', icon: '🐘', section: '#celebration' },
+  { kind: 'giraffe', name: 'Little giraffe', icon: '🦒', section: '#venue' },
+  { kind: 'monkey', name: 'Little monkey', icon: '🐒', section: '#games' },
+  { kind: 'tiger', name: 'Tiger cub', icon: '🐯', section: '#rsvp' },
 ];
 const routine = [
   { state: 'walk', duration: 10000, label: 'Exploring' },
@@ -16,32 +16,29 @@ const cycle = routine.reduce((total, step) => total + step.duration, 0);
 export function setupSafariFriends() {
   const main = document.querySelector('#main');
   if (!main || main.querySelector('.safari-friends')) return;
-  // Shuffle once per visit. Homes stay in the same document spot while scrolling.
-  const animals = [...cast];
-  for (let i = animals.length - 1; i > 0; i--) {
-    const other = Math.floor(Math.random() * (i + 1));
-    [animals[i], animals[other]] = [animals[other], animals[i]];
-  }
-  const stops = ['.hero', '#celebration', '#venue', '#games', '#rsvp'].map(selector => {
+  // One illustrated companion belongs to each section and scrolls with that section.
+  const stops = cast.map(animal => {
+    const section = main.querySelector(animal.section);
+    section.classList.add('safari-section');
     const stage = document.createElement('div');
     stage.className = 'safari-friends safari-stop';
     stage.setAttribute('role', 'group');
-    stage.setAttribute('aria-label', 'Safari companions: tap an animal for a surprise');
-    main.insertBefore(stage, main.querySelector(selector));
+    stage.setAttribute('aria-label', `${animal.name}: tap for a surprise`);
+    section.prepend(stage);
     return stage;
   });
   const reduced = matchMedia('(prefers-reduced-motion: reduce)');
   const still = () => reduced.matches || document.body.classList.contains('motion-paused');
-  let frame = 0, last = null, models;
-  const friends = animals.map((animal, i) => {
+  let frame = 0, last = null, sprites;
+  const friends = cast.map((animal, i) => {
     const home = document.createElement('div');
     home.className = `safari-home safari-home-${i % 2 ? 'right' : 'left'}`;
     home.dataset.animal = animal.kind;
     home.dataset.state = routine[i % 4].state;
-    home.style.setProperty('--safari-top', `${(i % 2 ? 18 : 0) + Math.round(Math.random() * 18)}px`);
-    home.style.setProperty('--safari-inset', `${4 + Math.round(Math.random() * 12)}px`);
+    home.style.setProperty('--safari-top', '8px');
+    home.style.setProperty('--safari-inset', '0px');
     home.innerHTML = `<button type="button" class="safari-friend" aria-label="${animal.name}: tap for a playful jumpscare" title="Tap ${animal.name} for a surprise!"><canvas class="safari-canvas" aria-hidden="true"></canvas><span class="safari-fallback" aria-hidden="true">${animal.icon}</span><span class="safari-boo" aria-hidden="true">BOO!</span><span class="safari-zzz" aria-hidden="true">z Z z</span></button><span class="safari-caption" aria-hidden="true"><strong>${animal.name}</strong><span>${routine[i % 4].label}</span></span>`;
-    stops[Math.floor(i / 2)].append(home);
+    stops[i].append(home);
     const button = home.querySelector('button');
     const friend = { home, button, canvas: home.querySelector('canvas'), caption: home.querySelector('.safari-caption > span'), elapsed: routine.slice(0, i % 4).reduce((total, step) => total + step.duration, 0), visible: false, busy: false, reaction: 0, habitat: null, loading: false };
     button.addEventListener('click', () => {
@@ -80,13 +77,13 @@ export function setupSafariFriends() {
     if (friend.loading) return;
     friend.loading = true;
     try {
-      models ||= import('./safari-models.js');
-      const { createHabitat } = await models;
-      friend.habitat = createHabitat(friend.canvas, friend.home.dataset.animal);
-      friend.home.dataset.renderer = friend.habitat ? 'webgl' : 'fallback';
+      sprites ||= import('./safari-sprites.js');
+      const { createHabitat } = await sprites;
+      friend.habitat = await createHabitat(friend.canvas, friend.home.dataset.animal);
+      friend.home.dataset.renderer = friend.habitat ? '2d' : 'fallback';
       render(friend);
     } catch {
-      // Keep the button usable on devices where WebGL is unavailable.
+      // Keep the button usable if an illustration cannot load.
       friend.home.dataset.renderer = 'fallback';
     }
   }

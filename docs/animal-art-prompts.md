@@ -1,0 +1,40 @@
+# 2D safari character artwork
+
+Generated with the built-in image_gen tool. Each transparent sheet contains a 3 × 2 grid: two walking poses, eating, sleeping, playing and a surprised hop. The lion sheet was the style reference for the other four sheets. Final sheets are resized to 768 × 512 and compressed as WebP with transparency preserved.
+
+## lion
+
+Use case: illustration-story.
+Asset type: a production-ready transparent 2D sprite sheet for a first-birthday safari invitation.
+Draw one adorable baby LION character in six poses, laid out as a strict 3-column by 2-row grid of equal square cells, landscape canvas. Top row, left to right: walking with left feet forward, walking with right feet forward, eating a tiny leafy snack. Bottom row, left to right: curled up asleep with closed eyes, playing joyfully with a small sage-green ball, startled delighted hop with paws up.
+Style: beautiful hand-drawn children's picture-book illustration, flat 2D shapes, subtle gouache texture, soft irregular warm-brown outlines, honey-gold cub with a fluffy caramel mane, cream muzzle, round black eyes, tiny blush cheeks, sweet smiling face, short rounded paws. Gentle warm muted colors to suit a cream, sage and terracotta birthday page. This must look like an illustrator's charming drawing, not a 3D render, not glossy, not a geometric construction.
+Exact same lion design, scale and color in all six cells. Full body in every pose, centered in its cell, feet at a consistent baseline, generous 15% transparent padding inside each cell. Nothing may cross into another cell. No scenery, no floor, no cast shadows, no lettering, no labels, no grid lines, no borders. Background genuinely transparent.
+
+## elephant
+
+Use case: illustration-story. Asset type: transparent 2D sprite sheet for a first-birthday safari invitation.
+Input image is ONLY a STYLE AND GRID reference. Replace the lion with one adorable baby ELEPHANT; powder sage-grey skin, big soft pink inner ears, little curved trunk, tiny rounded feet. Keep the same beautiful hand-painted children's picture-book style: flat 2D drawing, subtle gouache texture, soft warm brown outlines, round dark eyes, rosy cheeks, friendly smiling face. No 3D render, no glossy shading.
+Draw exactly SIX separate poses of the SAME ELEPHANT, in the same strict THREE columns by TWO rows grid of equal square cells, landscape canvas. Top row left to right: walking left feet forward, walking right feet forward (genuinely different gait), eating a leafy twig. Bottom row: curled asleep with closed eyes, playing with a small sage-green ball, surprised joyful hop with hands or front feet up.
+Same identity, color, and scale across six cells. Whole body visible, centered in each cell with 15% transparent padding and consistent foot baseline. Leave clear gutters. No other animal, no lions. No scenery, ground, shadows, text, labels, borders, or grid lines. Genuinely transparent background.
+
+## giraffe
+
+Use case: illustration-story. Asset type: transparent 2D sprite sheet for a first-birthday safari invitation.
+Input image is ONLY a STYLE AND GRID reference. Replace the lion with one adorable baby GIRAFFE; warm biscuit-yellow skin, caramel patches, short ossicones, gently long neck, rounded hooves. Keep the same beautiful hand-painted children's picture-book style: flat 2D drawing, subtle gouache texture, soft warm brown outlines, round dark eyes, rosy cheeks, friendly smiling face. No 3D render, no glossy shading.
+Draw exactly SIX separate poses of the SAME GIRAFFE, in the same strict THREE columns by TWO rows grid of equal square cells, landscape canvas. Top row left to right: walking left feet forward, walking right feet forward (genuinely different gait), eating a leafy twig. Bottom row: curled asleep with closed eyes, playing with a small sage-green ball, surprised joyful hop with hands or front feet up.
+Same identity, color, and scale across six cells. Whole body visible, centered in each cell with 15% transparent padding and consistent foot baseline. Leave clear gutters. No other animal, no lions. No scenery, ground, shadows, text, labels, borders, or grid lines. Genuinely transparent background.
+
+## monkey
+
+Use case: illustration-story. Asset type: transparent 2D sprite sheet for a first-birthday safari invitation.
+Input image is ONLY a STYLE AND GRID reference. Replace the lion with one adorable baby MONKEY; warm cocoa-brown fur, cream face and tummy, curly tail, little round ears, tiny rounded hands. Keep the same beautiful hand-painted children's picture-book style: flat 2D drawing, subtle gouache texture, soft warm brown outlines, round dark eyes, rosy cheeks, friendly smiling face. No 3D render, no glossy shading.
+Draw exactly SIX separate poses of the SAME MONKEY, in the same strict THREE columns by TWO rows grid of equal square cells, landscape canvas. Top row left to right: walking left feet forward, walking right feet forward (genuinely different gait), eating a small banana. Bottom row: curled asleep with closed eyes, playing with a small sage-green ball, surprised joyful hop with hands or front feet up.
+Same identity, color, and scale across six cells. Whole body visible, centered in each cell with 15% transparent padding and consistent foot baseline. Leave clear gutters. No other animal, no lions. No scenery, ground, shadows, text, labels, borders, or grid lines. Genuinely transparent background.
+
+## tiger
+
+Use case: illustration-story. Asset type: transparent 2D sprite sheet for a first-birthday safari invitation.
+Input image is ONLY a STYLE AND GRID reference. Replace the lion with one adorable baby TIGER CUB; warm apricot-orange fur, soft brown stripes, cream cheeks and tummy, rounded paws and little ears. Keep the same beautiful hand-painted children's picture-book style: flat 2D drawing, subtle gouache texture, soft warm brown outlines, round dark eyes, rosy cheeks, friendly smiling face. No 3D render, no glossy shading.
+Draw exactly SIX separate poses of the SAME TIGER CUB, in the same strict THREE columns by TWO rows grid of equal square cells, landscape canvas. Top row left to right: walking left feet forward, walking right feet forward (genuinely different gait), eating a tiny leafy snack. Bottom row: curled asleep with closed eyes, playing with a small sage-green ball, surprised joyful hop with hands or front feet up.
+Same identity, color, and scale across six cells. Whole body visible, centered in each cell with 15% transparent padding and consistent foot baseline. Leave clear gutters. No other animal, no lions. No scenery, ground, shadows, text, labels, borders, or grid lines. Genuinely transparent background.
+

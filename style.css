@@ -156,17 +156,19 @@
 @media(prefers-reduced-motion:reduce){.game-loading-dots i{animation:none}}
 @media(max-height:550px){.game-loading img{height:16dvh}.game-loading{padding:10px}.game-loading-dots{margin-top:10px}}
 
-/* Original 3D safari companions roam in safe spaces along both page edges. */
-.safari-stop{position:relative;height:204px;pointer-events:none;isolation:isolate;overflow:hidden}
-.safari-home{position:absolute;top:var(--safari-top);width:176px;height:164px;pointer-events:none}
+/* One picture-book companion in the decorative space of each section. */
+.safari-section{position:relative;padding-top:188px}
+.safari-stop{position:absolute;top:0;left:0;right:0;height:176px;pointer-events:none;isolation:isolate;overflow:hidden}
+.games-section>.safari-stop{width:min(1200px,88%);left:50%;right:auto;transform:translateX(-50%)}
+.safari-home{position:absolute;top:var(--safari-top);width:164px;height:160px;pointer-events:none}
 .safari-home-left{left:var(--safari-inset)}.safari-home-right{right:var(--safari-inset)}
-.safari-friend{position:relative;display:block;width:176px;height:138px;padding:0;border:0;border-radius:35%;background:transparent;pointer-events:auto;touch-action:pan-y;cursor:pointer;-webkit-tap-highlight-color:transparent}
-.safari-canvas{display:block;width:176px;height:138px;pointer-events:none}
+.safari-friend{position:relative;display:block;width:164px;height:130px;padding:0;border:0;border-radius:35%;background:transparent;pointer-events:auto;touch-action:pan-y;cursor:pointer;-webkit-tap-highlight-color:transparent}
+.safari-canvas{display:block;width:164px;height:130px;pointer-events:none}
 .safari-friend:focus-visible{outline:2px dashed var(--orange);outline-offset:-8px;background:#e9eddf55}
 .safari-caption{text-align:center;font-size:10px;line-height:1.5;color:var(--muted)}
 .safari-caption strong{display:block;font-weight:500;color:#50654e;font-size:11px}.safari-caption>span{display:block;font-size:9px}
 .safari-fallback{position:absolute;inset:20px 0 0;font-size:56px;line-height:1.4;filter:drop-shadow(0 4px 2px #463f2926)}
-.safari-home[data-renderer="webgl"] .safari-fallback{display:none}
+.safari-home[data-renderer="2d"] .safari-fallback{display:none}
 .safari-boo{position:absolute;z-index:1;top:10px;left:76%;padding:4px 9px;border:1px solid #b7653e;border-radius:9px 9px 9px 1px;background:#fff3cd;color:#a34f2f;font-size:12px;font-weight:700;letter-spacing:1px;opacity:0;transform:translateX(-50%);pointer-events:none}
 .safari-zzz{position:absolute;top:35px;right:35px;opacity:0;color:#70896d;font-family:var(--serif);font-size:17px;letter-spacing:4px;pointer-events:none}
 .safari-home[data-state="sleep"] .safari-zzz{animation:safari-dream 2.8s ease-out infinite}
@@ -176,5 +178,5 @@
 .safari-home[data-visible="false"] *,.safari-stop[data-paused="true"] *{animation-play-state:paused!important}
 @keyframes safari-dream{0%{opacity:0;transform:translateY(3px) scale(.8)}30%,70%{opacity:.9}100%{opacity:0;transform:translateY(-12px) scale(1.1)}}
 @keyframes safari-boo{0%{opacity:0;transform:translateX(-50%) scale(.5)}18%,65%{opacity:1;transform:translate(-50%,0) rotate(-7deg) scale(1.1)}100%{opacity:0;transform:translate(-50%,-4px)}}
-@media(max-width:760px){.safari-stop{height:180px}.safari-home{width:136px;height:146px}.safari-friend,.safari-canvas{width:136px;height:120px}.safari-home-left{left:calc(var(--safari-inset)/2)}.safari-home-right{right:calc(var(--safari-inset)/2)}.safari-caption strong{font-size:10px}.safari-caption>span{font-size:8px}.safari-boo{font-size:11px}.safari-zzz{right:24px;top:28px;font-size:15px}}
+@media(max-width:760px){.safari-section{padding-top:172px}.safari-stop{height:160px}.safari-home{width:144px;height:152px}.safari-friend,.safari-canvas{width:144px;height:124px}.safari-home-left{left:calc(var(--safari-inset)/2)}.safari-home-right{right:calc(var(--safari-inset)/2)}.safari-caption strong{font-size:10px}.safari-caption>span{font-size:8px}.safari-boo{font-size:11px}.safari-zzz{right:24px;top:28px;font-size:15px}}
 @media(prefers-reduced-motion:reduce){.safari-home *{animation:none!important}.safari-home[data-state="sleep"] .safari-zzz{opacity:1}}
