@@ -31,6 +31,8 @@ The final four games are Tap Tap Tap, Hextris, 0h h1, and Safari Flyer (an adapt
 
 Calendar download buttons are available in the hero, countdown and RSVP sections. The message strap loops continuously; a pause control stops decorative animations, and reduced-motion settings show all strap text without scrolling.
 
+Hover, tap or use Enter/Space on the coloured words and playful accents for a comic ‘BOOM!’: a layered starburst, bold lettering, smoke puffs and flying stars. The word squashes, disappears and bounces back without shifting the sentence. Bursts fit the viewport, clear after playing or scrolling, and respect pause and reduced-motion settings.
+
 Four SVG safari animals live in the invitation’s top and bottom corners, anchored to the page so they scroll out of view. Each repeats a walk → eat → sleep → play routine, with a small circular walk, moving limbs, blinking eyes, snacks and a toy ball. Tap or activate an animal with the keyboard for a surprised face, a bouncing jumpscare and a ‘BOO!’ bubble. The pause control and reduced-motion preference stop movement; offscreen routines pause too.
 
 The invitation labels missing details honestly. RSVP opens an explanatory dialog until a number is configured. The countdown and calendar download appear only after a valid date and time are configured. No invented event end time is added to the calendar.

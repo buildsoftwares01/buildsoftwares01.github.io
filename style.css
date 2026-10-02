@@ -132,10 +132,12 @@
 .pop-accent{cursor:pointer;pointer-events:auto;touch-action:manipulation}
 .pop-accent-inline{display:inline-block}
 .pop-accent:focus-visible{outline:2px solid var(--orange);outline-offset:5px;border-radius:3px}
-.accent-magic-burst{position:fixed;width:0;height:0;z-index:100;pointer-events:none}
-.accent-magic-burst>span{position:absolute;left:0;top:0;font:22px var(--sans);line-height:1;color:#c7993e;text-shadow:0 0 6px #e5b65c80;pointer-events:none}
-.accent-magic-burst>span:nth-child(3n){color:var(--orange);font-size:30px}
-.accent-magic-burst>span:nth-child(3n + 2){color:#b7653e;font-size:16px}
+.accent-comic-burst{position:fixed;z-index:100;pointer-events:none;transform:translate(-50%,-50%);contain:layout style}
+.accent-comic-burst svg{display:block;width:100%;height:100%;overflow:hidden}
+.comic-impact,.comic-lettering,.comic-ring{transform-origin:160px 120px}
+.comic-puff,.comic-shard{transform-box:fill-box;transform-origin:center}
+.comic-boom,.comic-boom-shadow{font-family:Impact,'Arial Black',var(--sans);font-size:65px;font-weight:1000;font-style:italic;letter-spacing:-2px;paint-order:stroke fill;stroke:#30241e;stroke-width:5px;stroke-linejoin:round;fill:#df452b}
+.comic-boom-shadow{fill:#30241e;stroke-width:6px}
 
 /* Safari welcome while the embedded game initializes. */
 #game-frame-container{position:relative;isolation:isolate}

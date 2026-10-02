@@ -2,6 +2,7 @@ import { setupLeaderboards } from './leaderboard.js';
 import { event } from './event-config.js';
 import { getEventDate } from './event-details.js';
 import { setupSafariFriends } from './safari-friends.js';
+import { comicBurst, clearComicBursts } from './comic-burst.js';
 setupSafariFriends();
 const $ = (s) => document.querySelector(s);
 const paths = { calendar: '<rect x="3" y="5" width="18" height="16" rx="2"/><path d="M16 3v4M8 3v4M3 11h18m-13 5h2m4 0h2"/>', clock: '<circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/>', pin: '<path d="M20 10c0 6-8 12-8 12S4 16 4 10a8 8 0 1 1 16 0Z"/><circle cx="12" cy="10" r="2.5"/>', phone: '<rect x="6" y="2" width="12" height="20" rx="2"/><path d="M10 18h4"/>', message: '<path d="m4 17-1 5 5-2a9 9 0 1 0-4-3Z"/><path d="M8 8c0 4 4 7 7 7l1-2-3-1-1 1-2-2 1-1-1-3Z"/>' };
@@ -14,42 +15,29 @@ if (!matchMedia('(prefers-reduced-motion: reduce)').matches && 'IntersectionObse
 // One control pauses the decorative movement and the scrolling message strap.
 const motionPreference = matchMedia('(prefers-reduced-motion: reduce)');
 const motionToggle = $('#motion-toggle');
-function syncMotionControl() { motionToggle.hidden = motionPreference.matches; }
+const activeAccentAnimations = new Set();
+function stopAccentPops() {
+  clearComicBursts();
+  activeAccentAnimations.forEach(animation => animation.cancel());
+}
+function syncMotionControl() {
+  motionToggle.hidden = motionPreference.matches;
+  if (motionPreference.matches) stopAccentPops();
+}
 syncMotionControl();
 motionPreference.addEventListener('change', syncMotionControl);
 motionToggle.addEventListener('click', () => {
   const paused = document.body.classList.toggle('motion-paused');
+  if (paused) stopAccentPops();
   motionToggle.setAttribute('aria-pressed', String(paused));
   motionToggle.setAttribute('aria-label', paused ? 'Resume animations' : 'Pause animations');
   motionToggle.firstElementChild.textContent = paused ? '▷' : 'Ⅱ';
   motionToggle.querySelector('.motion-label').textContent = paused ? 'Play' : 'Pause';
 });
-// Keep each accent's space in the layout while it pops away for one second.
+// Keep each accent's space in the layout during the cartoon impact.
 const poppingAccents = new WeakSet();
-function sparkleAccent(accent) {
-  const rect = accent.getBoundingClientRect();
-  const burst = document.createElement('span');
-  burst.className = 'accent-magic-burst';
-  burst.setAttribute('aria-hidden', 'true');
-  burst.style.left = `${rect.left + rect.width / 2}px`;
-  burst.style.top = `${rect.top + rect.height / 2}px`;
-  // Stay above the backdrop when an accent belongs to an open dialog.
-  (accent.closest('dialog') || document.body).append(burst);
-  const radius = Math.min(90, Math.max(35, rect.width * .4));
-  const animations = Array.from({ length: 10 }, (_, i) => {
-    const spark = document.createElement('span');
-    spark.textContent = ['✦', '✧', '·'][i % 3];
-    burst.append(spark);
-    const angle = i * Math.PI * 2 / 10;
-    const distance = radius * (i % 2 ? 1 : .7);
-    return spark.animate([
-      { transform: 'translate(-50%, -50%) scale(0)', opacity: 0 },
-      { opacity: 1, offset: .18 },
-      { transform: `translate(calc(-50% + ${Math.cos(angle) * distance}px), calc(-50% + ${Math.sin(angle) * distance}px)) rotate(${i % 2 ? 100 : -100}deg) scale(.3)`, opacity: 0 },
-    ], { duration: 650, easing: 'ease-out' }).finished;
-  });
-  Promise.allSettled(animations).then(() => burst.remove());
-}
+window.addEventListener('scroll', clearComicBursts, { passive: true });
+window.addEventListener('resize', clearComicBursts);
 document.querySelectorAll('h1 em, h2 em, .word-accent, .brand-icon span, .footer-brand span, .heart-mark, .signature > span, .floating-heart, .rsvp-heart, .art-spark, .title-star, .one > span:last-child, .preview-doodle, .hex-inner, #score-error').forEach(accent => {
   accent.classList.add('pop-accent');
   if (getComputedStyle(accent).display === 'inline') accent.classList.add('pop-accent-inline');
@@ -62,19 +50,24 @@ document.querySelectorAll('h1 em, h2 em, .word-accent, .brand-icon span, .footer
     if (poppingAccents.has(accent)) return;
     poppingAccents.add(accent);
     const still = motionPreference.matches || document.body.classList.contains('motion-paused');
-    if (!still) sparkleAccent(accent);
+    if (!still) comicBurst(accent);
     const frames = still
       ? [{ opacity: 0 }, { opacity: 0, offset: .85 }, { opacity: 1 }]
       : [
           { scale: '1', opacity: 1, filter: 'brightness(1) drop-shadow(0 0 0 transparent)' },
-          { scale: '1.25', opacity: 1, filter: 'brightness(1.5) drop-shadow(0 0 8px #e5b65c)', offset: .12 },
-          { scale: '.65', opacity: 0, filter: 'brightness(1.5) drop-shadow(0 0 8px #e5b65c)', offset: .25 },
-          { scale: '.65', opacity: 0, filter: 'brightness(1.5) drop-shadow(0 0 8px #e5b65c)', offset: .8 },
+          { scale: '1.18 .72', opacity: 1, filter: 'brightness(1.2)', offset: .07 },
+          { scale: '1.35', opacity: 0, filter: 'brightness(1.5)', offset: .18 },
+          { scale: '.4', opacity: 0, offset: .72 },
+          { scale: '1.15 .9', opacity: 1, filter: 'brightness(1)', offset: .9 },
           { scale: '1', opacity: 1, filter: 'brightness(1) drop-shadow(0 0 0 transparent)' },
         ];
     // Separate scale from the existing decorative transforms; no layout shift.
-    const animation = accent.animate(frames, { duration: 1000, easing: 'ease-out' });
-    const finish = () => poppingAccents.delete(accent);
+    const animation = accent.animate(frames, { duration: still ? 1000 : 1250, easing: 'ease-out' });
+    activeAccentAnimations.add(animation);
+    const finish = () => {
+      poppingAccents.delete(accent);
+      activeAccentAnimations.delete(animation);
+    };
     animation.onfinish = finish;
     animation.oncancel = finish;
   };
