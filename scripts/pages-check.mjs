@@ -32,6 +32,10 @@ try {
     const base = `http://127.0.0.1:${server.address().port}${prefix}`;
     const page = await browser.newPage(prefix === '/Birthday/' ? { viewport: { width: 390, height: 844 } } : {});
     const failures = [];
+    const recordShaderError = message => {
+      if (message.type() === 'error' && /THREE\.WebGLProgram|VALIDATE_STATUS|GL_INVALID_OPERATION/i.test(message.text())) failures.push(message.text());
+    };
+    page.on('console', recordShaderError);
     page.on('pageerror', error => failures.push(error.message));
     page.on('response', response => { if (response.status() >= 400) failures.push(`${response.status()} ${response.url()}`); });
     page.on('requestfailed', request => failures.push(request.url()));
@@ -90,6 +94,10 @@ try {
       await new Promise(resolve => setTimeout(resolve, 336));
       assert(Number(await friend.locator('.safari-boo').evaluate(el => getComputedStyle(el).opacity)) > .9);
       assert.notEqual(await pixels(friend), beforeTap, 'Tap produces an animated 3D leap');
+      assert(await friend.locator('canvas').evaluate(canvas => {
+        const row = canvas.getContext('2d').getImageData(0, 0, canvas.width, 1).data;
+        return row.every((value, index) => index % 4 !== 3 || value < 128);
+      }), 'The leap keeps the animal head and ears inside the canvas');
       if (i === 0) await page.screenshot({ path: `test-results/safari-boo-${prefix === '/' ? 'desktop' : 'mobile'}.png` });
       await page.clock.runFor(880);
       assert.equal(await friend.getAttribute('data-gesture'), null, 'Surprise ends and the routine resumes');
@@ -122,6 +130,8 @@ try {
     await page.clock.resume();
     if (prefix === '/') {
       const gallery = await browser.newPage({ viewport: { width: 1400, height: 850 } });
+      gallery.on('console', recordShaderError);
+      gallery.on('pageerror', error => failures.push(error.message));
       await gallery.goto(base, { waitUntil: 'networkidle' });
       await gallery.evaluate(() => {
         document.body.classList.add('motion-paused');
