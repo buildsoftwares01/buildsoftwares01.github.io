@@ -7,19 +7,11 @@ try {
   page.on('pageerror', error => errors.push(error.message));
   await page.goto(process.env.TEST_URL || 'http://127.0.0.1:5173');
   await page.evaluate(() => document.fonts.ready);
-  assert.equal(await page.locator('#animation-mode').inputValue(), 'gentle');
-  assert.equal(await page.locator('h1 em').getAttribute('role'), null, 'Gentle text adds no inactive tab stops');
-  await page.locator('h1 em').click();
-  assert.equal(await page.locator('.accent-comic-burst').count(), 0);
-  await page.locator('#animation-mode').selectOption('full');
+  assert.equal(await page.locator('#animation-mode,.motion-controls').count(), 0, 'No animation setting');
   assert.equal(await page.locator('h1 em').getAttribute('role'), 'button');
   await page.locator('h1 em').focus();
   await page.keyboard.press('Enter');
   assert(await page.locator('.accent-comic-burst').count() > 0, 'Full-mode text reacts to keyboard activation');
-  await page.locator('#animation-mode').selectOption('gentle');
-  assert.equal(await page.locator('h1 em').getAttribute('tabindex'), null);
-  assert.equal(await page.locator('.accent-comic-burst').count(), 0);
-  await page.locator('#animation-mode').selectOption('full');
   await page.locator('.site-header [data-rsvp]').click();
   await page.waitForFunction(() => document.body.classList.contains('motion-dialog'));
   assert.equal(await page.locator('.safari-stop').first().getAttribute('data-paused'), 'true', 'Dialog pauses animal movement');
@@ -49,30 +41,17 @@ try {
     assert.equal(phrasesSeen, 4, `${width}px: every ribbon phrase scrolls into view`);
   }
   await page.setViewportSize({ width: 390, height: 844 });
-  await page.locator('#animation-mode').selectOption('off');
-  assert(await page.locator('.safari-stop').first().getAttribute('data-paused') === 'true');
-  await page.locator('#animation-mode').selectOption('full');
-  assert(await page.locator('.ticker-track').evaluate(el => getComputedStyle(el).animationPlayState === 'running'));
   await page.emulateMedia({ reducedMotion: 'reduce' });
-  await page.locator('#animation-mode:disabled').waitFor({ state: 'visible' });
-  assert(await page.locator('#animation-mode').isDisabled());
-  assert.equal(await page.locator('#animation-mode').inputValue(), 'off');
-  assert(await page.locator('.ticker-track').evaluate(el => getComputedStyle(el).animationName === 'none'));
-  assert(await page.locator('.ticker-group').first().evaluate(group => {
-    const visible = group.parentElement.parentElement.getBoundingClientRect();
-    return [...group.querySelectorAll('span')].every(el => {
-      const rect = el.getBoundingClientRect();
-      return rect.left >= visible.left && rect.right <= visible.right && rect.top >= visible.top && rect.bottom <= visible.bottom;
-    });
-  }), 'Reduced motion shows every phrase without scrolling');
+  assert.equal(await page.locator('.ticker-track').evaluate(el => getComputedStyle(el).animationName), 'ribbon-scroll', 'Full animation is always enabled');
   for (const [name, width, height] of [['mobile', 390, 844], ['desktop', 1440, 1000]]) {
     const preview = await browser.newPage({ viewport: { width, height }, reducedMotion: 'reduce' });
     await preview.goto(process.env.TEST_URL || 'http://127.0.0.1:5173');
     await preview.evaluate(() => document.fonts.ready);
+    await preview.waitForFunction(() => [...document.querySelectorAll('.safari-home')].every(home => home.dataset.renderer === '2d'));
     await preview.screenshot({ path: `test-results/${name}.png`, fullPage: true });
     await preview.screenshot({ path: `test-results/${name}-hero.png` });
     await preview.close();
   }
   assert.deepEqual(errors, []);
-  console.log('Responsive layouts, complete ribbon loop, pause/resume and reduced motion passed.');
+  console.log('Responsive layouts, full animation, complete ribbon loop and dialog motion passed.');
 } finally { await browser.close(); }

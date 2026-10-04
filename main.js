@@ -6,43 +6,17 @@ setupSafariFriends();
 const $ = (s) => document.querySelector(s);
 const paths = { calendar: '<rect x="3" y="5" width="18" height="16" rx="2"/><path d="M16 3v4M8 3v4M3 11h18m-13 5h2m4 0h2"/>', clock: '<circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/>', pin: '<path d="M20 10c0 6-8 12-8 12S4 16 4 10a8 8 0 1 1 16 0Z"/><circle cx="12" cy="10" r="2.5"/>', phone: '<rect x="6" y="2" width="12" height="20" rx="2"/><path d="M10 18h4"/>', message: '<path d="m4 17-1 5 5-2a9 9 0 1 0-4-3Z"/><path d="M8 8c0 4 4 7 7 7l1-2-3-1-1 1-2-2 1-1-1-3Z"/>' };
 document.querySelectorAll('[data-icon]').forEach(el => { el.innerHTML = `<svg viewBox="0 0 24 24" aria-hidden="true">${paths[el.dataset.icon]}</svg>`; });
-if (!matchMedia('(prefers-reduced-motion: reduce)').matches && 'IntersectionObserver' in window) {
+if ('IntersectionObserver' in window) {
   document.body.classList.add('motion');
   const observer = new IntersectionObserver(entries => entries.forEach(entry => { if (entry.isIntersecting) { entry.target.classList.add('in-view'); observer.unobserve(entry.target); } }), { threshold: .08 });
   document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
 }
-// Guests can soften continuous movement or pause it while retaining touch controls.
-const motionPreference = matchMedia('(prefers-reduced-motion: reduce)');
-const animationMode = $('#animation-mode');
+// Full animation is always active; there is no page motion setting.
 const activeAccentAnimations = new Set();
-let selectedMotion = 'gentle';
 function stopAccentPops() {
   clearComicBursts();
   activeAccentAnimations.forEach(animation => animation.cancel());
 }
-function syncMotionControl() {
-  const mode = motionPreference.matches ? 'off' : selectedMotion;
-  document.body.classList.toggle('motion-gentle', mode !== 'full');
-  document.body.classList.toggle('motion-paused', mode === 'off');
-  animationMode.value = mode;
-  animationMode.disabled = motionPreference.matches;
-  document.querySelectorAll('[data-pop-control]').forEach(accent => {
-    if (mode === 'full') {
-      accent.tabIndex = 0;
-      accent.setAttribute('role', 'button');
-    } else {
-      accent.removeAttribute('tabindex');
-      accent.removeAttribute('role');
-    }
-  });
-  stopAccentPops();
-}
-syncMotionControl();
-motionPreference.addEventListener('change', syncMotionControl);
-animationMode.addEventListener('change', () => {
-  selectedMotion = animationMode.value;
-  syncMotionControl();
-});
 // Pause decorations behind dialogs so guests can concentrate on the task.
 function syncDialogMotion() {
   const open = !!document.querySelector('dialog[open]');
@@ -65,11 +39,13 @@ document.querySelectorAll('h1 em, h2 em, .word-accent, .brand-icon span, .footer
   if (getComputedStyle(accent).display === 'inline') accent.classList.add('pop-accent-inline');
   const hasControl = accent.closest('a, button');
   const canBeButton = !hasControl && !accent.closest('[aria-hidden="true"]');
-  if (canBeButton) accent.dataset.popControl = '';
+  if (canBeButton) {
+    accent.tabIndex = 0;
+    accent.setAttribute('role', 'button');
+  }
   const pop = () => {
     if (poppingAccents.has(accent)) return;
-    const still = motionPreference.matches || document.body.classList.contains('motion-paused') || document.body.classList.contains('motion-gentle');
-    if (still) return;
+    if (document.body.classList.contains('motion-dialog')) return;
     poppingAccents.add(accent);
     comicBurst(accent);
     const frames = [
@@ -99,7 +75,6 @@ document.querySelectorAll('h1 em, h2 em, .word-accent, .brand-icon span, .footer
     });
   }
 });
-syncMotionControl();
 const games = {
   taptaptap: { name: 'Tap Tap Tap', help: 'Tap the blue circles before time runs out. Avoid red circles. Start with New Game.' },
   flappy: { name: 'Safari Flyer', help: 'Tap to flap through the green branches. On a computer, click or press Space.' },

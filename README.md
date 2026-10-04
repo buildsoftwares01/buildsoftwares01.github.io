@@ -25,7 +25,9 @@ Guests enter a name and party size to prepare a WhatsApp message. They review an
 
 ## Artwork, motion and games
 
-The cream, sage and terracotta palette, illustrated venue card and picture-book safari animals are retained. Tap an animal for a surprise. Animation has a single Full / Gentle / Off selector; Gentle is the default. Device reduced-motion preferences take priority. Off freezes the animals; offscreen animals and page decorations behind open dialogs stop moving. Text surprises are deliberate taps in Full mode, with no disappearing text in Gentle or reduced-motion mode.
+The cream, sage and terracotta palette, illustrated venue card and picture-book safari animals are retained. Full animation is always active, with no on-page selector. All five sprite sheets and the tiger’s rolling pose preload at page open and decode in parallel, including animals below the fold. Each animal appears only after its real artwork is painted; no emoji face or static placeholder flashes first.
+
+Continuous in-between frames add head and neck movement, body bends, breathing, a smoother walking turn, springy monkey hops and a crouch-roll-bounce sequence for the tiger. Existing artwork stays local. Offscreen animals and page decorations behind open dialogs stop moving to avoid unnecessary work. Text surprises are deliberate taps.
 
 The play corner contains Tap Tap Tap, Hextris, 0h h1 and Safari Flyer. Phone cards use compact illustrated previews. Scores remain inside the isolated game session and disappear when it is closed. Games never report scores, ask for nicknames or contact a service.
 
@@ -49,9 +51,9 @@ The venue card is an original SVG illustration. Google Maps provides real visito
 
 Browser checks require installed Chrome on macOS, or `CHROME_PATH` pointing to Chrome elsewhere:
 
-- `npm run build && npm run test:pages`: domain-root and repository-subpath loading, animal activities, motion settings, fallback artwork, game loading, credits and source downloads.
+- `npm run build && npm run test:pages`: domain-root and repository-subpath loading, animal activities, smooth animation frames, eager loading without placeholder faces, missing artwork, game loading, credits and source downloads.
 - With `npm run dev` running: `node scripts/invitation-check.mjs` checks direct RSVP entry points, mobile quick actions, WhatsApp URL encoding, clipboard/manual fallback, pending event settings and calendar timezone. WhatsApp is mocked; no messages are sent.
-- With `npm run dev` running: `node scripts/motion-check.mjs` checks responsive layouts, ribbon phrases, motion modes and device reduced motion.
+- With `npm run dev` running: `node scripts/motion-check.mjs` checks responsive layouts, ribbon phrases, full animation, keyboard surprises and dialog motion.
 - With `npm run preview -- --port 4173` running: `node scripts/game-check.mjs` exercises touch gameplay, replay, restart, closing, frame isolation and absence of external requests at phone and desktop widths.
 
 These checks use browser-emulated devices, not physical-device certification.

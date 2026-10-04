@@ -39,7 +39,9 @@ try {
     await page.clock.pauseAt(new Date('2026-10-02T08:00:01Z'));
     await page.goto(base, { waitUntil: 'networkidle' });
     await page.evaluate(() => document.fonts.ready);
-    await page.locator('#animation-mode').selectOption('full');
+    assert.equal(await page.locator('#animation-mode,.motion-controls,.safari-fallback').count(), 0);
+    await page.waitForFunction(() => [...document.querySelectorAll('.safari-home')].length === 5 && [...document.querySelectorAll('.safari-home')].every(home => home.dataset.renderer === '2d'));
+    assert(await page.locator('.safari-canvas').evaluateAll(canvases => canvases.every(canvas => canvas.getContext('2d').getImageData(0, 0, canvas.width, canvas.height).data.some((value, i) => i % 4 === 3 && value > 0))), 'All animals are painted before any scrolling');
     assert(await page.locator('.hero-art img').evaluate(img => img.complete && img.naturalWidth > 0));
     const friends = page.locator('.safari-friend');
     const homes = page.locator('.safari-home');
@@ -61,16 +63,11 @@ try {
     assert.notEqual(await pixels(friends.first()), start, '2D sprite walking changes the rendered pose');
     await page.clock.runFor(31000);
     assert.deepEqual(await homes.evaluateAll(homes => homes.map(home => home.dataset.state)), ['walk', 'sleep', 'eat', 'roll', 'play'], 'Each animal keeps its assigned activity over time');
-    await page.evaluate(() => { const select = document.querySelector('#animation-mode'); select.value = document.body.classList.contains('motion-paused') ? 'full' : 'off'; select.dispatchEvent(new Event('change')); });
-    const beforePause = await pixels(friends.first());
-    await page.clock.runFor(12000);
-    assert.equal(await pixels(friends.first()), beforePause, 'Pause freezes 2D animation and routine');
     const anchorBefore = await homes.first().evaluate(home => home.getBoundingClientRect().top + scrollY);
     await page.evaluate(() => window.scrollTo({ top: 500, behavior: 'instant' }));
     const anchorAfter = await homes.first().evaluate(home => home.getBoundingClientRect().top + scrollY);
     assert(Math.abs(anchorBefore - anchorAfter) < .01, 'Home stays in its document spot while scrolling');
     assert((await homes.first().boundingBox()).y < 0, 'Top animal scrolls out of the viewport');
-    await page.evaluate(() => { const select = document.querySelector('#animation-mode'); select.value = document.body.classList.contains('motion-paused') ? 'full' : 'off'; select.dispatchEvent(new Event('change')); });
     for (let i = 0; i < 5; i++) {
       const friend = friends.nth(i);
       await friend.scrollIntoViewIfNeeded();
@@ -80,6 +77,12 @@ try {
       assert(bounds.width >= 44 && bounds.height >= 44, 'Heading animals retain accessible touch targets');
       assert(bounds.x >= 0 && bounds.x + bounds.width <= page.viewportSize().width);
       const activity = await homes.nth(i).getAttribute('data-state');
+      const interpolated = new Set();
+      for (let sample = 0; sample < 8; sample++) {
+        await page.clock.runFor(64);
+        interpolated.add(await pixels(friend));
+      }
+      assert(interpolated.size >= 7, `${activity}: smooth in-between animation frames`);
       const beforeActivity = await pixels(friend);
       await page.clock.runFor(1250);
       assert.notEqual(await pixels(friend), beforeActivity, `${activity} visibly animates`);
@@ -104,44 +107,10 @@ try {
       await friend.evaluate(el => el.blur());
     }
     await page.screenshot({ path: `test-results/safari-bottom-${prefix === '/' ? 'desktop' : 'mobile'}.png` });
-    await page.evaluate(() => { const select = document.querySelector('#animation-mode'); select.value = select.value === 'gentle' ? 'full' : 'gentle'; select.dispatchEvent(new Event('change')); });
-    assert.equal(await page.locator('#animation-mode').inputValue(), 'gentle');
-    assert.equal(await page.locator('.ticker-track').evaluate(el => getComputedStyle(el).animationName), 'none', 'Less animation stops the continuous ticker');
-    assert.equal(await page.locator('h1 em').evaluate(el => getComputedStyle(el).animationName), 'none', 'Less animation stops heading loops');
-    const tiger = page.locator('.safari-home[data-animal="tiger"] .safari-friend');
-    await tiger.scrollIntoViewIfNeeded();
-    const calmer = await pixels(tiger);
-    await page.clock.runFor(1500);
-    assert.notEqual(await pixels(tiger), calmer, 'The tiger retains a gentle resting movement');
-    await tiger.click();
-    assert.equal(await tiger.getAttribute('data-gesture'), 'boo', 'Less animation preserves touch interaction');
-    await page.clock.runFor(336);
-    assert.notEqual(await pixels(tiger), calmer, 'Touch still changes the rendered pose in less-animation mode');
-    assert.equal(await tiger.locator('.safari-boo').evaluate(el => getComputedStyle(el).opacity), '1');
-    await page.clock.runFor(880);
-    assert.equal(await page.locator('.safari-home[data-animal="tiger"]').getAttribute('data-state'), 'roll');
-    assert.equal(await tiger.getAttribute('data-gesture'), null);
-    if (prefix === '/Birthday/') {
-      await page.setViewportSize({ width: 320, height: 740 });
-      assert(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth), 'Less-animation controls fit at 320px');
-      await page.setViewportSize({ width: 390, height: 844 });
-    }
-    await page.screenshot({ path: `test-results/safari-less-${prefix === '/' ? 'desktop' : 'mobile'}.png` });
-    await page.evaluate(() => { const select = document.querySelector('#animation-mode'); select.value = select.value === 'gentle' ? 'full' : 'gentle'; select.dispatchEvent(new Event('change')); });
-    assert.equal(await page.locator('#animation-mode').inputValue(), 'full');
+    // Full motion stays active, without any on-page setting.
     await page.emulateMedia({ reducedMotion: 'reduce' });
     await page.clock.runFor(32);
-    await page.locator('#animation-mode:disabled').waitFor({ state: 'visible' });
-    assert(await page.locator('#animation-mode').isDisabled(), 'Device reduced motion stays respected');
-    assert.equal(await page.locator('#animation-mode').inputValue(), 'off');
-    await friends.first().focus();
-    await page.keyboard.press('Enter');
-    assert.equal(await friends.first().getAttribute('data-gesture'), 'quiet');
-    assert.equal(await friends.first().locator('.safari-boo').evaluate(el => getComputedStyle(el).animationName), 'none');
-    await page.clock.runFor(1200);
-    const reducedPose = await pixels(friends.first());
-    await page.clock.runFor(5000);
-    assert.equal(await pixels(friends.first()), reducedPose, 'Reduced motion freezes 2D rendering');
+    assert.equal(await page.locator('h1 em').evaluate(el => getComputedStyle(el).animationName), 'word-wiggle');
     await page.emulateMedia({ reducedMotion: 'no-preference' });
     await page.evaluate(() => { document.activeElement.blur(); window.scrollTo({ top: 0, behavior: 'instant' }); });
     await page.clock.runFor(32);
@@ -183,13 +152,34 @@ try {
       assert.equal(await pixels(hidden), hiddenPose, 'Offscreen 2D animation stops');
       assert.notEqual(await pixels(active), activePose, 'Visible 2D animation continues');
       await gallery.close();
-      const fallback = await browser.newPage();
-      await fallback.route('**/assets/animals/*.webp', route => route.abort());
-      await fallback.goto(base, { waitUntil: 'networkidle' });
-      await fallback.waitForFunction(() => document.querySelector('.safari-home').dataset.renderer === 'fallback');
-      await fallback.locator('.safari-friend').first().click();
-      assert.equal(await fallback.locator('.safari-friend').first().getAttribute('data-gesture'), 'boo', 'Missing-art fallback remains interactive');
-      await fallback.close();
+      const cold = await browser.newPage({ viewport: { width: 390, height: 844 } });
+      const requested = new Set();
+      let releaseArtwork, assetsRequested;
+      const artworkGate = new Promise(resolve => { releaseArtwork = resolve; });
+      const allRequests = new Promise(resolve => { assetsRequested = resolve; });
+      await cold.route('**/assets/animals/*.webp', async route => {
+        requested.add(new URL(route.request().url()).pathname.split('/').pop());
+        if (requested.size === 6) assetsRequested();
+        await artworkGate;
+        await route.continue();
+      });
+      await cold.goto(base, { waitUntil: 'domcontentloaded' });
+      await allRequests;
+      assert.equal(requested.size, 6, 'All five sheets and the tiger roll are requested at page open');
+      assert.equal(await cold.locator('.safari-fallback').count(), 0, 'No substitute animal faces');
+      assert(await cold.locator('.safari-friend').evaluateAll(buttons => buttons.length === 5 && buttons.every(button => button.disabled && getComputedStyle(button).visibility === 'hidden')), 'Unpainted animal controls stay hidden');
+      releaseArtwork();
+      await cold.waitForFunction(() => [...document.querySelectorAll('.safari-home')].every(home => home.dataset.renderer === '2d'));
+      assert(await cold.locator('.safari-friend').evaluateAll(buttons => buttons.every(button => !button.disabled)));
+      await cold.close();
+      const missingArt = await browser.newPage();
+      await missingArt.route('**/assets/animals/*.webp', route => route.abort());
+      await missingArt.goto(base, { waitUntil: 'networkidle' });
+      await missingArt.waitForFunction(() => [...document.querySelectorAll('.safari-home')].every(home => home.dataset.renderer === 'unavailable'));
+      assert(await missingArt.locator('.safari-friend').evaluateAll(buttons => buttons.every(button => button.disabled && getComputedStyle(button).visibility === 'hidden')), 'Failed assets never introduce substitute faces');
+      await missingArt.locator('.site-header [data-rsvp]').click();
+      assert(await missingArt.locator('#rsvp-dialog').isVisible(), 'Invitation still works if artwork is unavailable');
+      await missingArt.close();
     }
     for (const game of ['taptaptap', 'hextris', 'ohhi', 'flappy']) {
       let releaseScript;
