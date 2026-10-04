@@ -9,6 +9,10 @@ assert.equal(getEventDate({ ...sample, time: null }).toISOString(), '2026-12-06T
 assert.deepEqual(getReadinessIssues(sample), []);
 assert.equal(getReadinessIssues({}).length, 3);
 const html = await readFile('index.html', 'utf8');
+assert(html.includes("connect-src 'none'"), 'The invitation cannot call a remote backend');
+assert(!/leaderboard|workers\.dev|cloudflare/i.test(html), 'No remote score integration');
+const manifest = JSON.parse(await readFile('package.json', 'utf8'));
+assert(!manifest.devDependencies.wrangler && !manifest.devDependencies.miniflare);
 assert.equal((html.match(/data-game=/g) || []).length, 4, 'All four selected games are available');
 assert(!html.includes('data-game="2048"'), '2048 has been removed');
 const js = await readFile('main.js', 'utf8');
@@ -17,6 +21,7 @@ assert(!js.includes('allow-same-origin'));
 assert(js.includes('encodeURIComponent(message)'));
 for (const game of ['taptaptap', 'hextris', 'ohhi', 'flappy']) {
   const source = await readFile(`public/games/${game}/index.html`, 'utf8');
+  assert(!source.includes('leaderboard-bridge'));
   assert(source.includes("connect-src 'none'"));
   assert(!/<script[^>]+src=["']https?:/.test(source));
   assert(!/<script\b(?![^>]*\bsrc=)[^>]*>/.test(source), `${game} contains an inline script`);

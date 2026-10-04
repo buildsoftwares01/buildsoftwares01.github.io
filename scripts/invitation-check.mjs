@@ -29,28 +29,50 @@ try {
    Object.defineProperty(navigator,'clipboard',{value:{writeText:async text=>{window.testCopiedText=text}},configurable:true});
   });
   await page.goto(base);
-  await page.locator('#rsvp-button').tap();
+  assert.equal(await page.locator('#mobile-actions').isVisible(), false);
+  assert.deepEqual(await page.locator('#main > section').evaluateAll(sections => sections.map(s => s.id || 'hero')), ['hero', 'celebration', 'venue', 'rsvp', 'games']);
+  for (const trigger of await page.locator('[data-rsvp]:not(.mobile-actions button)').all()) {
+   await trigger.tap();
+   assert(await page.locator('#rsvp-dialog').isVisible());
+   await page.locator('#close-rsvp').tap();
+   assert(await trigger.evaluate(el => document.activeElement === el));
+  }
+  await page.locator('#games').scrollIntoViewIfNeeded();
+  await page.locator('#mobile-actions').waitFor({state:'visible'});
+  await page.locator('#mobile-actions [data-rsvp]').tap();
+  assert(await page.locator('#rsvp-dialog').isVisible());
   if (!test.event.whatsappNumber) {
    assert(await page.locator('#rsvp-unavailable').isVisible());
    assert.equal(await page.locator('#rsvp-form').isVisible(),false);
    assert.equal(await page.locator('#countdown').isVisible(),false);
+   assert.equal(await page.locator('#hero-date').textContent(), 'Date coming soon');
+   assert.equal(await page.locator('#event-date').textContent(), 'Date coming soon');
+   assert.equal(await page.locator('#event-time').textContent(), 'Time coming soon');
   } else {
    assert.equal(await page.locator('#event-date').textContent(),'6 December 2026');
    assert.equal(await page.locator('#event-day').textContent(),'Sunday');
    assert.match(await page.locator('#event-time').textContent(),new RegExp(test.event.time));
    assert(await page.locator('#rsvp-form').isVisible());
    await page.locator('#guest-name').fill('   ');
-   await page.locator('#rsvp-form button').tap();
+   await page.locator('#rsvp-form button[type=submit]').tap();
    assert.equal(await page.evaluate(()=>window.testOpenedURL),undefined);
    const guest = 'A & B <script>alert(1)</script> 🦁';
    await page.locator('#guest-name').fill(guest);
    await page.locator('#guest-count').selectOption('3');
-   await page.locator('#rsvp-form button').tap();
+   await page.locator('#rsvp-form button[type=submit]').tap();
    const url=new URL(await page.evaluate(()=>window.testOpenedURL));
    assert.equal(url.origin,'https://wa.me');
    assert.equal(url.pathname,`/${test.event.whatsappNumber}`);
    assert(url.searchParams.get('text').includes(guest));
    assert(url.searchParams.get('text').includes('3 guests'));
+   assert(await page.locator('#rsvp-fallback').isVisible());
+   assert.equal(await page.locator('#rsvp-message').inputValue(), url.searchParams.get('text'));
+   await page.locator('#copy-rsvp').tap();
+   assert.equal(await page.evaluate(() => window.testCopiedText), url.searchParams.get('text'));
+   await page.evaluate(() => { navigator.clipboard.writeText = async () => { throw new Error('Clipboard denied'); }; });
+   await page.locator('#copy-rsvp').tap();
+   assert((await page.locator('#copy-status').textContent()).includes('Select and copy'));
+   assert.equal(await page.evaluate(() => document.activeElement.id), 'rsvp-message');
    assert.equal(await page.evaluate(()=>localStorage.length),0);
   }
   await page.locator('#close-rsvp').tap();

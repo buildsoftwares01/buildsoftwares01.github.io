@@ -22,7 +22,7 @@ For a local production check, run `npm run build` then `npm run test:pages`. Thi
 
 References: [GitHub Pages workflows](https://docs.github.com/en/pages/getting-started-with-github-pages/using-custom-workflows-with-github-pages), [Vite deployment guide](https://vite.dev/guide/static-deploy.html).
 
-## Netlify or Cloudflare Pages
+## Netlify
 
 For a repository deployment, use build command `npm run build` and output directory `dist`. For a manual Netlify deployment, upload `dist/` or the extracted hosting ZIP. Keep `_headers` in the upload: it provides the security headers.
 
@@ -40,12 +40,8 @@ This build uses relative paths and supports a domain root or a nested folder suc
 
 After rebuilding, run `python3 scripts/package-site.py` to update `vihaan-invitation.zip`. Only public production files are packaged; dependencies, project source, reference artwork, and local test results are excluded. Complete source archives for the open-source games remain included for license compliance.
 
-The current event details are incomplete. You can preview the website, but the calendar and directed WhatsApp RSVP become available only after the corresponding settings are filled in and the site is rebuilt.
+Run `npm run check:ready` to verify the event settings before sharing. Calendar and directed WhatsApp RSVP appear only when their corresponding settings are valid. The site needs no backend or database.
 
 ## Final live check
 
 Open the HTTPS site on your phone. Check the displayed date and time, open each game, open Maps, and confirm that the RSVP button prepares a message to your intended WhatsApp recipient. The site never sends the message itself. Website event details and the RSVP recipient are public; use your host's access controls if you need a private invitation.
-
-## Shared leaderboards
-
-Follow `LEADERBOARDS.md` to deploy the Cloudflare Worker and D1 database and fill in `leaderboard-config.js`. GitHub Pages continues hosting the static invitation; Cloudflare D1 stores the shared results. Run the database setup before deploying a configured frontend.

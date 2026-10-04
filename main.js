@@ -1,4 +1,3 @@
-import { setupLeaderboards } from './leaderboard.js';
 import { event } from './event-config.js';
 import { getEventDate } from './event-details.js';
 import { setupSafariFriends } from './safari-friends.js';
@@ -14,54 +13,66 @@ if (!matchMedia('(prefers-reduced-motion: reduce)').matches && 'IntersectionObse
 }
 // Guests can soften continuous movement or pause it while retaining touch controls.
 const motionPreference = matchMedia('(prefers-reduced-motion: reduce)');
-const motionToggle = $('#motion-toggle');
-const lessMotionToggle = $('#less-motion');
+const animationMode = $('#animation-mode');
 const activeAccentAnimations = new Set();
+let selectedMotion = 'gentle';
 function stopAccentPops() {
   clearComicBursts();
   activeAccentAnimations.forEach(animation => animation.cancel());
 }
 function syncMotionControl() {
-  motionToggle.hidden = motionPreference.matches;
-  lessMotionToggle.disabled = motionPreference.matches;
-  lessMotionToggle.setAttribute('aria-pressed', String(motionPreference.matches || document.body.classList.contains('motion-gentle')));
-  if (motionPreference.matches) stopAccentPops();
+  const mode = motionPreference.matches ? 'off' : selectedMotion;
+  document.body.classList.toggle('motion-gentle', mode !== 'full');
+  document.body.classList.toggle('motion-paused', mode === 'off');
+  animationMode.value = mode;
+  animationMode.disabled = motionPreference.matches;
+  document.querySelectorAll('[data-pop-control]').forEach(accent => {
+    if (mode === 'full') {
+      accent.tabIndex = 0;
+      accent.setAttribute('role', 'button');
+    } else {
+      accent.removeAttribute('tabindex');
+      accent.removeAttribute('role');
+    }
+  });
+  stopAccentPops();
 }
 syncMotionControl();
 motionPreference.addEventListener('change', syncMotionControl);
-lessMotionToggle.addEventListener('click', () => {
-  document.body.classList.toggle('motion-gentle');
-  stopAccentPops();
+animationMode.addEventListener('change', () => {
+  selectedMotion = animationMode.value;
   syncMotionControl();
 });
-motionToggle.addEventListener('click', () => {
-  const paused = document.body.classList.toggle('motion-paused');
-  if (paused) stopAccentPops();
-  motionToggle.setAttribute('aria-pressed', String(paused));
-  motionToggle.setAttribute('aria-label', paused ? 'Resume animations' : 'Pause animations');
-  motionToggle.firstElementChild.textContent = paused ? '▷' : 'Ⅱ';
-  motionToggle.querySelector('.motion-label').textContent = paused ? 'Play' : 'Pause';
-});
+// Pause decorations behind dialogs so guests can concentrate on the task.
+function syncDialogMotion() {
+  const open = !!document.querySelector('dialog[open]');
+  document.body.classList.toggle('motion-dialog', open);
+  if (open) stopAccentPops();
+}
+new MutationObserver(syncDialogMotion).observe(document.body, { subtree: true, attributes: true, attributeFilter: ['open'] });
+const mobileActions = $('#mobile-actions');
+if ('IntersectionObserver' in window) {
+  new IntersectionObserver(([entry]) => {
+    mobileActions.hidden = entry.isIntersecting || entry.boundingClientRect.top >= 0;
+  }).observe($('.hero'));
+}
 // Keep each accent's space in the layout during the cartoon impact.
 const poppingAccents = new WeakSet();
 window.addEventListener('scroll', clearComicBursts, { passive: true });
 window.addEventListener('resize', clearComicBursts);
-document.querySelectorAll('h1 em, h2 em, .word-accent, .brand-icon span, .footer-brand span, .heart-mark, .signature > span, .floating-heart, .rsvp-heart, .art-spark, .title-star, .one > span:last-child, .preview-doodle, .hex-inner, #score-error').forEach(accent => {
+document.querySelectorAll('h1 em, h2 em, .word-accent, .brand-icon span, .footer-brand span, .heart-mark, .signature > span, .floating-heart, .rsvp-heart, .art-spark, .title-star, .one > span:last-child, .preview-doodle, .hex-inner').forEach(accent => {
   accent.classList.add('pop-accent');
   if (getComputedStyle(accent).display === 'inline') accent.classList.add('pop-accent-inline');
   const hasControl = accent.closest('a, button');
-  if (!hasControl && !accent.closest('[aria-hidden="true"]') && !accent.matches('[role="status"]')) {
-    accent.tabIndex = 0;
-    accent.setAttribute('role', 'button');
-  }
+  const canBeButton = !hasControl && !accent.closest('[aria-hidden="true"]');
+  if (canBeButton) accent.dataset.popControl = '';
   const pop = () => {
     if (poppingAccents.has(accent)) return;
-    poppingAccents.add(accent);
     const still = motionPreference.matches || document.body.classList.contains('motion-paused') || document.body.classList.contains('motion-gentle');
-    if (!still) comicBurst(accent);
-    const frames = still
-      ? [{ opacity: 0 }, { opacity: 0, offset: .85 }, { opacity: 1 }]
-      : [
+    if (still) return;
+    poppingAccents.add(accent);
+    comicBurst(accent);
+    const frames = [
           { scale: '1', opacity: 1, filter: 'brightness(1) drop-shadow(0 0 0 transparent)' },
           { scale: '1.18 .72', opacity: 1, filter: 'brightness(1.2)', offset: .07 },
           { scale: '1.35', opacity: 0, filter: 'brightness(1.5)', offset: .18 },
@@ -70,7 +81,7 @@ document.querySelectorAll('h1 em, h2 em, .word-accent, .brand-icon span, .footer
           { scale: '1', opacity: 1, filter: 'brightness(1) drop-shadow(0 0 0 transparent)' },
         ];
     // Separate scale from the existing decorative transforms; no layout shift.
-    const animation = accent.animate(frames, { duration: still ? 1000 : 1250, easing: 'ease-out' });
+    const animation = accent.animate(frames, { duration: 1250, easing: 'ease-out' });
     activeAccentAnimations.add(animation);
     const finish = () => {
       poppingAccents.delete(accent);
@@ -79,17 +90,16 @@ document.querySelectorAll('h1 em, h2 em, .word-accent, .brand-icon span, .footer
     animation.onfinish = finish;
     animation.oncancel = finish;
   };
-  // A mouse touching the word should feel as playful as a finger touching it.
-  // Touch pointers enter before scrolling too, so only hover with a mouse.
-  accent.addEventListener('pointerenter', e => { if (e.pointerType === 'mouse') pop(); });
+  // Decorative surprises are deliberate taps, leaving reading undisturbed.
   accent.addEventListener('pointerdown', e => { if (e.isPrimary && e.button === 0) pop(); });
   accent.addEventListener('click', pop);
-  if (accent.getAttribute('role') === 'button' && !hasControl) {
+  if (canBeButton) {
     accent.addEventListener('keydown', e => {
       if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); if (!e.repeat) pop(); }
     });
   }
 });
+syncMotionControl();
 const games = {
   taptaptap: { name: 'Tap Tap Tap', help: 'Tap the blue circles before time runs out. Avoid red circles. Start with New Game.' },
   flappy: { name: 'Safari Flyer', help: 'Tap to flap through the green branches. On a computer, click or press Space.' },
@@ -112,9 +122,7 @@ window.addEventListener('message', event => {
   frame.removeAttribute('aria-hidden');
   frame.classList.remove('is-loading');
 });
-const leaderboards = setupLeaderboards({ gameDialog, getGame: () => activeGame, getFrame: () => $('#game-frame-container iframe') });
 function loadGame() {
-  leaderboards.reset();
   clearGameLoading();
   gameContainer.setAttribute('aria-busy', 'true');
   const hero = document.createElement('div');
@@ -145,16 +153,21 @@ document.querySelectorAll('[data-game]').forEach(button => button.addEventListen
 }));
 $('#close-game').addEventListener('click', () => gameDialog.close());
 $('#restart-game').addEventListener('click', loadGame);
-gameDialog.addEventListener('close', () => { clearGameLoading(); leaderboards.reset(); $('#game-frame-container').replaceChildren(); gameTrigger?.focus(); });
+gameDialog.addEventListener('close', () => { clearGameLoading(); $('#game-frame-container').replaceChildren(); gameTrigger?.focus(); });
 const rsvpDialog = $('#rsvp-dialog');
 const rsvpReady = /^[1-9]\d{7,14}$/.test(event.whatsappNumber);
-$('#rsvp-button').addEventListener('click', () => {
+let rsvpTrigger;
+document.querySelectorAll('[data-rsvp]').forEach(button => button.addEventListener('click', () => {
+  rsvpTrigger = button;
   $('#rsvp-form').hidden = !rsvpReady;
   $('#rsvp-unavailable').hidden = rsvpReady;
+  $('#rsvp-fallback').hidden = true;
   rsvpDialog.showModal();
-});
+  if (rsvpReady) $('#guest-name').focus();
+}));
 if (!rsvpReady) $('#rsvp-note').textContent = 'WhatsApp RSVP details coming soon';
 $('#close-rsvp').addEventListener('click', () => rsvpDialog.close());
+rsvpDialog.addEventListener('close', () => rsvpTrigger?.focus({ preventScroll: true }));
 $('#rsvp-form').addEventListener('submit', e => {
   e.preventDefault();
   if (!rsvpReady) return;
@@ -162,9 +175,38 @@ $('#rsvp-form').addEventListener('submit', e => {
   if (!name) { $('#guest-name').setCustomValidity('Please enter your name.'); $('#guest-name').reportValidity(); return; }
   const count = $('#guest-count').value;
   const message = `Hi Madhav & Urvashee! It's ${name}. We'd love to celebrate Vihaan's first birthday at Paps Restaurant. RSVP: ${count} ${count === '1' ? 'guest' : 'guests'}. Can’t wait for cake and birthday adventures!`;
+  $('#rsvp-message').value = message;
+  $('#rsvp-status').textContent = 'Your message is ready. Review and send it in WhatsApp to RSVP.';
+  $('#copy-status').textContent = '';
+  $('#rsvp-fallback').hidden = false;
   window.open(`https://wa.me/${event.whatsappNumber}?text=${encodeURIComponent(message)}`, '_blank', 'noopener,noreferrer');
 });
-$('#guest-name').addEventListener('input', () => $('#guest-name').setCustomValidity(''));
+$('#rsvp-form').addEventListener('input', () => {
+  $('#guest-name').setCustomValidity('');
+  $('#rsvp-fallback').hidden = true;
+});
+$('#copy-rsvp').addEventListener('click', async () => {
+  try {
+    await navigator.clipboard.writeText($('#rsvp-message').value);
+    $('#copy-status').textContent = 'Message copied. Paste it into WhatsApp and send it to Madhav & Urvashee.';
+  } catch {
+    $('#rsvp-message').focus();
+    $('#rsvp-message').select();
+    $('#copy-status').textContent = 'Select and copy the message above, then paste it into WhatsApp.';
+  }
+});
+const eventDate = getEventDate(event);
+if (!eventDate) {
+  $('#event-date').textContent = 'Date coming soon';
+  $('#event-day').textContent = 'A lovely day together';
+}
+if (!eventDate || !event.time) $('#event-time').textContent = 'Time coming soon';
+$('#hero-date').textContent = eventDate
+  ? new Intl.DateTimeFormat('en-GB', { weekday: 'long', day: 'numeric', month: 'long', timeZone: 'Indian/Mauritius' }).format(eventDate)
+  : 'Date coming soon';
+$('#hero-time').textContent = eventDate && event.time
+  ? new Intl.DateTimeFormat('en-GB', { hour: 'numeric', minute: '2-digit', hour12: true, timeZone: 'Indian/Mauritius' }).format(eventDate)
+  : 'Time coming soon';
 if (event.date) {
   const date = getEventDate(event);
   if (date) {

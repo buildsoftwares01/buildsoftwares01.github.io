@@ -54,14 +54,12 @@ for (const game of ['taptaptap', 'hextris', 'ohhi', 'flappy']) {
     assert((await frame.evaluate(() => velocity)) < 0, 'Bird flaps on touch');
     await page.waitForTimeout(3000);
     assert.equal(await frame.evaluate(() => currentstate), 2, 'Bird reaches game over');
-    if (await page.locator('#leaderboard-dialog[open]').count()) await page.locator('#close-leaderboard').tap();
     await frame.locator('#replay').tap();
     await page.waitForTimeout(1200);
     assert.equal(await frame.evaluate(() => currentstate), 0, 'Bird replay returns to ready screen');
   }
   await page.waitForTimeout(650);
   await page.screenshot({ path: `test-results/${game}.png` });
-  if (await page.locator('#leaderboard-dialog[open]').count()) await page.locator('#close-leaderboard').tap();
   await page.locator('#restart-game').tap();
   await page.waitForTimeout(300);
   await page.locator('#close-game').tap();

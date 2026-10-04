@@ -19,7 +19,7 @@ export function setupSafariFriends() {
     return stage;
   });
   const reduced = matchMedia('(prefers-reduced-motion: reduce)');
-  const still = () => reduced.matches || document.body.classList.contains('motion-paused');
+  const still = () => reduced.matches || document.body.classList.contains('motion-paused') || document.body.classList.contains('motion-dialog');
   let frame = 0, last = null, sprites;
   const friends = cast.map((animal, i) => {
     const home = document.createElement('span');

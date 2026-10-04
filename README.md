@@ -1,70 +1,57 @@
-# Vihaan's Little Explorer invitation
+# Vihaan’s Little Explorer invitation
 
-A responsive, static birthday invitation with custom safari artwork, local fonts, an illustrated venue card, Maps directions, WhatsApp RSVP preparation, share button, and sandboxed open-source games.
+A responsive static invitation for Vihaan’s first birthday, with locally hosted safari artwork, fonts, five animated animal companions and four sandboxed games. No backend, database, analytics, guest accounts or remote API is required.
 
 ## Preview and build
 
-See `HOSTING.md` for the complete publishing steps. `npm run check:ready` identifies missing event details before launch.
-
-Requires Node.js 22.12+ (including the Cloudflare tooling).
+Requires Node.js 22.12+.
 
 ```
 npm ci
 npm run dev
+npm test
 npm run build
 ```
 
-Publish only `dist/` to a static HTTPS host. Do not publish the project directory, dependencies, development server, or environment files. Netlify and Vercel configurations are included; Cloudflare Pages can use `npm run build`, output `dist`, and the included `_headers`. For another host, configure the equivalent headers from `public/_headers`. Confirm response headers after deployment because static hosts differ in header support.
+Publish only `dist/` to a static HTTPS host. GitHub Pages, Netlify and Vercel configurations are included. See [HOSTING.md](HOSTING.md) for publishing and security-header setup. The build supports a domain root or a repository subpath.
 
-## GitHub Pages
+## Event details and RSVP
 
-A deployment workflow is included in `.github/workflows/deploy.yml`. Push to `main` and select **GitHub Actions** in the repository’s **Settings → Pages**. See `HOSTING.md` for setup and local checks. The same build supports repository subpaths and custom domains.
+Edit `event-config.js`. The configured celebration is Sunday 6 December 2026 at 11:00 am Mauritius time, at Paps Restaurant. Run `npm run check:ready` before sharing.
 
-## Event details
+The hero shows the date, time and venue. Every RSVP button opens the same form directly. On phones, RSVP and Directions remain available in a bottom action bar after the hero scrolls away. The RSVP section comes before the play corner.
 
-Edit `event-config.js`:
-- Date: Sunday 6 December 2026.
-- Start time: 11:00 am, Mauritius UTC+04:00.
-- WhatsApp recipient: +230 5786 4984 (stored as international digits without `+`).
+Guests enter a name and party size to prepare a WhatsApp message. They review and send it themselves; the website does not send messages or claim attendance is confirmed. A copy-message fallback works when WhatsApp does not open, with manual selection if clipboard access is unavailable. Names and RSVP details are not stored. Calendar downloads use the Mauritius time zone and do not invent an event end time. Missing settings are labelled as pending.
 
-The final four games are Tap Tap Tap, Hextris, 0h h1, and Safari Flyer (an adaptation of Floppy Bird). 2048 has been removed.
+## Artwork, motion and games
 
-Calendar download buttons are available in the hero, countdown and RSVP sections. The message strap loops continuously; a pause control stops decorative animations, and reduced-motion settings show all strap text without scrolling.
+The cream, sage and terracotta palette, illustrated venue card and picture-book safari animals are retained. Tap an animal for a surprise. Animation has a single Full / Gentle / Off selector; Gentle is the default. Device reduced-motion preferences take priority. Off freezes the animals; offscreen animals and page decorations behind open dialogs stop moving. Text surprises are deliberate taps in Full mode, with no disappearing text in Gentle or reduced-motion mode.
 
-Hover, tap or use Enter/Space on the coloured words and playful accents for a comic ‘BOOM!’: a layered starburst, bold lettering, smoke puffs and flying stars. The word squashes, disappears and bounces back without shifting the sentence. Bursts fit the viewport, clear after playing or scrolling, and respect pause and reduced-motion settings.
-
-Five cute 2D picture-book animals sit beside the heading phrases: lion cub by “explorer”, elephant by “little sunshine”, giraffe by “Good food”, monkey by “fun begin” and tiger cub by “without you”. Their sizes adapt to the heading space on desktop and phones, and they have no visible name or activity captions. Each keeps its own activity: the lion explores, elephant sleeps, giraffe eats, monkey plays and tiger rolls on the floor with a new curled-up illustration. Taps still trigger a joyful surprise before returning to that animal’s activity. The “Less animation” control stops looping page decorations and softens animal movement and touch bounces; the separate Pause control and device reduced-motion setting remain available. A lightweight canvas renderer animates their small circular walks, breathing, playful hops and bounce. Their homes stay anchored to the document. Pause, reduced motion and offscreen visibility stop movement. Transparent sprite sheets load locally on demand; no 3D renderer is needed. Artwork was created with the built-in image_gen tool; prompts and asset details are in [docs/animal-art-prompts.md](docs/animal-art-prompts.md).
-
-The invitation labels missing details honestly. RSVP opens an explanatory dialog until a number is configured. The countdown and calendar download appear only after a valid date and time are configured. No invented event end time is added to the calendar.
+The play corner contains Tap Tap Tap, Hextris, 0h h1 and Safari Flyer. Phone cards use compact illustrated previews. Scores remain inside the isolated game session and disappear when it is closed. Games never report scores, ask for nicknames or contact a service.
 
 ## Security and privacy
 
-The invitation has no frontend runtime dependencies. No analytics or advertising. Optional shared leaderboards use Cloudflare Workers and D1; see `LEADERBOARDS.md` for setup, moderation, data retention and limitations. Only the public Worker URL belongs in the frontend; no Cloudflare credentials are shipped. Fonts and game assets are local. Games use `sandbox="allow-scripts"` with no same-origin, top navigation, forms, popups or downloads permissions. Games cannot read the invitation DOM or storage. A memory-only compatibility layer supports old games without allowing cookies or persistent browser storage. Their CSP blocks fetch/XHR/WebSocket connections and external scripts. Parent scripts use a CSP without inline-script or eval permissions. Only the invitation can connect to the configured Cloudflare Worker; games cannot. Third-party game CSS requires inline styles inside the isolated frames.
+The invitation has no frontend runtime dependencies and makes no outbound API requests. Assets and game libraries are local. WhatsApp and Google Maps open only when a guest chooses their links. A static host may maintain access logs.
 
-Only fixed game identifiers can select an iframe path. The WhatsApp number is validated, names are length-limited, and the entire RSVP message is URL-encoded. No message is sent automatically. External links use `noopener noreferrer`.
+Games run in frames with `sandbox="allow-scripts"` and no same-origin, navigation, popup, forms or download privileges. They cannot read the invitation DOM or browser storage. A memory-only compatibility layer supports older game code; games have no cookies or persistent storage. Content policies block outbound fetch/XHR/WebSocket connections and external scripts. The only message games send to the invitation indicates that their start screen is ready.
 
-The site asks search engines not to index it, but this is not access control. A public invitation and configured WhatsApp recipient can be read by anyone with access to the site. Use host-level access control if the invitation must be private. The host may keep request logs.
-
-The two new games are silent. Safari Flyer retains the upstream Floppy Bird mechanics with original CSS artwork, text scores, and no original Flappy Bird art or audio. Tap Tap Tap uses pointer events to avoid duplicate touch/click actions. Game sources were reviewed and stripped of telemetry; they are older upstream projects, not a guarantee of vulnerability-free code. Keep sandbox restrictions and CSP in place. No server security claims can be verified until a host is configured.
+The site asks search engines not to index it, but this is not access control. Event details and the WhatsApp recipient are public to anyone who can access the site. Use host access controls if needed. Vendored games are older upstream projects; preserve their isolation and content policies when editing them.
 
 ## Attribution
 
-`public/credits.html` includes licenses, attribution and complete downloadable source archives for the modified games. When changing vendored games, run `python3 scripts/package-game-sources.py` before `npm run build` to regenerate these archives. `scripts/harden-games.py` documents the one-time adaptation of pristine upstream game sources; do not repeatedly apply it to already adapted files.
+[public/credits.html](public/credits.html) contains licenses, attribution and downloadable complete modified game sources. After changing games, run `python3 scripts/package-game-sources.py` before building. `scripts/harden-games.py` documents the original one-time adaptation and should not be reapplied to already adapted games.
 
-The venue card is an original SVG illustration. The Google Maps link provides real venue photos; no third-party venue photograph is redistributed. See `design/asset-notes.md` for image-generation details.
+The venue card is an original SVG illustration. Google Maps provides real visitor photos; no third-party venue photograph is redistributed. Safari artwork and sprite sheets were generated with the built-in image generation tool; see [design/asset-notes.md](design/asset-notes.md) and [docs/animal-art-prompts.md](docs/animal-art-prompts.md).
 
 ## Verification
 
-`npm test` checks game assets and source security settings. For touch integration checks, run `npm run build`, start `npm run preview -- --port 4173`, then run `node scripts/game-check.mjs`. The browser check uses installed Chrome on macOS by default; set `CHROME_PATH` to your browser executable on another system. It exercises scoring, rotation, tile changes, flapping, replay, closing and frame isolation, rejects external requests and console errors, and checks page overflow at 320, 768 and 1440 pixels. These are browser-emulated phone tests, not physical-device certification.
+`npm test` checks assets, date validation, game content policies and absence of backend tooling. `npm run check:ready` checks event configuration.
 
-`npm run test:pages` checks root/subpath loading, five document-anchored 2D animals beside their heading phrases, caption removal, heading alignment, rendered sprite movement, fixed animal activities, tiger floor rolls, less-animation controls, tap/keyboard surprises, pause and reduced motion, mobile overflow, and game loading.
+Browser checks require installed Chrome on macOS, or `CHROME_PATH` pointing to Chrome elsewhere:
 
-`node scripts/motion-check.mjs` checks mobile and desktop overflow, visibility of every scrolling phrase, pause/resume, and the reduced-motion layout against `npm run dev`.
+- `npm run build && npm run test:pages`: domain-root and repository-subpath loading, animal activities, motion settings, fallback artwork, game loading, credits and source downloads.
+- With `npm run dev` running: `node scripts/invitation-check.mjs` checks direct RSVP entry points, mobile quick actions, WhatsApp URL encoding, clipboard/manual fallback, pending event settings and calendar timezone. WhatsApp is mocked; no messages are sent.
+- With `npm run dev` running: `node scripts/motion-check.mjs` checks responsive layouts, ribbon phrases, motion modes and device reduced motion.
+- With `npm run preview -- --port 4173` running: `node scripts/game-check.mjs` exercises touch gameplay, replay, restart, closing, frame isolation and absence of external requests at phone and desktop widths.
 
-`node scripts/invitation-check.mjs` tests the actual, pending and configured RSVP states, URL encoding, the Mauritius calendar timezone, and sharing against `npm run dev`. Temporary event settings and a mocked WhatsApp navigation are used only inside the test browser; no messages are sent.
-
-## Shared game leaderboards
-
-Each finished round offers optional nickname entry. Arcade games rank points; 0h h1 ranks solve time separately for 4, 6, 8 and 10 tiles per side, excluding tutorials. Only the best result per browser and board is kept. See `LEADERBOARDS.md` to connect the database. Rankings are explicitly unavailable until configured; no pretend shared/local fallback is used.
-
-`npm test` also runs the Worker and D1 locally in Miniflare to check API access, name filtering, ranking and duplicate submissions. `npm run test:leaderboards` exercises all four games in Chrome and uses that Worker and database through intercepted test API requests, including a separate browser guest.
+These checks use browser-emulated devices, not physical-device certification.

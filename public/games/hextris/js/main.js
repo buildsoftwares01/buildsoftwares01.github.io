@@ -89,7 +89,6 @@ function hideUIElements() {
 
 function init(b, preview) {
 	if(settings.ending_block && b == 1){return;}
-	if (!preview) window.invitationScore.start('hextris');
 	if (b) {
 		$("#pauseBtn").attr('src',"./images/btn_pause.svg");
 		if ($('#helpScreen').is(":visible")) {
@@ -342,7 +341,6 @@ function checkGameOver() {
 				highscores.push(score);
 			}
 			writeHighScores();
-			window.invitationScore.finish(score);
 			gameOverDisplay();
 			return true;
 		}

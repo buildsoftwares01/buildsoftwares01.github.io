@@ -39,6 +39,7 @@ try {
     await page.clock.pauseAt(new Date('2026-10-02T08:00:01Z'));
     await page.goto(base, { waitUntil: 'networkidle' });
     await page.evaluate(() => document.fonts.ready);
+    await page.locator('#animation-mode').selectOption('full');
     assert(await page.locator('.hero-art img').evaluate(img => img.complete && img.naturalWidth > 0));
     const friends = page.locator('.safari-friend');
     const homes = page.locator('.safari-home');
@@ -46,11 +47,11 @@ try {
     assert.deepEqual(await page.locator('#main > section').evaluateAll(sections => sections.map(section => section.querySelectorAll('.safari-home').length)), [1, 1, 1, 1, 1], 'Exactly one animal belongs to each section');
     assert.equal(await page.locator('.safari-stop').count(), 5);
     assert.equal(await page.locator('.safari-caption').count(), 0, 'Animal captions are removed');
-    assert.deepEqual(await page.locator('[data-safari-anchor]').evaluateAll(anchors => anchors.map(anchor => anchor.firstElementChild.textContent.trim())), ['explorer', 'little sunshine.', 'Good food.', 'fun begin.', 'without you.']);
+    assert.deepEqual(await page.locator('[data-safari-anchor]').evaluateAll(anchors => anchors.map(anchor => anchor.firstElementChild.textContent.trim())), ['explorer', 'little sunshine.', 'Good food.', 'without you.', 'fun begin.']);
     assert(await homes.evaluateAll(homes => homes.every(home => home.closest('h1, h2'))), 'All animals sit beside their heading phrases');
     assert.equal(await homes.evaluateAll(homes => new Set(homes.map(home => home.dataset.animal)).size), 5, 'Five different illustrated animals');
     await page.waitForFunction(() => document.querySelector('.safari-home').dataset.renderer === '2d');
-    assert.deepEqual(await homes.evaluateAll(homes => homes.map(home => home.dataset.state)), ['walk', 'sleep', 'eat', 'play', 'roll']);
+    assert.deepEqual(await homes.evaluateAll(homes => homes.map(home => home.dataset.state)), ['walk', 'sleep', 'eat', 'roll', 'play']);
     assert.equal(await page.locator('.safari-friends').first().evaluate(el => getComputedStyle(el).position), 'relative');
     await page.mouse.move(200, 0);
     await page.clock.runFor(32);
@@ -59,8 +60,8 @@ try {
     await page.clock.runFor(1250);
     assert.notEqual(await pixels(friends.first()), start, '2D sprite walking changes the rendered pose');
     await page.clock.runFor(31000);
-    assert.deepEqual(await homes.evaluateAll(homes => homes.map(home => home.dataset.state)), ['walk', 'sleep', 'eat', 'play', 'roll'], 'Each animal keeps its assigned activity over time');
-    await page.evaluate(() => document.querySelector('#motion-toggle').click());
+    assert.deepEqual(await homes.evaluateAll(homes => homes.map(home => home.dataset.state)), ['walk', 'sleep', 'eat', 'roll', 'play'], 'Each animal keeps its assigned activity over time');
+    await page.evaluate(() => { const select = document.querySelector('#animation-mode'); select.value = document.body.classList.contains('motion-paused') ? 'full' : 'off'; select.dispatchEvent(new Event('change')); });
     const beforePause = await pixels(friends.first());
     await page.clock.runFor(12000);
     assert.equal(await pixels(friends.first()), beforePause, 'Pause freezes 2D animation and routine');
@@ -69,10 +70,11 @@ try {
     const anchorAfter = await homes.first().evaluate(home => home.getBoundingClientRect().top + scrollY);
     assert(Math.abs(anchorBefore - anchorAfter) < .01, 'Home stays in its document spot while scrolling');
     assert((await homes.first().boundingBox()).y < 0, 'Top animal scrolls out of the viewport');
-    await page.evaluate(() => document.querySelector('#motion-toggle').click());
+    await page.evaluate(() => { const select = document.querySelector('#animation-mode'); select.value = document.body.classList.contains('motion-paused') ? 'full' : 'off'; select.dispatchEvent(new Event('change')); });
     for (let i = 0; i < 5; i++) {
       const friend = friends.nth(i);
       await friend.scrollIntoViewIfNeeded();
+      await page.waitForFunction(i => document.querySelectorAll('.safari-home')[i].dataset.visible === 'true', i);
       await page.waitForFunction(i => document.querySelectorAll('.safari-home')[i].dataset.renderer === '2d', i);
       const bounds = await friend.boundingBox();
       assert(bounds.width >= 44 && bounds.height >= 44, 'Heading animals retain accessible touch targets');
@@ -102,11 +104,12 @@ try {
       await friend.evaluate(el => el.blur());
     }
     await page.screenshot({ path: `test-results/safari-bottom-${prefix === '/' ? 'desktop' : 'mobile'}.png` });
-    await page.evaluate(() => document.querySelector('#less-motion').click());
-    assert.equal(await page.locator('#less-motion').getAttribute('aria-pressed'), 'true');
+    await page.evaluate(() => { const select = document.querySelector('#animation-mode'); select.value = select.value === 'gentle' ? 'full' : 'gentle'; select.dispatchEvent(new Event('change')); });
+    assert.equal(await page.locator('#animation-mode').inputValue(), 'gentle');
     assert.equal(await page.locator('.ticker-track').evaluate(el => getComputedStyle(el).animationName), 'none', 'Less animation stops the continuous ticker');
     assert.equal(await page.locator('h1 em').evaluate(el => getComputedStyle(el).animationName), 'none', 'Less animation stops heading loops');
-    const tiger = friends.last();
+    const tiger = page.locator('.safari-home[data-animal="tiger"] .safari-friend');
+    await tiger.scrollIntoViewIfNeeded();
     const calmer = await pixels(tiger);
     await page.clock.runFor(1500);
     assert.notEqual(await pixels(tiger), calmer, 'The tiger retains a gentle resting movement');
@@ -116,7 +119,7 @@ try {
     assert.notEqual(await pixels(tiger), calmer, 'Touch still changes the rendered pose in less-animation mode');
     assert.equal(await tiger.locator('.safari-boo').evaluate(el => getComputedStyle(el).opacity), '1');
     await page.clock.runFor(880);
-    assert.equal(await homes.last().getAttribute('data-state'), 'roll');
+    assert.equal(await page.locator('.safari-home[data-animal="tiger"]').getAttribute('data-state'), 'roll');
     assert.equal(await tiger.getAttribute('data-gesture'), null);
     if (prefix === '/Birthday/') {
       await page.setViewportSize({ width: 320, height: 740 });
@@ -124,13 +127,13 @@ try {
       await page.setViewportSize({ width: 390, height: 844 });
     }
     await page.screenshot({ path: `test-results/safari-less-${prefix === '/' ? 'desktop' : 'mobile'}.png` });
-    await page.evaluate(() => document.querySelector('#less-motion').click());
-    assert.equal(await page.locator('#less-motion').getAttribute('aria-pressed'), 'false');
+    await page.evaluate(() => { const select = document.querySelector('#animation-mode'); select.value = select.value === 'gentle' ? 'full' : 'gentle'; select.dispatchEvent(new Event('change')); });
+    assert.equal(await page.locator('#animation-mode').inputValue(), 'full');
     await page.emulateMedia({ reducedMotion: 'reduce' });
     await page.clock.runFor(32);
-    await page.locator('#less-motion:disabled').waitFor({ state: 'visible' });
-    assert(await page.locator('#less-motion').isDisabled(), 'Device reduced motion stays respected');
-    assert.equal(await page.locator('#less-motion').getAttribute('aria-pressed'), 'true');
+    await page.locator('#animation-mode:disabled').waitFor({ state: 'visible' });
+    assert(await page.locator('#animation-mode').isDisabled(), 'Device reduced motion stays respected');
+    assert.equal(await page.locator('#animation-mode').inputValue(), 'off');
     await friends.first().focus();
     await page.keyboard.press('Enter');
     assert.equal(await friends.first().getAttribute('data-gesture'), 'quiet');

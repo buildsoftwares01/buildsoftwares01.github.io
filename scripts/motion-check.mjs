@@ -7,6 +7,24 @@ try {
   page.on('pageerror', error => errors.push(error.message));
   await page.goto(process.env.TEST_URL || 'http://127.0.0.1:5173');
   await page.evaluate(() => document.fonts.ready);
+  assert.equal(await page.locator('#animation-mode').inputValue(), 'gentle');
+  assert.equal(await page.locator('h1 em').getAttribute('role'), null, 'Gentle text adds no inactive tab stops');
+  await page.locator('h1 em').click();
+  assert.equal(await page.locator('.accent-comic-burst').count(), 0);
+  await page.locator('#animation-mode').selectOption('full');
+  assert.equal(await page.locator('h1 em').getAttribute('role'), 'button');
+  await page.locator('h1 em').focus();
+  await page.keyboard.press('Enter');
+  assert(await page.locator('.accent-comic-burst').count() > 0, 'Full-mode text reacts to keyboard activation');
+  await page.locator('#animation-mode').selectOption('gentle');
+  assert.equal(await page.locator('h1 em').getAttribute('tabindex'), null);
+  assert.equal(await page.locator('.accent-comic-burst').count(), 0);
+  await page.locator('#animation-mode').selectOption('full');
+  await page.locator('.site-header [data-rsvp]').click();
+  await page.waitForFunction(() => document.body.classList.contains('motion-dialog'));
+  assert.equal(await page.locator('.safari-stop').first().getAttribute('data-paused'), 'true', 'Dialog pauses animal movement');
+  await page.locator('#close-rsvp').click();
+  await page.waitForFunction(() => !document.body.classList.contains('motion-dialog'));
   for (const width of [320, 390, 768, 1440]) {
     await page.setViewportSize({ width, height: 900 });
     assert(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth), `${width}px: no horizontal overflow`);
@@ -31,13 +49,14 @@ try {
     assert.equal(phrasesSeen, 4, `${width}px: every ribbon phrase scrolls into view`);
   }
   await page.setViewportSize({ width: 390, height: 844 });
-  await page.getByRole('button', { name: 'Pause animations', exact: true }).click();
-  assert(await page.locator('.ticker-track').evaluate(el => getComputedStyle(el).animationPlayState === 'paused'));
-  assert(await page.locator('.hero-art img').evaluate(el => getComputedStyle(el).animationPlayState === 'paused'));
-  await page.getByRole('button', { name: 'Resume animations', exact: true }).click();
+  await page.locator('#animation-mode').selectOption('off');
+  assert(await page.locator('.safari-stop').first().getAttribute('data-paused') === 'true');
+  await page.locator('#animation-mode').selectOption('full');
   assert(await page.locator('.ticker-track').evaluate(el => getComputedStyle(el).animationPlayState === 'running'));
   await page.emulateMedia({ reducedMotion: 'reduce' });
-  assert(await page.locator('#motion-toggle').isHidden());
+  await page.locator('#animation-mode:disabled').waitFor({ state: 'visible' });
+  assert(await page.locator('#animation-mode').isDisabled());
+  assert.equal(await page.locator('#animation-mode').inputValue(), 'off');
   assert(await page.locator('.ticker-track').evaluate(el => getComputedStyle(el).animationName === 'none'));
   assert(await page.locator('.ticker-group').first().evaluate(group => {
     const visible = group.parentElement.parentElement.getBoundingClientRect();

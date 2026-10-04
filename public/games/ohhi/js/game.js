@@ -208,7 +208,6 @@ var Game = new (function() {
   }
 
   // puzzle is object with format { size:6, full:[2,1,...], empty:[0,0,2,...], quality: 76, ms: 42 }
-  var leaderboardStartedAt = 0;
   function startGame(puzzle) {
     onHomeScreen = false;
     if (!puzzle || !puzzle.size || !puzzle.full)
@@ -248,14 +247,10 @@ var Game = new (function() {
     undone = false;
     gameEnded = false;
 
-    leaderboardStartedAt = performance.now();
-    window.invitationScore.cancel();
-    if (!puzzle.isTutorial) window.invitationScore.start('ohhi', puzzle.size);
     setTimeout(showGame, 0);
   }
 
   function endGame() {
-    if (!currentPuzzle.isTutorial) window.invitationScore.finish(Math.round(performance.now() - leaderboardStartedAt));
     // first of all, save the score, so if you quit while the animation runs, the score is kept
     var oldScore = getScore(),
         newScore = setScore(grid.width * grid.height);
@@ -301,7 +296,6 @@ var Game = new (function() {
   }
 
   function quitCurrentGame() {
-    window.invitationScore.cancel();
     gameEnded = true;
     if (grid) {
       grid.unmark();
