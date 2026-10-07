@@ -28,22 +28,24 @@
 <body>
   <a class="skip-link" href="#main">Skip to invitation</a>
   <header class="site-header wrap">
-    <a class="brand" href="#" aria-label="Vihaan's first birthday, home"><span class="brand-icon">v<span>✳</span></span><span>vihaan<span class="brand-small">OUR LITTLE EXPLORER</span></span></a>
-    <nav aria-label="Main navigation"><a href="#celebration">The celebration</a><a href="#venue">The venue</a><a href="#games">Let's play</a></nav>
+    <a class="brand" href="#main" aria-label="Vihaan's first birthday, home"><span>Vihaan<span class="brand-small">FIRST BIRTHDAY</span></span></a>
     <div class="header-actions"><button class="button button-small" data-rsvp type="button">RSVP on WhatsApp <span aria-hidden="true">↗</span></button><button class="motion-toggle" id="motion-toggle" type="button">Pause animations</button></div>
   </header>
-  <main id="main">
+  <nav class="page-tabs" aria-label="Explore the invitation">
+    <div class="section-tabs"><a href="#main" data-section-link aria-current="location">Invitation</a><a href="#kids-corner" data-section-link>Kids corner</a><a href="#games" data-section-link>Gaming</a></div>
+  </nav>
+  <main id="main" tabindex="-1">
     <section class="hero wrap" aria-labelledby="hero-title">
       <div class="hero-copy">
         <div class="eyebrow"><span class="little-line"></span> A LITTLE SAFARI. A BIG CELEBRATION.</div>
-        <h1 id="hero-title"><span class="hero-name">Vihaan’s first birthday</span>Our little<br><span class="safari-anchor" data-safari-anchor="lion"><em>explorer</em></span><br>is turning <span class="one" aria-label="one."><span aria-hidden="true">o</span><span aria-hidden="true">n</span><span aria-hidden="true">e</span><span aria-hidden="true">.</span></span></h1>
+        <h1 id="hero-title"><span class="hero-name">Vihaan’s first birthday</span>Our little<br><em>explorer</em><br>is turning <span class="one" aria-label="one."><span aria-hidden="true">o</span><span aria-hidden="true">n</span><span aria-hidden="true">e</span><span aria-hidden="true">.</span></span></h1>
         <div class="hero-details" aria-label="Celebration details"><span id="hero-date">Sunday 6 December 2026</span><span id="hero-time">11:00 am · Mauritius time</span><a href="#venue">Paps Restaurant <span aria-hidden="true">↗</span></a></div>
         <p class="hero-description">A year of tiny toes, big <span class="word-accent accent-bounce">giggles,</span> and endless love. Come make a little more <span class="word-accent accent-shimmer">magic</span> with <strong>Vihaan.</strong></p>
         <div class="hero-actions"><button class="button" data-rsvp type="button"><span data-icon="message"></span> RSVP on WhatsApp <span aria-hidden="true">↗</span></button><button class="text-link" data-calendar type="button" hidden><span data-icon="calendar"></span> Add to calendar ↗</button></div>
         <p class="rsvp-guide">Prepare your reply here, then send it in WhatsApp.</p>
         <div class="parent-note"><span class="heart-mark" aria-hidden="true">♡</span><span>With full hearts & a whole lot of excitement,<br><strong>Madhav & Urvashee</strong></span></div>
       </div>
-      <div class="hero-art"><div class="safari-frame"><img src="./assets/safari.webp" width="1254" height="1254" alt="A playful lion, giraffe and tiger celebrate a first birthday with sage balloons and a giant number one" fetchpriority="high"></div><span class="party-shape shape-peach" aria-hidden="true"></span><span class="party-shape shape-sage" aria-hidden="true"></span><div class="round-stamp"><span>SMALL BOY</span><strong>BIG<br>ADVENTURES</strong><span>EST. WITH LOVE ♡</span></div><span class="floating-heart" aria-hidden="true">♡</span><span class="art-spark spark-one" aria-hidden="true">✧</span><span class="art-spark spark-two" aria-hidden="true">✦</span><div class="art-caption">a sweet little chapter begins</div><p class="animal-hint">Tap the animals for a little surprise. <a href="#little-playground">More safari fun ↓</a></p></div>
+      <div class="hero-art"><div class="safari-frame"><img src="./assets/safari.webp" width="1254" height="1254" alt="A playful lion, giraffe and tiger celebrate a first birthday with sage balloons and a giant number one" fetchpriority="high"></div><span class="party-shape shape-peach" aria-hidden="true"></span><span class="party-shape shape-sage" aria-hidden="true"></span><div class="round-stamp"><span>SMALL BOY</span><strong>BIG<br>ADVENTURES</strong><span>EST. WITH LOVE ♡</span></div><span class="floating-heart" aria-hidden="true">♡</span><span class="art-spark spark-one" aria-hidden="true">✧</span><span class="art-spark spark-two" aria-hidden="true">✦</span><div class="art-caption">a sweet little chapter begins</div><p class="animal-hint"><a href="#kids-corner">Meet our safari friends in Kids corner ↓</a></p></div>
     </section>
     <div class="ticker">
       <div class="ticker-window">
@@ -54,7 +56,7 @@
       </div>
     </div>
     <section id="celebration" class="celebration wrap section-space">
-      <div class="section-heading reveal"><div class="eyebrow">THE MAIN EVENT</div><h2>A day for our <span class="safari-anchor" data-safari-anchor="elephant"><em>little sunshine.</em></span></h2><p>Gather your favourite people and your biggest <span class="word-accent accent-wiggle">smiles.</span><br>We've got a very special first birthday to celebrate.</p></div>
+      <div class="section-heading reveal"><div class="eyebrow">THE MAIN EVENT</div><h2>A day for our <em>little sunshine.</em></h2><p>Gather your favourite people and your biggest <span class="word-accent accent-wiggle">smiles.</span><br>We've got a very special first birthday to celebrate.</p></div>
       <div class="details-grid reveal">
         <div class="detail"><span class="detail-icon" data-icon="calendar"></span><span class="eyebrow">SAVE THE DATE</span><h3 id="event-date">6 December 2026</h3><p id="event-day">Sunday</p></div>
         <div class="detail"><span class="detail-icon" data-icon="clock"></span><span class="eyebrow">PARTY O'CLOCK</span><h3 id="event-time">11:00 am</h3><p>Mauritius time · a little magic awaits</p></div>
@@ -64,11 +66,21 @@
     </section>
     <section id="venue" class="venue-section wrap section-space">
       <div class="venue-visual reveal"><img id="venue-photo" src="./assets/venue-garden.svg" alt="Restaurant illustration with a Paps sign, striped awning, and outdoor dining tables" width="1000" height="940" loading="lazy"><div class="photo-caption"><span data-icon="pin"></span> An illustration for our celebration</div><a class="photo-credit" href="https://maps.app.goo.gl/bnpBMfxSez6iZjbZA" target="_blank" rel="noopener noreferrer">See the venue & photos on Google Maps ↗</a></div>
-      <div class="venue-copy reveal"><div class="eyebrow">OUR LITTLE CORNER OF THE JUNGLE</div><h2><span class="safari-anchor" data-safari-anchor="giraffe"><span>Good food.</span></span><br>Great company.<br><em>Happy little moments.</em></h2><p>Join us at Paps for a celebration filled with <span class="word-accent accent-wiggle">laughter,</span> love, and a little safari magic.</p><div class="venue-address"><strong>Paps Bar, Lounge & Restaurant</strong><span>Caleechurn Lane, Carreau Laliane<br>Vacoas-Phoenix, Mauritius</span></div><a class="button button-outline" href="https://maps.app.goo.gl/bnpBMfxSez6iZjbZA" target="_blank" rel="noopener noreferrer"><span data-icon="pin"></span> Get directions <span aria-hidden="true">↗</span></a></div>
+      <div class="venue-copy reveal"><div class="eyebrow">OUR LITTLE CORNER OF THE JUNGLE</div><h2><span>Good food.</span><br>Great company.<br><em>Happy little moments.</em></h2><p>Join us at Paps for a celebration filled with <span class="word-accent accent-wiggle">laughter,</span> love, and a little safari magic.</p><div class="venue-address"><strong>Paps Bar, Lounge & Restaurant</strong><span>Caleechurn Lane, Carreau Laliane<br>Vacoas-Phoenix, Mauritius</span></div><a class="button button-outline" href="https://maps.app.goo.gl/bnpBMfxSez6iZjbZA" target="_blank" rel="noopener noreferrer"><span data-icon="pin"></span> Get directions <span aria-hidden="true">↗</span></a></div>
     </section>
-    <section id="rsvp" class="rsvp-section wrap section-space reveal"><span class="rsvp-spark" aria-hidden="true">✳</span><span class="rsvp-heart" aria-hidden="true">♡</span><div class="eyebrow">OUR FAVOURITE PEOPLE. OUR FAVOURITE DAY.</div><h2>It wouldn't be the same<br><span class="safari-anchor" data-safari-anchor="tiger"><em>without you.</em></span></h2><p>Come for the cake. Stay for the <span class="word-accent accent-bounce">fun.</span><br>Let us know if you'll be part of Vihaan's big little day.</p><button class="button" id="rsvp-button" data-rsvp type="button"><span data-icon="message"></span> RSVP on WhatsApp <span aria-hidden="true">↗</span></button><div class="rsvp-calendar"><button class="text-link" data-calendar type="button" hidden><span data-icon="calendar"></span> Add to calendar ↗</button></div><span class="rsvp-note" id="rsvp-note">A little message to Madhav & Urvashee</span><div class="signature">With love, always.<br><strong>Madhav, Urvashee & little Vihaan</strong><span>♡</span></div></section>
-    <section id="games" class="games-section section-space">
-      <div class="wrap"><div class="games-heading reveal"><div><div class="eyebrow">A LITTLE PLAY BEFORE THE BIG DAY</div><h2>Let the <span class="safari-anchor" data-safari-anchor="monkey"><em>fun begin.</em></span></h2></div><p>Little surprises for little explorers.<br>Tap, play & make a birthday wish.</p></div>
+    <section id="rsvp" class="rsvp-section wrap section-space reveal"><span class="rsvp-spark" aria-hidden="true">✳</span><span class="rsvp-heart" aria-hidden="true">♡</span><div class="eyebrow">OUR FAVOURITE PEOPLE. OUR FAVOURITE DAY.</div><h2>It wouldn't be the same<br><em>without you.</em></h2><p>Come for the cake. Stay for the <span class="word-accent accent-bounce">fun.</span><br>Let us know if you'll be part of Vihaan's big little day.</p><button class="button" id="rsvp-button" data-rsvp type="button"><span data-icon="message"></span> RSVP on WhatsApp <span aria-hidden="true">↗</span></button><div class="rsvp-calendar"><button class="text-link" data-calendar type="button" hidden><span data-icon="calendar"></span> Add to calendar ↗</button></div><span class="rsvp-note" id="rsvp-note">A little message to Madhav & Urvashee</span><div class="signature">With love, always.<br><strong>Madhav, Urvashee & little Vihaan</strong><span>♡</span></div></section>
+    <section id="kids-corner" class="kids-section section-space" aria-labelledby="kids-title" tabindex="-1">
+      <div class="wrap"><div class="games-heading reveal"><div><div class="eyebrow">KIDS CORNER</div><h2 id="kids-title">Let the <em>fun begin.</em></h2></div><p>Little surprises for little explorers.<br>Tap, play & make a birthday wish.</p></div>
+        <div class="safari-playground" aria-labelledby="safari-title">
+          <div class="playground-heading"><h3 id="safari-title">Say hello to our safari friends</h3><p>Tap an animal and see what happens!</p></div>
+          <div class="safari-pals">
+            <div class="safari-pal"><span class="safari-anchor" data-safari-anchor="lion"></span><span class="pal-action">Wave with lion</span></div>
+            <div class="safari-pal"><span class="safari-anchor" data-safari-anchor="elephant"></span><span class="pal-action">Elephant splash</span></div>
+            <div class="safari-pal"><span class="safari-anchor" data-safari-anchor="giraffe"></span><span class="pal-action">Giraffe munch</span></div>
+            <div class="safari-pal"><span class="safari-anchor" data-safari-anchor="monkey"></span><span class="pal-action">Monkey tumble</span></div>
+            <div class="safari-pal"><span class="safari-anchor" data-safari-anchor="tiger"></span><span class="pal-action">Tiger roll</span></div>
+          </div>
+        </div>
         <div id="little-playground" class="little-playground" aria-labelledby="playground-title" hidden>
           <div class="playground-heading"><span class="eyebrow">LITTLE HANDS. BIG DISCOVERIES.</span><h3 id="playground-title">A little birthday playground</h3><p>Big friendly buttons. A little surprise with every tap.</p></div>
           <div class="activity-grid">
@@ -117,7 +129,11 @@
             <p class="activity-status" id="seek-status" role="status">Found 0 of 5 safari friends.</p>
           </article>
         </div>
-        <div class="classic-games-heading"><h3>More little adventures</h3><p>A colourful challenge for bigger explorers, too.</p></div>
+      </div>
+    </section>
+    <section id="games" class="games-section section-space" aria-labelledby="gaming-title" tabindex="-1">
+      <div class="wrap">
+        <div class="games-heading reveal"><div><div class="eyebrow">GAMING</div><h2 id="gaming-title">Choose your next <em>adventure.</em></h2></div><p>A colourful challenge for bigger explorers, too.<br>Pick a game to play right here.</p></div>
         <div class="games-grid">
           <button class="game-card reveal" data-game="taptaptap" type="button"><div class="game-preview preview-tap" aria-hidden="true"><span class="game-tag">MAKE EVERY TAP COUNT</span><div class="tap-rings"><i></i><span>tap!</span></div><span class="tap-dot"></span><span class="preview-doodle">✧</span></div><div class="game-content"><span class="game-type">TAP · REACT · REPEAT</span><h3>Tap Tap Tap <span>↗</span></h3><p>Quick fingers. Happy little victories.</p><span class="play-label">Let's play <span>→</span></span></div></button>
           <button class="game-card reveal" data-game="hextris" type="button"><div class="game-preview preview-hextris" aria-hidden="true"><span class="game-tag">A COLOURFUL LITTLE CHALLENGE</span><div class="hexagon hex-outer"><div class="hexagon hex-middle"><div class="hexagon hex-inner">✦</div></div></div><span class="hex-dot dot-one"></span><span class="hex-dot dot-two"></span></div><div class="game-content"><span class="game-type">ROTATE · MATCH · SMILE</span><h3>Hextris <span>↗</span></h3><p>A happy spin on a colourful classic.</p><span class="play-label">Let's play <span>→</span></span></div></button>
@@ -129,8 +145,8 @@
 
   </main>
   <nav id="mobile-actions" class="mobile-actions" aria-label="Party quick actions" hidden><button class="button" data-rsvp type="button"><span data-icon="message"></span>RSVP on WhatsApp</button><a class="button button-outline" href="https://maps.app.goo.gl/bnpBMfxSez6iZjbZA" target="_blank" rel="noopener noreferrer"><span data-icon="pin"></span>Directions</a></nav>
-  <footer class="site-footer wrap"><a class="brand footer-brand" href="#">vihaan<span>✳</span></a><p>One little boy. A whole world of love.</p><div><a class="footer-link" href="./credits.html">Credits & privacy</a></div></footer>
-  <dialog id="game-dialog" aria-labelledby="game-title"><div class="game-toolbar"><div><span class="eyebrow">VIHAAN'S PLAY CORNER</span><h2 id="game-title">Let's play</h2></div><button class="icon-button" id="close-game" type="button" aria-label="Close game">×</button></div><p id="game-help"></p><div id="game-frame-container"></div><div class="game-dialog-footer"><span>Just for fun. Enjoy your little adventure!</span><button id="restart-game" type="button" class="footer-link">Restart ↻</button></div></dialog>
+  <footer class="site-footer wrap"><a class="brand footer-brand" href="#main">Vihaan</a><p>One little boy. A whole world of love.</p><div><a class="footer-link" href="./credits.html">Credits & privacy</a></div></footer>
+  <dialog id="game-dialog" aria-labelledby="game-title"><div class="game-toolbar"><div><span class="eyebrow">VIHAAN'S GAMING CORNER</span><h2 id="game-title">Let's play</h2></div><button class="icon-button" id="close-game" type="button" aria-label="Close game">×</button></div><nav class="section-tabs dialog-tabs" aria-label="Explore from this game"><a href="#main" data-section-link data-leave-game>Invitation</a><a href="#kids-corner" data-section-link data-leave-game>Kids corner</a><a href="#games" data-section-link data-leave-game>Gaming</a></nav><p id="game-help"></p><div id="game-frame-container"></div><div class="game-dialog-footer"><span>Just for fun. Enjoy your little adventure!</span><button id="restart-game" type="button" class="footer-link">Restart ↻</button></div></dialog>
   <dialog id="rsvp-dialog" aria-labelledby="rsvp-title">
     <button class="icon-button dialog-close" id="close-rsvp" type="button" aria-label="Close RSVP">×</button>
     <span class="eyebrow">WE'D LOVE TO HEAR FROM YOU</span>

@@ -10,6 +10,7 @@
     "test": "node scripts/check-site.mjs",
     "test:pages": "node scripts/pages-check.mjs",
     "test:play": "node scripts/play-corner-check.mjs",
+    "test:navigation": "node scripts/navigation-check.mjs",
     "check:ready": "node scripts/check-ready.mjs"
   },
   "devDependencies": {

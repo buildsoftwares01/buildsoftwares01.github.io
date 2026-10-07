@@ -21,6 +21,29 @@ motionPreference.addEventListener('change', syncMotionPreference);
 syncMotionPreference();
 setupSafariFriends();
 setupPlayCorner();
+// Real section links remain usable without JavaScript; highlight the current area.
+const pageTabs = $('.page-tabs');
+const sectionLinks = [...document.querySelectorAll('[data-section-link]')];
+const playSections = [$('#kids-corner'), $('#games')];
+let navigationFrame;
+function syncSectionNavigation() {
+  navigationFrame = null;
+  const boundary = pageTabs.getBoundingClientRect().bottom + 64;
+  let current = '#main';
+  playSections.forEach(section => {
+    if (section.getBoundingClientRect().top <= boundary) current = `#${section.id}`;
+  });
+  sectionLinks.forEach(link => {
+    if (link.hash === current) link.setAttribute('aria-current', 'location');
+    else link.removeAttribute('aria-current');
+  });
+}
+function scheduleSectionNavigation() {
+  if (!navigationFrame) navigationFrame = requestAnimationFrame(syncSectionNavigation);
+}
+window.addEventListener('scroll', scheduleSectionNavigation, { passive: true });
+window.addEventListener('resize', scheduleSectionNavigation);
+syncSectionNavigation();
 const paths = { calendar: '<rect x="3" y="5" width="18" height="16" rx="2"/><path d="M16 3v4M8 3v4M3 11h18m-13 5h2m4 0h2"/>', clock: '<circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/>', pin: '<path d="M20 10c0 6-8 12-8 12S4 16 4 10a8 8 0 1 1 16 0Z"/><circle cx="12" cy="10" r="2.5"/>', phone: '<rect x="6" y="2" width="12" height="20" rx="2"/><path d="M10 18h4"/>', message: '<path d="m4 17-1 5 5-2a9 9 0 1 0-4-3Z"/><path d="M8 8c0 4 4 7 7 7l1-2-3-1-1 1-2-2 1-1-1-3Z"/>' };
 document.querySelectorAll('[data-icon]').forEach(el => { el.innerHTML = `<svg viewBox="0 0 24 24" aria-hidden="true">${paths[el.dataset.icon]}</svg>`; });
 if ('IntersectionObserver' in window) {
@@ -94,6 +117,11 @@ document.querySelectorAll('[data-game]').forEach(button => button.addEventListen
 $('#close-game').addEventListener('click', () => gameDialog.close());
 $('#restart-game').addEventListener('click', loadGame);
 gameDialog.addEventListener('close', () => { clearGameLoading(); $('#game-frame-container').replaceChildren(); gameTrigger?.focus(); });
+document.querySelectorAll('[data-leave-game]').forEach(link => link.addEventListener('click', () => {
+  // The link takes focus to its section after the game is closed.
+  gameTrigger = null;
+  gameDialog.close();
+}));
 const rsvpDialog = $('#rsvp-dialog');
 const rsvpReady = /^[1-9]\d{7,14}$/.test(event.whatsappNumber);
 const guestAttendance = $('#guest-attendance');

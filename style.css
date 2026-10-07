@@ -130,7 +130,7 @@
 
 @media(max-height:550px){.game-loading img{height:16dvh}.game-loading{padding:10px}.game-loading-dots{margin-top:10px}}
 
-/* Small companions sit beside the heading phrases without adding section spacers. */
+/* Interactive animal controls share the picture-book artwork in Kids corner. */
 .safari-anchor{--safari-size:78px;display:inline-flex;align-items:center;gap:2px;max-width:100%;vertical-align:middle;white-space:nowrap}
 .hero .safari-anchor{--safari-size:108px}
 .rsvp-section .safari-anchor{--safari-size:88px}
@@ -338,4 +338,27 @@ html:has(.motion-paused){scroll-behavior:auto}
   .hero-actions{margin-bottom:10px}
   .rsvp-guide{font-size:13px;max-width:280px;margin-inline:auto}
   .animal-hint{font-size:12px}
+}
+
+/* A small, persistent map of the page, with generous touch targets. */
+html{scroll-padding-top:80px}
+.site-header{height:104px;border-bottom:0}
+.site-header .brand{font-size:32px}
+.page-tabs{position:sticky;top:0;z-index:30;background:#f9f7f0f5;backdrop-filter:blur(12px);border-block:1px solid var(--line);padding:8px 0;box-shadow:0 4px 14px #304e3e06}
+.section-tabs{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:6px;width:min(540px,92%);margin-inline:auto;padding:4px;border:1px solid #dce2d1;border-radius:12px;background:#edf0e5}
+.section-tabs a{display:flex;align-items:center;justify-content:center;min-height:44px;padding:10px 12px;border-radius:8px;font-size:14px;font-weight:500;white-space:nowrap;transition:background .2s,color .2s}
+.section-tabs a:hover{background:#dfe6d3}
+.section-tabs a[aria-current="location"]{background:var(--green);color:#fffdf5;box-shadow:0 2px 5px #304e3e18}
+.section-tabs a:focus-visible{outline-offset:1px}
+.dialog-tabs{width:calc(100% - 48px);margin-block:4px 12px}
+#main:focus,#kids-corner:focus,#games:focus{outline:none}
+.kids-section{background:#ecefe5}
+.games-section{background:#f5f1e7;border-top:1px solid var(--line)}
+@media(max-width:760px){
+  .site-header{height:104px}
+  .site-header .brand{font-size:28px}
+  .page-tabs{padding-block:5px}
+  .section-tabs{gap:3px;padding:3px}
+  .section-tabs a{font-size:13px;padding-inline:5px}
+  .dialog-tabs{width:calc(100% - 36px)}
 }

@@ -10,7 +10,7 @@ const cast = [
 export function setupSafariFriends() {
   const main = document.querySelector('#main');
   if (!main || main.querySelector('.safari-friends')) return;
-  // Companions sit beside their heading phrases and scroll with the document.
+  // The interactive cast lives together in Kids corner and scrolls with the document.
   const stops = cast.map(animal => {
     const anchor = main.querySelector(`[data-safari-anchor="${animal.kind}"]`);
     const stage = document.createElement('span');
@@ -62,7 +62,7 @@ export function setupSafariFriends() {
       friend.home.dataset.renderer = '2d';
       friend.button.disabled = false;
     } catch {
-      // Keep the reserved heading space, without flashing a substitute face.
+      // Keep the reserved play space, without flashing a substitute face.
       friend.home.dataset.renderer = 'unavailable';
       friend.home.setAttribute('aria-hidden', 'true');
     }

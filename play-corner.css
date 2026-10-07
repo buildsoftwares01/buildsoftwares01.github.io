@@ -1,5 +1,16 @@
 /* Small, deliberate activities in the invitation's picture-book palette. */
-.little-playground{margin:36px 0 48px;scroll-margin-top:24px}
+.little-playground{margin:36px 0 0}
+.safari-pals{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:14px}
+.safari-pal{display:flex;align-items:center;flex-direction:column;gap:8px;padding:16px 8px;border:1px solid #dce1d1;border-radius:20px;background:#fbf9f1}
+.safari-pal .safari-anchor{--safari-size:132px;width:min(132px,100%);height:var(--safari-size)}
+.safari-pal .safari-stop{width:100%;flex-basis:100%;height:100%}
+.pal-action{font-size:13px;line-height:1.5;text-align:center}
+@media(max-width:760px){
+  .safari-pals{grid-template-columns:repeat(3,minmax(0,1fr));gap:10px}
+  .safari-pal{padding:12px 5px;gap:6px;border-radius:16px}
+  .safari-pal .safari-anchor{--safari-size:90px}
+  .pal-action{font-size:12px}
+}
 .playground-heading{margin-bottom:24px}
 .playground-heading h3,.classic-games-heading h3{font:500 30px/1.3 var(--serif);letter-spacing:-.5px;margin:8px 0}
 .playground-heading p,.classic-games-heading p{font-size:14px}
