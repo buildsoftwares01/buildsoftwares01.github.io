@@ -6,7 +6,7 @@ export function setupPlayCorner() {
   const playground = document.querySelector('#little-playground');
   if (!playground) return;
   const $ = selector => playground.querySelector(selector);
-  const quiet = () => document.body.classList.contains('motion-paused') || document.body.classList.contains('motion-dialog') || document.hidden;
+  const quiet = () => document.body.dataset.view !== 'kids' || document.body.classList.contains('motion-paused') || document.body.classList.contains('motion-dialog') || document.hidden;
   const animations = new Set();
   const canvasRuns = new Set();
   const artwork = new Map();
@@ -89,7 +89,7 @@ export function setupPlayCorner() {
     canvasRuns.clear();
     playground.querySelectorAll('.party-confetti').forEach(burst => burst.remove());
   }
-  new MutationObserver(stopMotion).observe(document.body, { attributes: true, attributeFilter: ['class'] });
+  new MutationObserver(stopMotion).observe(document.body, { attributes: true, attributeFilter: ['class', 'data-view'] });
   document.addEventListener('visibilitychange', stopMotion);
 
   const resizeArtwork = new ResizeObserver(entries => entries.forEach(({ target }) => {

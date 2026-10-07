@@ -37,7 +37,7 @@ try {
    await page.locator('#close-rsvp').tap();
    assert(await trigger.evaluate(el => document.activeElement === el));
   }
-  await page.locator('#games').scrollIntoViewIfNeeded();
+  await page.locator('#rsvp').scrollIntoViewIfNeeded();
   await page.locator('#mobile-actions').waitFor({state:'visible'});
   await page.locator('#mobile-actions [data-rsvp]').tap();
   assert(await page.locator('#rsvp-dialog').isVisible());

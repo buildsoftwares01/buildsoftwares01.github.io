@@ -22,7 +22,7 @@ try {
       if (url.origin !== new URL(base).origin) { external.push(url.href); return route.abort(); }
       return route.continue();
     });
-    await page.goto(base);
+    await page.goto(base + '#kids-corner');
     await page.evaluate(() => document.fonts.ready);
     await page.waitForFunction(() => [...document.querySelectorAll('[data-play-animal]')].every(canvas => canvas.dataset.art === 'ready'));
     await page.waitForFunction(() => [...document.querySelectorAll('.safari-home')].every(home => home.dataset.renderer === '2d'));

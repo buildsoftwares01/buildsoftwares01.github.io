@@ -10,6 +10,7 @@ try {
   await page.waitForFunction(() => [...document.querySelectorAll('.safari-home')].every(home => home.dataset.renderer === '2d'));
   assert.equal(await page.locator('h1 em,.word-accent').evaluateAll(words => words.filter(word => word.hasAttribute('role') || word.tabIndex >= 0).length), 0, 'Reading text stays out of the tab order');
   assert.equal(await page.locator('h1 em,.one>span,.word-accent').evaluateAll(words => words.filter(word => getComputedStyle(word).animationName !== 'none').length), 0, 'Reading text stays still');
+  await page.locator('body > .notebook-tabs').getByRole('link', {name:'Kids corner', exact:true}).click();
   await page.getByRole('button', {name:'Wave with lion cub', exact:true}).focus();
   await page.keyboard.press('Enter');
   assert.equal(await page.locator('.safari-friend').first().getAttribute('data-gesture'), 'hello', 'Animal greeting works by keyboard');
@@ -27,6 +28,7 @@ try {
   assert.equal(await page.locator('.safari-stop').first().getAttribute('data-paused'), 'true', 'Dialog pauses animal movement');
   await page.locator('#close-rsvp').click();
   await page.waitForFunction(() => !document.body.classList.contains('motion-dialog'));
+  await page.locator('.brand').first().click();
   for (const width of [320, 390, 768, 1440]) {
     await page.setViewportSize({ width, height: 900 });
     assert(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth), `${width}px: no horizontal overflow`);

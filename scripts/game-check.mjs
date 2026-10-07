@@ -10,7 +10,7 @@ const failures = [], external = [];
 page.on('pageerror', e => {failures.push(e.message); console.log('ERROR',e.message)});
 page.on('console', m => { if (m.type() === 'error') failures.push(m.text()); });
 page.on('request', r => { if (!r.url().startsWith(base) && !/^(data|blob):/.test(r.url())) external.push(r.url()); });
-await page.goto(base);
+await page.goto(base + '#games');
 await page.locator('[data-game="taptaptap"]').scrollIntoViewIfNeeded();
 assert.equal(await page.locator('[data-game]').count(), 4);
 assert.equal(await page.evaluate(() => document.documentElement.scrollWidth > innerWidth), false);

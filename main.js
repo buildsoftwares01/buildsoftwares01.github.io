@@ -21,29 +21,40 @@ motionPreference.addEventListener('change', syncMotionPreference);
 syncMotionPreference();
 setupSafariFriends();
 setupPlayCorner();
-// Real section links remain usable without JavaScript; highlight the current area.
-const pageTabs = $('.page-tabs');
+// Notebook bookmarks open one view at a time and remember the reader’s place.
+const views = [...document.querySelectorAll('[data-page-view]')];
 const sectionLinks = [...document.querySelectorAll('[data-section-link]')];
-const playSections = [$('#kids-corner'), $('#games')];
-let navigationFrame;
-function syncSectionNavigation() {
-  navigationFrame = null;
-  const boundary = pageTabs.getBoundingClientRect().bottom + 64;
-  let current = '#main';
-  playSections.forEach(section => {
-    if (section.getBoundingClientRect().top <= boundary) current = `#${section.id}`;
-  });
+const viewHashes = { invitation: '#main', kids: '#kids-corner', gaming: '#games' };
+const viewPositions = new Map();
+let currentView;
+const viewForHash = () => location.hash === '#kids-corner' ? 'kids' : location.hash === '#games' ? 'gaming' : 'invitation';
+function showView(view, { focus = true, restore = true } = {}) {
+  if ($('#game-dialog').open) {
+    gameTrigger = null;
+    $('#game-dialog').close();
+  }
+  if (currentView && currentView !== view) viewPositions.set(currentView, window.scrollY);
+  currentView = view;
+  document.body.dataset.view = view;
+  views.forEach(panel => { panel.hidden = panel.dataset.pageView !== view; });
   sectionLinks.forEach(link => {
-    if (link.hash === current) link.setAttribute('aria-current', 'location');
+    if (link.hash === viewHashes[view]) link.setAttribute('aria-current', 'page');
     else link.removeAttribute('aria-current');
   });
+  if (focus) $(viewHashes[view]).focus({ preventScroll: true });
+  if (restore) window.scrollTo({ top: viewPositions.get(view) || 0, behavior: 'instant' });
 }
-function scheduleSectionNavigation() {
-  if (!navigationFrame) navigationFrame = requestAnimationFrame(syncSectionNavigation);
-}
-window.addEventListener('scroll', scheduleSectionNavigation, { passive: true });
-window.addEventListener('resize', scheduleSectionNavigation);
-syncSectionNavigation();
+document.addEventListener('click', event => {
+  const link = event.target.closest('a[href]');
+  if (!link || event.defaultPrevented || event.button !== 0 || event.metaKey || event.ctrlKey || event.shiftKey || event.altKey) return;
+  const url = new URL(link.href);
+  if (url.origin !== location.origin || url.pathname !== location.pathname || !Object.values(viewHashes).includes(url.hash)) return;
+  event.preventDefault();
+  if (location.hash !== url.hash) history.pushState(null, '', url.hash);
+  showView(url.hash === '#kids-corner' ? 'kids' : url.hash === '#games' ? 'gaming' : 'invitation');
+});
+window.addEventListener('hashchange', () => showView(viewForHash()));
+showView(viewForHash(), { focus: false, restore: false });
 const paths = { calendar: '<rect x="3" y="5" width="18" height="16" rx="2"/><path d="M16 3v4M8 3v4M3 11h18m-13 5h2m4 0h2"/>', clock: '<circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/>', pin: '<path d="M20 10c0 6-8 12-8 12S4 16 4 10a8 8 0 1 1 16 0Z"/><circle cx="12" cy="10" r="2.5"/>', phone: '<rect x="6" y="2" width="12" height="20" rx="2"/><path d="M10 18h4"/>', message: '<path d="m4 17-1 5 5-2a9 9 0 1 0-4-3Z"/><path d="M8 8c0 4 4 7 7 7l1-2-3-1-1 1-2-2 1-1-1-3Z"/>' };
 document.querySelectorAll('[data-icon]').forEach(el => { el.innerHTML = `<svg viewBox="0 0 24 24" aria-hidden="true">${paths[el.dataset.icon]}</svg>`; });
 if ('IntersectionObserver' in window) {
@@ -117,11 +128,6 @@ document.querySelectorAll('[data-game]').forEach(button => button.addEventListen
 $('#close-game').addEventListener('click', () => gameDialog.close());
 $('#restart-game').addEventListener('click', loadGame);
 gameDialog.addEventListener('close', () => { clearGameLoading(); $('#game-frame-container').replaceChildren(); gameTrigger?.focus(); });
-document.querySelectorAll('[data-leave-game]').forEach(link => link.addEventListener('click', () => {
-  // The link takes focus to its section after the game is closed.
-  gameTrigger = null;
-  gameDialog.close();
-}));
 const rsvpDialog = $('#rsvp-dialog');
 const rsvpReady = /^[1-9]\d{7,14}$/.test(event.whatsappNumber);
 const guestAttendance = $('#guest-attendance');

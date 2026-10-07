@@ -42,7 +42,8 @@ try {
     assert.equal(await page.locator('#motion-toggle').count(), 1);
     assert.equal(await page.locator('.safari-fallback').count(), 0);
     await page.waitForFunction(() => [...document.querySelectorAll('.safari-home')].length === 5 && [...document.querySelectorAll('.safari-home')].every(home => home.dataset.renderer === '2d'));
-    assert(await page.locator('.safari-canvas').evaluateAll(canvases => canvases.every(canvas => canvas.getContext('2d').getImageData(0, 0, canvas.width, canvas.height).data.some((value, i) => i % 4 === 3 && value > 0))), 'All animals are painted before any scrolling');
+    assert.equal(await page.locator('#kids-corner').isVisible(), false, 'Kids corner does not lengthen the invitation');
+    await page.locator('body > .notebook-tabs').getByRole('link', { name: 'Kids corner', exact: true }).click();
     assert(await page.locator('.hero-art img').evaluate(img => img.complete && img.naturalWidth > 0));
     const friends = page.locator('.safari-friend');
     const homes = page.locator('.safari-home');
@@ -133,7 +134,7 @@ try {
     if (prefix === '/') {
       const gallery = await browser.newPage({ viewport: { width: 1400, height: 850 } });
       gallery.on('pageerror', error => failures.push(error.message));
-      await gallery.goto(base, { waitUntil: 'networkidle' });
+      await gallery.goto(base + '#kids-corner', { waitUntil: 'networkidle' });
       await gallery.evaluate(() => {
         document.body.classList.add('motion-paused');
         for (const child of document.body.children) if (child.id !== 'main') child.style.display = 'none';
@@ -185,6 +186,7 @@ try {
       assert(await missingArt.locator('#rsvp-dialog').isVisible(), 'Invitation still works if artwork is unavailable');
       await missingArt.close();
     }
+    await page.locator('body > .notebook-tabs').getByRole('link', { name: 'Gaming', exact: true }).click();
     for (const game of ['taptaptap', 'hextris', 'ohhi', 'flappy']) {
       let releaseScript;
       const scriptGate = new Promise(resolve => { releaseScript = resolve; });
