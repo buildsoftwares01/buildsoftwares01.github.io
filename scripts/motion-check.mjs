@@ -7,11 +7,21 @@ try {
   page.on('pageerror', error => errors.push(error.message));
   await page.goto(process.env.TEST_URL || 'http://127.0.0.1:5173');
   await page.evaluate(() => document.fonts.ready);
-  assert.equal(await page.locator('#animation-mode,.motion-controls').count(), 0, 'No animation setting');
-  assert.equal(await page.locator('h1 em').getAttribute('role'), 'button');
-  await page.locator('h1 em').focus();
+  await page.waitForFunction(() => [...document.querySelectorAll('.safari-home')].every(home => home.dataset.renderer === '2d'));
+  assert.equal(await page.locator('h1 em,.word-accent').evaluateAll(words => words.filter(word => word.hasAttribute('role') || word.tabIndex >= 0).length), 0, 'Reading text stays out of the tab order');
+  assert.equal(await page.locator('h1 em,.one>span,.word-accent').evaluateAll(words => words.filter(word => getComputedStyle(word).animationName !== 'none').length), 0, 'Reading text stays still');
+  await page.getByRole('button', {name:'Say hello to lion cub', exact:true}).focus();
   await page.keyboard.press('Enter');
-  assert(await page.locator('.accent-comic-burst').count() > 0, 'Full-mode text reacts to keyboard activation');
+  assert.equal(await page.locator('.safari-friend').first().getAttribute('data-gesture'), 'hello', 'Animal greeting works by keyboard');
+  assert.equal(await page.locator('.accent-comic-burst').count(), 0, 'No comic burst covers reading text');
+  await page.getByRole('button', {name:'Pause animations', exact:true}).click();
+  assert(await page.locator('body').evaluate(body => body.classList.contains('motion-paused')));
+  const pausedPose = await page.locator('.safari-canvas').first().evaluate(canvas => canvas.toDataURL());
+  await page.waitForTimeout(200);
+  assert.equal(await page.locator('.safari-canvas').first().evaluate(canvas => canvas.toDataURL()), pausedPose, 'Canvas movement stops while paused');
+  assert.equal(await page.locator('.ticker-track').evaluate(el => getComputedStyle(el).animationName), 'none');
+  await page.getByRole('button', {name:'Resume animations', exact:true}).click();
+  await page.locator('.safari-friend[data-gesture]').waitFor({state:'detached'});
   await page.locator('.site-header [data-rsvp]').click();
   await page.waitForFunction(() => document.body.classList.contains('motion-dialog'));
   assert.equal(await page.locator('.safari-stop').first().getAttribute('data-paused'), 'true', 'Dialog pauses animal movement');
@@ -42,7 +52,23 @@ try {
   }
   await page.setViewportSize({ width: 390, height: 844 });
   await page.emulateMedia({ reducedMotion: 'reduce' });
-  assert.equal(await page.locator('.ticker-track').evaluate(el => getComputedStyle(el).animationName), 'ribbon-scroll', 'Full animation is always enabled');
+  await page.waitForFunction(() => document.body.classList.contains('motion-paused'));
+  assert.equal(await page.locator('.ticker-track').evaluate(el => getComputedStyle(el).animationName), 'none', 'Reduced motion stops the ribbon');
+  assert(await page.locator('#motion-toggle').isDisabled());
+  const stillPose = await page.locator('.safari-canvas').first().evaluate(canvas => canvas.toDataURL());
+  await page.waitForTimeout(200);
+  assert.equal(await page.locator('.safari-canvas').first().evaluate(canvas => canvas.toDataURL()), stillPose, 'Reduced motion stops canvas loops');
+  for (const width of [320, 390, 768, 1440]) {
+    await page.setViewportSize({width,height:900});
+    assert(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth), `${width}px: paused ribbon has no overflow`);
+    assert(await page.locator('.ticker-group').first().locator('span').evaluateAll(phrases => phrases.every(phrase => {
+      const box = phrase.getBoundingClientRect();
+      return box.left >= 0 && box.right <= innerWidth;
+    })), `${width}px: every paused phrase is readable`);
+  }
+  await page.emulateMedia({reducedMotion:'no-preference'});
+  await page.waitForFunction(() => !document.body.classList.contains('motion-paused'));
+  assert.equal(await page.locator('.ticker-track').evaluate(el => getComputedStyle(el).animationName), 'ribbon-scroll', 'Changing device preference resumes decorations');
   for (const [name, width, height] of [['mobile', 390, 844], ['desktop', 1440, 1000]]) {
     const preview = await browser.newPage({ viewport: { width, height }, reducedMotion: 'reduce' });
     await preview.goto(process.env.TEST_URL || 'http://127.0.0.1:5173');
@@ -53,5 +79,5 @@ try {
     await preview.close();
   }
   assert.deepEqual(errors, []);
-  console.log('Responsive layouts, full animation, complete ribbon loop and dialog motion passed.');
+  console.log('Responsive layouts, steady reading text, keyboard greetings, pause/resume, reduced motion and dialog motion passed.');
 } finally { await browser.close(); }

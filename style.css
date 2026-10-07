@@ -113,17 +113,6 @@
 @media(max-width:1050px){.round-stamp strong{font-size:9px}}
 @media(max-width:760px){.round-stamp strong{font-size:8px;letter-spacing:0}.brand-small{font-size:6px;letter-spacing:1.4px}}
 
-/* Tap accents without removing their space or interrupting nearby controls. */
-.pop-accent{cursor:pointer;pointer-events:auto;touch-action:manipulation}
-.pop-accent-inline{display:inline-block}
-.pop-accent:focus-visible{outline:2px solid var(--orange);outline-offset:5px;border-radius:3px}
-.accent-comic-burst{position:fixed;z-index:100;pointer-events:none;transform:translate(-50%,-50%);contain:layout style}
-.accent-comic-burst svg{display:block;width:100%;height:100%;overflow:hidden}
-.comic-impact,.comic-lettering,.comic-ring{transform-origin:160px 120px}
-.comic-puff,.comic-shard{transform-box:fill-box;transform-origin:center}
-.comic-boom,.comic-boom-shadow{font-family:Impact,'Arial Black',var(--sans);font-size:65px;font-weight:1000;font-style:italic;letter-spacing:-2px;paint-order:stroke fill;stroke:#30241e;stroke-width:5px;stroke-linejoin:round;fill:#df452b}
-.comic-boom-shadow{fill:#30241e;stroke-width:6px}
-
 /* Safari welcome while the embedded game initializes. */
 #game-frame-container{position:relative;isolation:isolate}
 #game-frame-container iframe.is-loading{opacity:0;pointer-events:none}
@@ -151,15 +140,15 @@
 .safari-home:not([data-renderer="2d"]) .safari-friend{visibility:hidden}
 .safari-canvas{display:block;width:100%;height:100%;pointer-events:none}
 .safari-friend:focus-visible{outline:2px dashed var(--orange);outline-offset:-8px;background:#e9eddf55}
-.safari-boo{position:absolute;z-index:1;top:0;left:66%;padding:3px 6px;border:1px solid #b7653e;border-radius:9px 9px 9px 1px;background:#fff3cd;color:#a34f2f;font-size:10px;font-weight:700;letter-spacing:1px;opacity:0;transform:translateX(-50%);pointer-events:none}
+.safari-hello{position:absolute;z-index:1;top:0;left:66%;padding:3px 6px;border:1px solid #b7653e;border-radius:9px 9px 9px 1px;background:#fff3cd;color:#a34f2f;font-size:10px;font-weight:700;letter-spacing:1px;opacity:0;transform:translateX(-50%);pointer-events:none}
 .safari-zzz{position:absolute;top:10px;right:5px;opacity:0;color:#70896d;font-family:var(--serif);font-size:12px;letter-spacing:2px;pointer-events:none}
 .safari-home[data-state="sleep"] .safari-zzz{animation:safari-dream 2.8s ease-out infinite}
 .safari-home[data-startled] .safari-zzz{display:none}
-.safari-friend[data-gesture="boo"] .safari-boo{animation:safari-boo 1.2s both}
-.safari-friend[data-gesture="quiet"] .safari-boo{opacity:1}
+.safari-friend[data-gesture="hello"] .safari-hello{animation:safari-hello 1.2s both}
+.safari-friend[data-gesture="quiet"] .safari-hello{opacity:1}
 .safari-home[data-visible="false"] *,.safari-stop[data-paused="true"] *{animation-play-state:paused!important}
 @keyframes safari-dream{0%{opacity:0;transform:translateY(3px) scale(.8)}30%,70%{opacity:.9}100%{opacity:0;transform:translateY(-12px) scale(1.1)}}
-@keyframes safari-boo{0%{opacity:0;transform:translateX(-50%) scale(.5)}18%,65%{opacity:1;transform:translate(-50%,0) rotate(-7deg) scale(1.1)}100%{opacity:0;transform:translate(-50%,-4px)}}
+@keyframes safari-hello{0%{opacity:0;transform:translateX(-50%) scale(.5)}18%,65%{opacity:1;transform:translate(-50%,0) rotate(-7deg) scale(1.1)}100%{opacity:0;transform:translate(-50%,-4px)}}
 @media(max-width:760px){.safari-anchor{--safari-size:64px}.hero .safari-anchor{--safari-size:84px}.rsvp-section .safari-anchor{--safari-size:68px}}
 @media(max-width:360px){.safari-anchor,.hero .safari-anchor,.rsvp-section .safari-anchor{--safari-size:60px}}
 
@@ -309,4 +298,44 @@ input,select,textarea{border-radius:8px}
   .tap-rings{width:65px;height:65px}
   .rsvp-section h2{font-size:30px}
   .rsvp-section .safari-anchor{--safari-size:48px}
+}
+
+/* Keep reading steady, and give guests control over decorative movement. */
+.header-actions{display:flex;flex-direction:column;align-items:center;flex-shrink:0}
+.motion-toggle{min-height:44px;padding:8px 10px;background:transparent;border:0;border-radius:6px;color:var(--muted);font-size:12px;text-decoration:underline;text-underline-offset:4px}
+.motion-toggle:disabled{color:var(--muted);text-decoration:none}
+.site-header{height:120px}
+.hero-copy h1 em,.one>span,.one:after,.section-heading h2 em,.games-heading h2 em,.rsvp-section h2 em,.word-accent,.accent-shimmer:after,.detail-icon,.safari-frame,.party-shape{animation:none}
+.accent-shimmer:after{transform:none;opacity:.65}
+.hero-details{font-size:16px;gap:6px 0}
+.hero-details>*{flex-basis:100%}
+.hero-details>*+*{border:0;margin:0;padding:0}
+.hero-actions{margin-bottom:12px}
+.rsvp-guide{font-size:13px;line-height:1.6;margin-bottom:22px}
+.animal-hint{text-align:center;font-size:13px;margin-top:8px}
+.form-intro{font-size:14px;line-height:1.6;margin-bottom:18px}
+#rsvp-form input,#rsvp-form select{font-size:16px}
+.motion-paused *,.motion-paused *:before,.motion-paused *:after{animation:none!important;transition:none!important}
+html:has(.motion-paused){scroll-behavior:auto}
+.motion-paused .reveal{opacity:1;transform:none}
+.motion-paused .ticker-track{width:100%;transform:none}
+.motion-paused .ticker-group{width:100%;min-width:0;flex-wrap:wrap;justify-content:center;gap:12px 24px;padding:0 20px;text-align:center}
+.motion-paused .ticker-group[aria-hidden="true"],.motion-paused .ticker-group i{display:none}
+.motion-paused .safari-friend[data-gesture] .safari-hello{opacity:1}
+@media(prefers-reduced-motion:reduce){
+  html{scroll-behavior:auto}
+  *,*:before,*:after{animation:none!important;transition:none!important}
+  .reveal{opacity:1!important;transform:none!important}
+  .ticker-track{width:100%;transform:none}
+  .ticker-group{width:100%;min-width:0;flex-wrap:wrap;justify-content:center;gap:12px 24px;padding:0 20px;text-align:center}
+  .ticker-group[aria-hidden="true"],.ticker-group i{display:none}
+}
+@media(max-width:760px){
+  .site-header{height:112px}
+  .motion-toggle{font-size:11px;padding-inline:4px}
+  .hero-description,.section-heading p,.venue-copy>p,.rsvp-section p{font-size:16px}
+  .hero-details{font-size:16px}
+  .hero-actions{margin-bottom:10px}
+  .rsvp-guide{font-size:13px;max-width:280px;margin-inline:auto}
+  .animal-hint{font-size:12px}
 }

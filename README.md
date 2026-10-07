@@ -19,15 +19,15 @@ Publish only `dist/` to a static HTTPS host. GitHub Pages, Netlify and Vercel co
 
 Edit `event-config.js`. The configured celebration is Sunday 6 December 2026 at 11:00 am Mauritius time, at Paps Restaurant. Run `npm run check:ready` before sharing.
 
-The hero shows the date, time and venue. Every RSVP button opens the same form directly. On phones, RSVP and Directions remain available in a bottom action bar after the hero scrolls away. The RSVP section comes before the play corner.
+The hero shows the full date, Mauritius time and venue. Every RSVP button opens the same form directly. On phones, RSVP and Directions remain available in a bottom action bar after the hero scrolls away. The RSVP section comes before the play corner.
 
-Guests enter a name and party size to prepare a WhatsApp message. They review and send it themselves; the website does not send messages or claim attendance is confirmed. A copy-message fallback works when WhatsApp does not open, with manual selection if clipboard access is unavailable. Names and RSVP details are not stored. Calendar downloads use the Mauritius time zone and do not invent an event end time. Missing settings are labelled as pending.
+Guests enter a name and choose whether they can attend. Acceptances request a total headcount including the person replying and children, with an exact count for parties of six or more. Declines omit the headcount. Guests review and send the prepared message themselves in WhatsApp; the website does not send messages or claim attendance is confirmed. A copy-message fallback works when WhatsApp does not open, with manual selection if clipboard access is unavailable. Names and RSVP details are not stored. Calendar downloads use the Mauritius time zone and do not invent an event end time. Missing settings are labelled as pending.
 
 ## Artwork, motion and games
 
-The cream, sage and terracotta palette, illustrated venue card and picture-book safari animals are retained. Full animation is always active, with no on-page selector. All five sprite sheets and the tiger’s rolling pose preload at page open and decode in parallel, including animals below the fold. Each animal appears only after its real artwork is painted; no emoji face or static placeholder flashes first.
+The cream, sage and terracotta palette, visibly labelled venue illustration and picture-book safari animals are retained. Reading text stays still. The header offers a Pause/Resume animations button, and the operating system’s reduced-motion preference pauses all page decorations and canvas loops. Paused ribbon phrases wrap so every message remains readable. Motion choices stay in memory for the current page. All five sprite sheets and the tiger’s rolling pose preload at page open and decode in parallel, including animals below the fold. Each animal appears only after its real artwork is painted; no emoji face or static placeholder flashes first.
 
-Continuous in-between frames add head and neck movement, body bends, breathing, a smoother walking turn, springy monkey hops and a crouch-roll-bounce sequence for the tiger. Existing artwork stays local. Offscreen animals and page decorations behind open dialogs stop moving to avoid unnecessary work. Text surprises are deliberate taps.
+Continuous in-between frames add head and neck movement, body bends, breathing, a smoother walking turn, springy monkey hops and a crouch-roll-bounce sequence for the tiger. Existing artwork stays local. Offscreen animals and page decorations behind open dialogs stop moving to avoid unnecessary work. Animals offer gentle greetings by tap or keyboard activation, with a still greeting under reduced motion. Ordinary words have no surprise effects or extra keyboard stops.
 
 The play corner contains Tap Tap Tap, Hextris, 0h h1 and Safari Flyer. Phone cards use compact illustrated previews. Scores remain inside the isolated game session and disappear when it is closed. Games never report scores, ask for nicknames or contact a service.
 
@@ -52,8 +52,8 @@ The venue card is an original SVG illustration. Google Maps provides real visito
 Browser checks require installed Chrome on macOS, or `CHROME_PATH` pointing to Chrome elsewhere:
 
 - `npm run build && npm run test:pages`: domain-root and repository-subpath loading, animal activities, smooth animation frames, eager loading without placeholder faces, missing artwork, game loading, credits and source downloads.
-- With `npm run dev` running: `node scripts/invitation-check.mjs` checks direct RSVP entry points, mobile quick actions, WhatsApp URL encoding, clipboard/manual fallback, pending event settings and calendar timezone. WhatsApp is mocked; no messages are sent.
-- With `npm run dev` running: `node scripts/motion-check.mjs` checks responsive layouts, ribbon phrases, full animation, keyboard surprises and dialog motion.
+- With `npm run dev` running: `node scripts/invitation-check.mjs` checks direct RSVP entry points, acceptance/decline replies, exact larger-party counts, mobile quick actions, WhatsApp URL encoding, clipboard/manual fallback, pending event settings and calendar timezone. WhatsApp is mocked; no messages are sent.
+- With `npm run dev` running: `node scripts/motion-check.mjs` checks responsive layouts, readable ribbon phrases, stable reading text, keyboard greetings, pause/resume, reduced-motion preferences and dialog motion.
 - With `npm run preview -- --port 4173` running: `node scripts/game-check.mjs` exercises touch gameplay, replay, restart, closing, frame isolation and absence of external requests at phone and desktop widths.
 
 These checks use browser-emulated devices, not physical-device certification.

@@ -39,7 +39,8 @@ try {
     await page.clock.pauseAt(new Date('2026-10-02T08:00:01Z'));
     await page.goto(base, { waitUntil: 'networkidle' });
     await page.evaluate(() => document.fonts.ready);
-    assert.equal(await page.locator('#animation-mode,.motion-controls,.safari-fallback').count(), 0);
+    assert.equal(await page.locator('#motion-toggle').count(), 1);
+    assert.equal(await page.locator('.safari-fallback').count(), 0);
     await page.waitForFunction(() => [...document.querySelectorAll('.safari-home')].length === 5 && [...document.querySelectorAll('.safari-home')].every(home => home.dataset.renderer === '2d'));
     assert(await page.locator('.safari-canvas').evaluateAll(canvases => canvases.every(canvas => canvas.getContext('2d').getImageData(0, 0, canvas.width, canvas.height).data.some((value, i) => i % 4 === 3 && value > 0))), 'All animals are painted before any scrolling');
     assert(await page.locator('.hero-art img').evaluate(img => img.complete && img.naturalWidth > 0));
@@ -89,31 +90,34 @@ try {
       assert.equal(await homes.nth(i).getAttribute('data-state'), activity);
       const beforeTap = await pixels(friend);
       await friend.click();
-      assert.equal(await friend.getAttribute('data-gesture'), 'boo');
+      assert.equal(await friend.getAttribute('data-gesture'), 'hello');
 
       await page.clock.runFor(336);
       // Browser CSS animations use the rendering clock, not the mocked JS clock.
       await new Promise(resolve => setTimeout(resolve, 336));
-      assert(Number(await friend.locator('.safari-boo').evaluate(el => getComputedStyle(el).opacity)) > .9);
-      assert.notEqual(await pixels(friend), beforeTap, 'Tap produces an animated 2D leap');
+      assert(Number(await friend.locator('.safari-hello').evaluate(el => getComputedStyle(el).opacity)) > .9);
+      assert.notEqual(await pixels(friend), beforeTap, 'Tap produces a visible greeting');
       assert(await friend.locator('canvas').evaluate(canvas => {
         const row = canvas.getContext('2d').getImageData(0, 0, canvas.width, 1).data;
         return row.every((value, index) => index % 4 !== 3 || value < 128);
-      }), 'The leap keeps the animal head and ears inside the canvas');
-      if (i === 0) await page.screenshot({ path: `test-results/safari-boo-${prefix === '/' ? 'desktop' : 'mobile'}.png` });
+      }), 'The greeting keeps the animal head and ears inside the canvas');
+      if (i === 0) await page.screenshot({ path: `test-results/safari-hello-${prefix === '/' ? 'desktop' : 'mobile'}.png` });
       await page.clock.runFor(880);
-      assert.equal(await friend.getAttribute('data-gesture'), null, 'Surprise ends');
+      assert.equal(await friend.getAttribute('data-gesture'), null, 'Greeting ends');
       assert.equal(await homes.nth(i).getAttribute('data-state'), activity, 'The same activity resumes after touch');
       await friend.evaluate(el => el.blur());
     }
     await page.screenshot({ path: `test-results/safari-bottom-${prefix === '/' ? 'desktop' : 'mobile'}.png` });
-    // Full motion stays active, without any on-page setting.
+    // Reduced motion keeps text and canvas decorations still.
+    await page.clock.resume();
     await page.emulateMedia({ reducedMotion: 'reduce' });
-    await page.clock.runFor(32);
-    assert.equal(await page.locator('h1 em').evaluate(el => getComputedStyle(el).animationName), 'word-wiggle');
+    await page.waitForFunction(() => document.body.classList.contains('motion-paused'));
+    assert.equal(await page.locator('h1 em').evaluate(el => getComputedStyle(el).animationName), 'none');
+    assert(await page.locator('#motion-toggle').isDisabled());
+    assert.equal(await page.locator('.safari-stop').first().getAttribute('data-paused'), 'true');
     await page.emulateMedia({ reducedMotion: 'no-preference' });
+    await page.waitForFunction(() => !document.body.classList.contains('motion-paused'));
     await page.evaluate(() => { document.activeElement.blur(); window.scrollTo({ top: 0, behavior: 'instant' }); });
-    await page.clock.runFor(32);
     assert(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth), 'No horizontal overflow');
     await page.screenshot({ path: `test-results/safari-${prefix === '/' ? 'desktop' : 'mobile'}.png` });
     if (prefix === '/Birthday/') {
@@ -125,7 +129,6 @@ try {
       }
       await page.setViewportSize({ width: 390, height: 844 });
     }
-    await page.clock.resume();
     if (prefix === '/') {
       const gallery = await browser.newPage({ viewport: { width: 1400, height: 850 } });
       gallery.on('pageerror', error => failures.push(error.message));

@@ -1,9 +1,24 @@
 import { event } from './event-config.js';
 import { getEventDate } from './event-details.js';
 import { setupSafariFriends } from './safari-friends.js';
-import { comicBurst, clearComicBursts } from './comic-burst.js';
-setupSafariFriends();
 const $ = (s) => document.querySelector(s);
+const motionPreference = window.matchMedia('(prefers-reduced-motion: reduce)');
+const motionToggle = $('#motion-toggle');
+let guestPausedMotion = false;
+function syncMotionPreference() {
+  const paused = guestPausedMotion || motionPreference.matches;
+  document.body.classList.toggle('motion-paused', paused);
+  motionToggle.disabled = motionPreference.matches;
+  motionToggle.textContent = motionPreference.matches ? 'Reduced motion enabled' : paused ? 'Resume animations' : 'Pause animations';
+  motionToggle.title = motionPreference.matches ? 'Animations follow your device’s reduced-motion setting.' : '';
+}
+motionToggle.addEventListener('click', () => {
+  guestPausedMotion = !guestPausedMotion;
+  syncMotionPreference();
+});
+motionPreference.addEventListener('change', syncMotionPreference);
+syncMotionPreference();
+setupSafariFriends();
 const paths = { calendar: '<rect x="3" y="5" width="18" height="16" rx="2"/><path d="M16 3v4M8 3v4M3 11h18m-13 5h2m4 0h2"/>', clock: '<circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/>', pin: '<path d="M20 10c0 6-8 12-8 12S4 16 4 10a8 8 0 1 1 16 0Z"/><circle cx="12" cy="10" r="2.5"/>', phone: '<rect x="6" y="2" width="12" height="20" rx="2"/><path d="M10 18h4"/>', message: '<path d="m4 17-1 5 5-2a9 9 0 1 0-4-3Z"/><path d="M8 8c0 4 4 7 7 7l1-2-3-1-1 1-2-2 1-1-1-3Z"/>' };
 document.querySelectorAll('[data-icon]').forEach(el => { el.innerHTML = `<svg viewBox="0 0 24 24" aria-hidden="true">${paths[el.dataset.icon]}</svg>`; });
 if ('IntersectionObserver' in window) {
@@ -11,17 +26,10 @@ if ('IntersectionObserver' in window) {
   const observer = new IntersectionObserver(entries => entries.forEach(entry => { if (entry.isIntersecting) { entry.target.classList.add('in-view'); observer.unobserve(entry.target); } }), { threshold: .08 });
   document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
 }
-// Full animation is always active; there is no page motion setting.
-const activeAccentAnimations = new Set();
-function stopAccentPops() {
-  clearComicBursts();
-  activeAccentAnimations.forEach(animation => animation.cancel());
-}
 // Pause decorations behind dialogs so guests can concentrate on the task.
 function syncDialogMotion() {
   const open = !!document.querySelector('dialog[open]');
   document.body.classList.toggle('motion-dialog', open);
-  if (open) stopAccentPops();
 }
 new MutationObserver(syncDialogMotion).observe(document.body, { subtree: true, attributes: true, attributeFilter: ['open'] });
 const mobileActions = $('#mobile-actions');
@@ -30,51 +38,6 @@ if ('IntersectionObserver' in window) {
     mobileActions.hidden = entry.isIntersecting || entry.boundingClientRect.top >= 0;
   }).observe($('.hero'));
 }
-// Keep each accent's space in the layout during the cartoon impact.
-const poppingAccents = new WeakSet();
-window.addEventListener('scroll', clearComicBursts, { passive: true });
-window.addEventListener('resize', clearComicBursts);
-document.querySelectorAll('h1 em, h2 em, .word-accent, .brand-icon span, .footer-brand span, .heart-mark, .signature > span, .floating-heart, .rsvp-heart, .art-spark, .title-star, .one > span:last-child, .preview-doodle, .hex-inner').forEach(accent => {
-  accent.classList.add('pop-accent');
-  if (getComputedStyle(accent).display === 'inline') accent.classList.add('pop-accent-inline');
-  const hasControl = accent.closest('a, button');
-  const canBeButton = !hasControl && !accent.closest('[aria-hidden="true"]');
-  if (canBeButton) {
-    accent.tabIndex = 0;
-    accent.setAttribute('role', 'button');
-  }
-  const pop = () => {
-    if (poppingAccents.has(accent)) return;
-    if (document.body.classList.contains('motion-dialog')) return;
-    poppingAccents.add(accent);
-    comicBurst(accent);
-    const frames = [
-          { scale: '1', opacity: 1, filter: 'brightness(1) drop-shadow(0 0 0 transparent)' },
-          { scale: '1.18 .72', opacity: 1, filter: 'brightness(1.2)', offset: .07 },
-          { scale: '1.35', opacity: 0, filter: 'brightness(1.5)', offset: .18 },
-          { scale: '.4', opacity: 0, offset: .72 },
-          { scale: '1.15 .9', opacity: 1, filter: 'brightness(1)', offset: .9 },
-          { scale: '1', opacity: 1, filter: 'brightness(1) drop-shadow(0 0 0 transparent)' },
-        ];
-    // Separate scale from the existing decorative transforms; no layout shift.
-    const animation = accent.animate(frames, { duration: 1250, easing: 'ease-out' });
-    activeAccentAnimations.add(animation);
-    const finish = () => {
-      poppingAccents.delete(accent);
-      activeAccentAnimations.delete(animation);
-    };
-    animation.onfinish = finish;
-    animation.oncancel = finish;
-  };
-  // Decorative surprises are deliberate taps, leaving reading undisturbed.
-  accent.addEventListener('pointerdown', e => { if (e.isPrimary && e.button === 0) pop(); });
-  accent.addEventListener('click', pop);
-  if (canBeButton) {
-    accent.addEventListener('keydown', e => {
-      if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); if (!e.repeat) pop(); }
-    });
-  }
-});
 const games = {
   taptaptap: { name: 'Tap Tap Tap', help: 'Tap the blue circles before time runs out. Avoid red circles. Start with New Game.' },
   flappy: { name: 'Safari Flyer', help: 'Tap to flap through the green branches. On a computer, click or press Space.' },
@@ -131,6 +94,21 @@ $('#restart-game').addEventListener('click', loadGame);
 gameDialog.addEventListener('close', () => { clearGameLoading(); $('#game-frame-container').replaceChildren(); gameTrigger?.focus(); });
 const rsvpDialog = $('#rsvp-dialog');
 const rsvpReady = /^[1-9]\d{7,14}$/.test(event.whatsappNumber);
+const guestAttendance = $('#guest-attendance');
+const guestCount = $('#guest-count');
+const guestTotal = $('#guest-total');
+function syncRSVPFields() {
+  const attending = guestAttendance.value === 'yes';
+  const largeParty = attending && guestCount.value === '6+';
+  $('#guest-party').hidden = !attending;
+  guestCount.disabled = !attending;
+  $('#guest-large-party').hidden = !largeParty;
+  guestTotal.disabled = !largeParty;
+  guestTotal.required = largeParty;
+}
+guestAttendance.addEventListener('change', syncRSVPFields);
+guestCount.addEventListener('change', syncRSVPFields);
+syncRSVPFields();
 let rsvpTrigger;
 document.querySelectorAll('[data-rsvp]').forEach(button => button.addEventListener('click', () => {
   rsvpTrigger = button;
@@ -148,10 +126,13 @@ $('#rsvp-form').addEventListener('submit', e => {
   if (!rsvpReady) return;
   const name = $('#guest-name').value.trim();
   if (!name) { $('#guest-name').setCustomValidity('Please enter your name.'); $('#guest-name').reportValidity(); return; }
-  const count = $('#guest-count').value;
-  const message = `Hi Madhav & Urvashee! It's ${name}. We'd love to celebrate Vihaan's first birthday at Paps Restaurant. RSVP: ${count} ${count === '1' ? 'guest' : 'guests'}. Can’t wait for cake and birthday adventures!`;
+  const count = guestCount.value === '6+' ? guestTotal.value : guestCount.value;
+  const reply = guestAttendance.value === 'yes'
+    ? `We'd love to celebrate Vihaan's first birthday at Paps Restaurant. Total attending: ${count} ${count === '1' ? 'guest' : 'guests'}. Can’t wait for cake and birthday adventures!`
+    : `Sorry, we can't make it to Vihaan's first birthday. Sending Vihaan lots of love for his big day!`;
+  const message = `Hi Madhav & Urvashee! It's ${name}. ${reply}`;
   $('#rsvp-message').value = message;
-  $('#rsvp-status').textContent = 'Your message is ready. Review and send it in WhatsApp to RSVP.';
+  $('#rsvp-status').textContent = 'Your reply is ready. Send your message in WhatsApp to finish your RSVP.';
   $('#copy-status').textContent = '';
   $('#rsvp-fallback').hidden = false;
   window.open(`https://wa.me/${event.whatsappNumber}?text=${encodeURIComponent(message)}`, '_blank', 'noopener,noreferrer');
@@ -177,10 +158,10 @@ if (!eventDate) {
 }
 if (!eventDate || !event.time) $('#event-time').textContent = 'Time coming soon';
 $('#hero-date').textContent = eventDate
-  ? new Intl.DateTimeFormat('en-GB', { weekday: 'long', day: 'numeric', month: 'long', timeZone: 'Indian/Mauritius' }).format(eventDate)
+  ? new Intl.DateTimeFormat('en-GB', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric', timeZone: 'Indian/Mauritius' }).format(eventDate)
   : 'Date coming soon';
 $('#hero-time').textContent = eventDate && event.time
-  ? new Intl.DateTimeFormat('en-GB', { hour: 'numeric', minute: '2-digit', hour12: true, timeZone: 'Indian/Mauritius' }).format(eventDate)
+  ? new Intl.DateTimeFormat('en-GB', { hour: 'numeric', minute: '2-digit', hour12: true, timeZone: 'Indian/Mauritius' }).format(eventDate) + ' · Mauritius time'
   : 'Time coming soon';
 if (event.date) {
   const date = getEventDate(event);

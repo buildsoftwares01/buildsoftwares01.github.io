@@ -106,12 +106,12 @@ export async function createHabitat(canvas, kind) {
     }
     if (surprise !== null) {
       frame = 5;
-      const leap = Math.max(0, Math.sin(Math.PI * Math.min(1, surprise / .74)));
-      const bounce = surprise > .74 ? Math.sin((surprise - .74) / .26 * Math.PI) : 0;
-      x = 0; y = (-leap * 12 - bounce * 3) * motion;
-      angle = Math.sin(surprise * 28) * .08;
-      scaleX = 1 + leap * .10; scaleY = 1 + leap * .10;
-      headSway = Math.sin(surprise * Math.PI * 4) * .02;
+      // A small greeting keeps the character in place and the nearby text readable.
+      const greeting = Math.sin(Math.PI * surprise);
+      x = 0; y = -greeting * 3 * motion;
+      angle = Math.sin(surprise * Math.PI * 2) * .035;
+      scaleX = 1; scaleY = 1;
+      headSway = Math.sin(surprise * Math.PI * 2) * .015;
       headBob = 0; bodyBend = 0;
     }
     const rolling = state === 'roll' && surprise === null;

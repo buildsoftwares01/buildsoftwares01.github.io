@@ -16,7 +16,7 @@ export function setupSafariFriends() {
     const stage = document.createElement('span');
     stage.className = 'safari-friends safari-stop';
     stage.setAttribute('role', 'group');
-    stage.setAttribute('aria-label', `${animal.name}: tap for a surprise`);
+    stage.setAttribute('aria-label', animal.name);
     anchor.append(stage);
     return stage;
   });
@@ -27,7 +27,7 @@ export function setupSafariFriends() {
     home.className = 'safari-home';
     home.dataset.animal = animal.kind;
     home.dataset.state = animal.state;
-    home.innerHTML = `<button disabled type="button" class="safari-friend" aria-label="${animal.name}: tap for a playful jumpscare" title="Tap ${animal.name} for a surprise!"><canvas class="safari-canvas" aria-hidden="true"></canvas><span class="safari-boo" aria-hidden="true">BOO!</span><span class="safari-zzz" aria-hidden="true">z Z z</span></button>`;
+    home.innerHTML = `<button disabled type="button" class="safari-friend" aria-label="Say hello to ${animal.name.toLowerCase()}" title="Tap to say hello"><canvas class="safari-canvas" aria-hidden="true"></canvas><span class="safari-hello" aria-hidden="true">Hi!</span><span class="safari-zzz" aria-hidden="true">z Z z</span></button>`;
     stops[i].append(home);
     const button = home.querySelector('button');
     const friend = { home, button, canvas: home.querySelector('canvas'), activity: animal.state, duration: animal.duration, elapsed: 0, visible: false, busy: false, reaction: 0, habitat: null, loading: false };
@@ -35,7 +35,7 @@ export function setupSafariFriends() {
       if (friend.busy) return;
       friend.busy = true;
       friend.reaction = 0;
-      button.dataset.gesture = still() ? 'quiet' : 'boo';
+      button.dataset.gesture = still() ? 'quiet' : 'hello';
       home.dataset.startled = '';
       render(friend);
       sync();
@@ -84,7 +84,7 @@ export function setupSafariFriends() {
     const paused = still() || document.hidden;
     stops.forEach(stop => { stop.dataset.paused = String(paused); });
     friends.forEach(friend => {
-      if (friend.busy) friend.button.dataset.gesture = still() ? 'quiet' : 'boo';
+      if (friend.busy) friend.button.dataset.gesture = still() ? 'quiet' : 'hello';
       if (friend.visible) render(friend);
     });
     if (!paused && friends.some(friend => friend.visible)) frame = requestAnimationFrame(tick);

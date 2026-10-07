@@ -53,18 +53,22 @@ try {
    assert.equal(await page.locator('#event-day').textContent(),'Sunday');
    assert.match(await page.locator('#event-time').textContent(),new RegExp(test.event.time));
    assert(await page.locator('#rsvp-form').isVisible());
+   assert.equal(await page.locator('#guest-party').isVisible(),false);
    await page.locator('#guest-name').fill('   ');
+   await page.locator('#guest-attendance').selectOption('yes');
    await page.locator('#rsvp-form button[type=submit]').tap();
    assert.equal(await page.evaluate(()=>window.testOpenedURL),undefined);
    const guest = 'A & B <script>alert(1)</script> 🦁';
    await page.locator('#guest-name').fill(guest);
    await page.locator('#guest-count').selectOption('3');
+   if (test.actual) await page.screenshot({path:'test-results/rsvp-accept.png'});
    await page.locator('#rsvp-form button[type=submit]').tap();
    const url=new URL(await page.evaluate(()=>window.testOpenedURL));
    assert.equal(url.origin,'https://wa.me');
    assert.equal(url.pathname,`/${test.event.whatsappNumber}`);
    assert(url.searchParams.get('text').includes(guest));
    assert(url.searchParams.get('text').includes('3 guests'));
+   assert((await page.locator('#rsvp-status').textContent()).includes('Send your message in WhatsApp'));
    assert(await page.locator('#rsvp-fallback').isVisible());
    assert.equal(await page.locator('#rsvp-message').inputValue(), url.searchParams.get('text'));
    await page.locator('#copy-rsvp').tap();
@@ -73,6 +77,27 @@ try {
    await page.locator('#copy-rsvp').tap();
    assert((await page.locator('#copy-status').textContent()).includes('Select and copy'));
    assert.equal(await page.evaluate(() => document.activeElement.id), 'rsvp-message');
+   await page.locator('#guest-count').selectOption('6+');
+   assert(await page.locator('#guest-total').isVisible());
+   await page.locator('#guest-total').fill('5');
+   await page.evaluate(()=>{window.testOpenedURL=undefined});
+   await page.locator('#rsvp-form button[type=submit]').tap();
+   assert.equal(await page.evaluate(()=>window.testOpenedURL),undefined,'Reject an invalid larger-party count');
+   await page.locator('#guest-total').fill('8');
+   await page.locator('#rsvp-form button[type=submit]').tap();
+   assert(new URL(await page.evaluate(()=>window.testOpenedURL)).searchParams.get('text').includes('8 guests'),'Exact larger-party count reaches the message');
+   await page.locator('#guest-attendance').selectOption('no');
+   assert.equal(await page.locator('#guest-party').isVisible(),false);
+   assert.equal(await page.locator('#rsvp-fallback').isVisible(),false,'Changing the answer clears the stale prepared reply');
+   assert(await page.locator('#guest-total').isDisabled());
+   if (test.actual) await page.screenshot({path:'test-results/rsvp-decline.png'});
+   await page.locator('#rsvp-form button[type=submit]').tap();
+   const decline = new URL(await page.evaluate(()=>window.testOpenedURL)).searchParams.get('text');
+   assert(decline.includes(guest));
+   assert(decline.includes("Sorry, we can't make it"));
+   assert(!decline.includes('guests') && !decline.includes("We'd love to celebrate"),'Decline has no headcount or acceptance language');
+   await page.locator('#guest-attendance').selectOption('yes');
+   assert(await page.locator('#guest-total').isVisible(),'Switching back restores the exact count field');
    assert.equal(await page.evaluate(()=>localStorage.length),0);
   }
   await page.locator('#close-rsvp').tap();
@@ -91,7 +116,7 @@ try {
   assert.equal(await page.locator('#share-button').count(),0);
   assert.deepEqual(blocked,[],'No external requests');
   assert.deepEqual(errors,[],'No runtime errors');
-  console.log(`${test.name}: RSVP, calendar and privacy passed`);
+  console.log(`${test.name}: acceptance, decline, headcounts, calendar and privacy passed`);
   await context.close();
  }
 } finally { await browser.close(); }
