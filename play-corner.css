@@ -1,0 +1,92 @@
+/* Small, deliberate activities in the invitation's picture-book palette. */
+.little-playground{margin:36px 0 48px;scroll-margin-top:24px}
+.playground-heading{margin-bottom:24px}
+.playground-heading h3,.classic-games-heading h3{font:500 30px/1.3 var(--serif);letter-spacing:-.5px;margin:8px 0}
+.playground-heading p,.classic-games-heading p{font-size:14px}
+.activity-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:20px}
+.activity-card{position:relative;isolation:isolate;overflow:hidden;display:flex;flex-direction:column;padding:26px;border:1px solid #dce1d1;border-radius:22px;background:#fbf9f1}
+.balloon-card{background:#f7f0df}.cake-card{background:#f8eee6}.feed-card{background:#f2f4e7}
+.activity-label{display:flex;align-items:center;gap:12px}
+.activity-number{flex-shrink:0;display:grid;place-items:center;width:30px;height:30px;border-radius:50%;background:#e5e9d9;color:#4f6850;font-size:11px;font-weight:600}
+.activity-label h4{font:500 25px/1.25 var(--serif);letter-spacing:-.4px;margin:0}
+.activity-instruction{font-size:14px;line-height:1.6;margin-top:12px;min-height:45px}
+.activity-status{font-size:14px;line-height:1.6;min-height:45px;margin-top:18px;text-align:center;color:var(--green)}
+.balloon-garden{display:flex;align-items:center;justify-content:center;gap:5px;flex:1;min-height:240px;padding:18px 0}
+.balloon-button{position:relative;flex:1;max-width:100px;min-width:56px;padding:0 0 12px;background:transparent;border:0;border-radius:16px;color:#76906a;touch-action:manipulation}
+.balloon-peach{color:#c88560;transform:translateY(-14px)}.balloon-gold{color:#c5a151;transform:translateY(6px)}
+.balloon-shape{display:block;width:100%;height:auto;max-height:175px;stroke:none;fill:currentColor;overflow:visible}
+.balloon-shine{fill:none;stroke:#fffdf5;stroke-width:5;opacity:.6}
+.balloon-string{stroke:#8b8874;stroke-width:1.5;fill:none}.balloon-heart{fill:#fff9e9;stroke:none;opacity:.7}
+.balloon-tap{display:block;font-size:12px;color:var(--green);margin-top:8px}
+.balloon-reply{position:absolute;top:22px;left:0;right:0;font:46px/1 var(--serif);color:#ab813c;visibility:hidden}
+.balloon-reply small{display:block;font:13px var(--sans);margin-top:8px}
+.balloon-button.is-popped .balloon-shape{visibility:hidden}.balloon-button.is-popped .balloon-reply{visibility:visible}
+.birthday-cake{display:block;width:100%;max-width:250px;align-self:center;padding:6px 0 0;background:transparent;border:0;border-radius:20px;touch-action:manipulation;color:var(--green)}
+.birthday-cake svg{display:block;width:100%;height:auto;stroke:none;fill:none}
+.cake-shadow{fill:#d3b79b;opacity:.45}.cake-base{fill:#e7c692}.cake-top{fill:#fff3da}.cake-icing{fill:#bb7557}
+.cake-sprinkles{stroke:#fff0d4;stroke-width:4;stroke-linecap:round}.cake-candle{fill:#839b72}
+.candle-stripes{stroke:#eaf0dd;stroke-width:3}.candle-wick{stroke:#635044;stroke-width:2}.candle-flame{fill:#d6a14c}
+.candle-smoke{stroke:#8b8874;stroke-width:2;stroke-linecap:round;display:none}
+.cake-one{fill:#fff4df;stroke:none;font:600 37px var(--serif)}
+.cake-tap{display:block;font-size:12px;margin:4px 0 10px}
+.wish-made .candle-flame{display:none}.wish-made .candle-smoke{display:block;opacity:0}.wish-made .cake-tap{visibility:hidden}
+.wish-friends{display:flex;align-items:center;justify-content:center;gap:0;min-height:52px}
+.wish-friends canvas{display:block;width:20%;max-width:64px;height:56px;background:#ffffff60;border-radius:50%}
+.activity-controls{min-height:48px;display:flex;justify-content:center;margin-top:4px}
+.activity-replay{min-height:44px;align-self:center;padding:8px 4px;background:transparent;border:0;border-bottom:1px solid #9ba98b;color:var(--green);font-size:13px}
+.feeding-garden{display:flex;align-items:center;justify-content:center;gap:8px;min-height:265px;flex:1;padding:10px 0}
+.leaf-token,.feed-giraffe{position:relative;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px;padding:10px 4px;border:0;border-radius:18px;background:transparent;touch-action:manipulation}
+.leaf-token{flex:0 1 90px;min-width:64px}.leaf-token svg{width:64px;height:75px;fill:none;stroke:none;transition:transform .25s}
+.leaf-fill{fill:#8da375;stroke:#617e54;stroke-width:2}.leaf-vein{stroke:#edf2da;stroke-width:2;fill:none}
+.leaf-token span,.feed-giraffe>span{font-size:12px;line-height:1.5;color:var(--green);text-align:center}
+.leaf-picked .leaf-token{background:#e0e9cf;outline:2px solid #758d63;outline-offset:2px}.leaf-picked .leaf-token svg{transform:rotate(-12deg)}
+.feed-giraffe{flex:1;max-width:170px;min-width:90px}.feed-giraffe canvas{display:block;width:100%;height:170px}
+.feed-giraffe .giraffe-yum{position:absolute;top:10px;right:0;display:none;background:#fff7da;border:1px solid #b5bb9a;border-radius:12px 12px 12px 0;padding:6px 10px;font-size:14px}
+.is-feeding .giraffe-yum{display:block}.leaf-flight{position:absolute;z-index:2;width:64px;height:75px;fill:none;stroke:none;pointer-events:none}
+.seek-card{margin-top:20px;background:#f5f4e8}.seek-heading{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px}
+.seek-card .activity-instruction{min-height:0}.hideandseek-grid{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:16px;margin:20px 0 16px}
+.seek-bush{position:relative;isolation:isolate;overflow:hidden;min-height:166px;background:radial-gradient(ellipse at 50% 80%,#e0e7cf,transparent 75%);border:0;border-radius:20px;padding:4px 0 34px;touch-action:manipulation}
+.seek-bush canvas{display:block;width:100%;height:132px}
+.bush-leaf{position:absolute;top:42px;width:63%;height:85px;border-radius:4% 90% 5% 80%;background:#91a77b;border:1px solid #6d8658;transition:transform .65s ease,opacity .65s ease;pointer-events:none}
+.bush-leaf:after{content:'';position:absolute;top:49%;left:8%;width:83%;height:1px;background:#e4ebd3;transform:rotate(35deg)}
+.bush-left{left:0;transform:rotate(-14deg);z-index:1}.bush-right{right:0;transform:scaleX(-1) rotate(-14deg);background:#6d8a60;z-index:2}
+.seek-name{position:absolute;bottom:9px;left:0;right:0;font-size:13px;line-height:1.5;z-index:3;color:var(--green)}
+.is-found .bush-left{transform:translateX(-70%) rotate(-45deg);opacity:.15}.is-found .bush-right{transform:translateX(70%) scaleX(-1) rotate(-45deg);opacity:.15}
+.is-found .seek-name{font-weight:600}.safari-collection{display:flex;justify-content:center;gap:12px;margin-top:4px}
+.safari-collection>span{display:grid;place-items:center;width:46px;height:46px;border:1px dashed #a0af8b;border-radius:50%;color:#a8b394;font-size:20px}
+.safari-collection>span.is-collected{background:#e8edda;border-style:solid;font-size:9px;overflow:hidden}.safari-collection canvas{width:42px;height:42px;display:block}
+.seek-card .activity-status{margin-top:14px;min-height:24px}.classic-games-heading{margin:34px 0 22px}
+.party-confetti{position:absolute;inset:0;z-index:4;pointer-events:none;overflow:hidden;border-radius:inherit}
+.party-star{position:absolute;display:block;width:12px;height:12px;clip-path:polygon(50% 0,61% 35%,98% 35%,68% 57%,79% 94%,50% 72%,21% 94%,32% 57%,2% 35%,39% 35%);background:#c6a153;pointer-events:none}
+.star-colour-1{background:#8a9e72}.star-colour-2{background:#c98360}.star-colour-3{background:#b3bb9c}
+.animal-hint a{text-decoration:underline;text-underline-offset:3px;white-space:nowrap}
+.elephant-splash{position:absolute;inset:0;pointer-events:none;display:none;overflow:hidden}
+.safari-home[data-animal="elephant"] .safari-friend[data-gesture] .elephant-splash{display:block}
+.elephant-splash i{position:absolute;left:65%;top:40%;width:5px;height:7px;background:#7fa5aa;border-radius:60% 60% 70% 70%;animation:elephant-sprinkle 1.2s ease-out both}
+.elephant-splash i:nth-child(2){left:78%;top:25%;animation-delay:.05s}.elephant-splash i:nth-child(3){left:86%;top:43%;animation-delay:.1s}
+.elephant-splash i:nth-child(4){left:72%;top:56%;animation-delay:.15s}.elephant-splash i:nth-child(5){left:91%;top:63%;animation-delay:.05s}
+.elephant-splash i:nth-child(6){left:62%;top:18%;animation-delay:.1s}
+@keyframes elephant-sprinkle{0%{transform:translate(-10px,8px) scale(.5);opacity:0}25%{opacity:1}100%{transform:translate(4px,12px) scale(.8);opacity:0}}
+@media(max-width:1050px){
+  .activity-grid{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .feed-card{grid-column:1/-1;display:grid;grid-template-columns:1fr 1fr;align-items:center;column-gap:30px}
+  .feed-card .activity-label,.feed-card .activity-instruction,.feed-card .activity-status{grid-column:1}
+  .feed-card .feeding-garden{grid-column:2;grid-row:1/4}.feed-card .activity-status{text-align:left}
+  .hideandseek-grid{gap:10px}
+}
+@media(max-width:760px){
+  .little-playground{margin-top:28px;margin-bottom:36px}.playground-heading h3,.classic-games-heading h3{font-size:27px}
+  .activity-grid{grid-template-columns:1fr;gap:16px}.activity-card{padding:22px 20px;border-radius:18px}
+  .feed-card{grid-column:auto;display:flex}.feed-card .activity-status{text-align:center}
+  .activity-instruction{font-size:15px;min-height:0}.activity-status{font-size:15px}
+  .balloon-garden{min-height:220px;gap:10px}.balloon-button{max-width:95px}
+  .feeding-garden{min-height:230px}.feed-giraffe canvas{height:160px}
+  .hideandseek-grid{grid-template-columns:repeat(3,minmax(0,1fr));gap:12px 6px}
+  .seek-bush{min-height:144px}.seek-bush canvas{height:110px}.bush-leaf{top:32px;height:70px}
+  .safari-collection{gap:8px}.safari-collection>span{width:40px;height:40px}.safari-collection canvas{width:36px;height:36px}
+  .seek-name{font-size:12px}
+}
+@media(max-width:360px){
+  .activity-card{padding:20px 16px}.activity-label h4{font-size:23px}.activity-label{gap:8px}
+  .hideandseek-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.balloon-garden{gap:4px}
+}

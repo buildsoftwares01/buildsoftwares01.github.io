@@ -1,11 +1,11 @@
 import { createHabitat } from './safari-sprites.js';
 
 const cast = [
-  { kind: 'lion', name: 'Lion cub', state: 'walk', duration: 10000 },
-  { kind: 'elephant', name: 'Baby elephant', state: 'sleep', duration: 4800 },
-  { kind: 'giraffe', name: 'Little giraffe', state: 'eat', duration: 4800 },
-  { kind: 'monkey', name: 'Little monkey', state: 'play', duration: 5200 },
-  { kind: 'tiger', name: 'Tiger cub', state: 'roll', duration: 6200 },
+  { kind: 'lion', name: 'Lion cub', state: 'walk', duration: 10000, greeting: 'Hi!', action: 'Wave with lion cub' },
+  { kind: 'elephant', name: 'Baby elephant', state: 'sleep', duration: 4800, greeting: 'Splash!', action: 'Make baby elephant splash' },
+  { kind: 'giraffe', name: 'Little giraffe', state: 'eat', duration: 4800, greeting: 'Yum!', action: 'Make little giraffe munch a leaf' },
+  { kind: 'monkey', name: 'Little monkey', state: 'play', duration: 5200, greeting: 'Whee!', action: 'Make little monkey somersault' },
+  { kind: 'tiger', name: 'Tiger cub', state: 'roll', duration: 6200, greeting: 'Roll!', action: 'Make tiger cub roll' },
 ];
 export function setupSafariFriends() {
   const main = document.querySelector('#main');
@@ -27,7 +27,7 @@ export function setupSafariFriends() {
     home.className = 'safari-home';
     home.dataset.animal = animal.kind;
     home.dataset.state = animal.state;
-    home.innerHTML = `<button disabled type="button" class="safari-friend" aria-label="Say hello to ${animal.name.toLowerCase()}" title="Tap to say hello"><canvas class="safari-canvas" aria-hidden="true"></canvas><span class="safari-hello" aria-hidden="true">Hi!</span><span class="safari-zzz" aria-hidden="true">z Z z</span></button>`;
+    home.innerHTML = `<button disabled type="button" class="safari-friend" aria-label="${animal.action}" title="${animal.action}"><canvas class="safari-canvas" aria-hidden="true"></canvas><span class="safari-hello" aria-hidden="true">${animal.greeting}</span><span class="safari-zzz" aria-hidden="true">z Z z</span><span class="elephant-splash" aria-hidden="true">${'<i></i>'.repeat(6)}</span></button>`;
     stops[i].append(home);
     const button = home.querySelector('button');
     const friend = { home, button, canvas: home.querySelector('canvas'), activity: animal.state, duration: animal.duration, elapsed: 0, visible: false, busy: false, reaction: 0, habitat: null, loading: false };
@@ -50,7 +50,7 @@ export function setupSafariFriends() {
   });
   function render(friend) {
     const phase = friend.elapsed % friend.duration / friend.duration;
-    friend.habitat?.render(friend.activity, friend.elapsed, phase, friend.busy ? (still() ? .4 : Math.min(1, friend.reaction / 1200)) : null);
+    friend.habitat?.render(friend.activity, friend.elapsed, phase, friend.busy ? (still() ? .4 : Math.min(1, friend.reaction / 1200)) : null, still());
   }
   async function load(friend) {
     if (friend.loading) return;

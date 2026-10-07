@@ -37,7 +37,7 @@ export async function createHabitat(canvas, kind) {
   warped.height = cellHeight + padding * 2;
   const warpDraw = warped.getContext('2d');
 
-  function render(state, elapsed, phase, surprise) {
+  function render(state, elapsed, phase, surprise, quiet = false) {
     const width = canvas.clientWidth, height = canvas.clientHeight;
     if (!width || !height) return;
     const ratio = Math.min(devicePixelRatio, 2);
@@ -106,15 +106,36 @@ export async function createHabitat(canvas, kind) {
     }
     if (surprise !== null) {
       frame = 5;
-      // A small greeting keeps the character in place and the nearby text readable.
+      // Each character has its own short response; quiet mode shows a still pose.
       const greeting = Math.sin(Math.PI * surprise);
       x = 0; y = -greeting * 3 * motion;
       angle = Math.sin(surprise * Math.PI * 2) * .035;
       scaleX = 1; scaleY = 1;
       headSway = Math.sin(surprise * Math.PI * 2) * .015;
       headBob = 0; bodyBend = 0;
+      if (!quiet && kind === 'lion') {
+        angle = Math.sin(surprise * Math.PI * 6) * .07;
+        headSway = Math.sin(surprise * Math.PI * 6) * .04;
+      } else if (kind === 'elephant') {
+        frame = 0;
+        headSway = quiet ? 0 : Math.sin(surprise * Math.PI * 4) * .06;
+        angle = quiet ? 0 : -greeting * .08;
+      } else if (kind === 'giraffe') {
+        frame = 2;
+        angle = quiet ? 0 : greeting * .09;
+        headBob = quiet ? 0 : Math.sin(surprise * Math.PI * 8) * .03;
+        scaleY = quiet ? 1 : 1 + Math.sin(surprise * Math.PI * 8) * .025;
+      } else if (!quiet && kind === 'monkey') {
+        angle = smooth(surprise) * Math.PI * 2;
+        y = -greeting * 8 * motion;
+      } else if (kind === 'tiger') {
+        angle = quiet ? 0 : smooth(surprise) * Math.PI * 2;
+        x = quiet ? 0 : Math.sin(surprise * Math.PI * 2) * width * .06;
+        y = 0;
+      }
+      if (quiet) { x = 0; y = 0; angle = 0; headSway = 0; }
     }
-    const rolling = state === 'roll' && surprise === null;
+    const rolling = state === 'roll' && surprise === null || kind === 'tiger' && surprise !== null;
     const size = rolling ? Math.min(width, height) * .66 : Math.min(width * .74, height * .76);
     draw.fillStyle = 'rgba(78, 75, 58, .09)';
     draw.beginPath();

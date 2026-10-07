@@ -1,6 +1,7 @@
 import { event } from './event-config.js';
 import { getEventDate } from './event-details.js';
 import { setupSafariFriends } from './safari-friends.js';
+import { setupPlayCorner } from './play-corner.js';
 const $ = (s) => document.querySelector(s);
 const motionPreference = window.matchMedia('(prefers-reduced-motion: reduce)');
 const motionToggle = $('#motion-toggle');
@@ -19,6 +20,7 @@ motionToggle.addEventListener('click', () => {
 motionPreference.addEventListener('change', syncMotionPreference);
 syncMotionPreference();
 setupSafariFriends();
+setupPlayCorner();
 const paths = { calendar: '<rect x="3" y="5" width="18" height="16" rx="2"/><path d="M16 3v4M8 3v4M3 11h18m-13 5h2m4 0h2"/>', clock: '<circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/>', pin: '<path d="M20 10c0 6-8 12-8 12S4 16 4 10a8 8 0 1 1 16 0Z"/><circle cx="12" cy="10" r="2.5"/>', phone: '<rect x="6" y="2" width="12" height="20" rx="2"/><path d="M10 18h4"/>', message: '<path d="m4 17-1 5 5-2a9 9 0 1 0-4-3Z"/><path d="M8 8c0 4 4 7 7 7l1-2-3-1-1 1-2-2 1-1-1-3Z"/>' };
 document.querySelectorAll('[data-icon]').forEach(el => { el.innerHTML = `<svg viewBox="0 0 24 24" aria-hidden="true">${paths[el.dataset.icon]}</svg>`; });
 if ('IntersectionObserver' in window) {

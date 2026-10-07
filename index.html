@@ -22,6 +22,7 @@
   <link rel="preload" as="image" href="/assets/animals/tiger-roll.webp">
   <link rel="stylesheet" href="/assets/fonts.css">
   <link rel="stylesheet" href="./style.css">
+  <link rel="stylesheet" href="./play-corner.css">
   <script type="module" src="./main.js"></script>
 </head>
 <body>
@@ -42,7 +43,7 @@
         <p class="rsvp-guide">Prepare your reply here, then send it in WhatsApp.</p>
         <div class="parent-note"><span class="heart-mark" aria-hidden="true">♡</span><span>With full hearts & a whole lot of excitement,<br><strong>Madhav & Urvashee</strong></span></div>
       </div>
-      <div class="hero-art"><div class="safari-frame"><img src="./assets/safari.webp" width="1254" height="1254" alt="A playful lion, giraffe and tiger celebrate a first birthday with sage balloons and a giant number one" fetchpriority="high"></div><span class="party-shape shape-peach" aria-hidden="true"></span><span class="party-shape shape-sage" aria-hidden="true"></span><div class="round-stamp"><span>SMALL BOY</span><strong>BIG<br>ADVENTURES</strong><span>EST. WITH LOVE ♡</span></div><span class="floating-heart" aria-hidden="true">♡</span><span class="art-spark spark-one" aria-hidden="true">✧</span><span class="art-spark spark-two" aria-hidden="true">✦</span><div class="art-caption">a sweet little chapter begins</div><p class="animal-hint">Tap the animals to say hello.</p></div>
+      <div class="hero-art"><div class="safari-frame"><img src="./assets/safari.webp" width="1254" height="1254" alt="A playful lion, giraffe and tiger celebrate a first birthday with sage balloons and a giant number one" fetchpriority="high"></div><span class="party-shape shape-peach" aria-hidden="true"></span><span class="party-shape shape-sage" aria-hidden="true"></span><div class="round-stamp"><span>SMALL BOY</span><strong>BIG<br>ADVENTURES</strong><span>EST. WITH LOVE ♡</span></div><span class="floating-heart" aria-hidden="true">♡</span><span class="art-spark spark-one" aria-hidden="true">✧</span><span class="art-spark spark-two" aria-hidden="true">✦</span><div class="art-caption">a sweet little chapter begins</div><p class="animal-hint">Tap the animals for a little surprise. <a href="#little-playground">More safari fun ↓</a></p></div>
     </section>
     <div class="ticker">
       <div class="ticker-window">
@@ -67,7 +68,56 @@
     </section>
     <section id="rsvp" class="rsvp-section wrap section-space reveal"><span class="rsvp-spark" aria-hidden="true">✳</span><span class="rsvp-heart" aria-hidden="true">♡</span><div class="eyebrow">OUR FAVOURITE PEOPLE. OUR FAVOURITE DAY.</div><h2>It wouldn't be the same<br><span class="safari-anchor" data-safari-anchor="tiger"><em>without you.</em></span></h2><p>Come for the cake. Stay for the <span class="word-accent accent-bounce">fun.</span><br>Let us know if you'll be part of Vihaan's big little day.</p><button class="button" id="rsvp-button" data-rsvp type="button"><span data-icon="message"></span> RSVP on WhatsApp <span aria-hidden="true">↗</span></button><div class="rsvp-calendar"><button class="text-link" data-calendar type="button" hidden><span data-icon="calendar"></span> Add to calendar ↗</button></div><span class="rsvp-note" id="rsvp-note">A little message to Madhav & Urvashee</span><div class="signature">With love, always.<br><strong>Madhav, Urvashee & little Vihaan</strong><span>♡</span></div></section>
     <section id="games" class="games-section section-space">
-      <div class="wrap"><div class="games-heading reveal"><div><div class="eyebrow">A LITTLE PLAY BEFORE THE BIG DAY</div><h2>Let the <span class="safari-anchor" data-safari-anchor="monkey"><em>fun begin.</em></span></h2></div><p>For little explorers & big kids at heart.<br>Four little adventures. Tap to <span class="word-accent accent-bounce">play!</span></p></div>
+      <div class="wrap"><div class="games-heading reveal"><div><div class="eyebrow">A LITTLE PLAY BEFORE THE BIG DAY</div><h2>Let the <span class="safari-anchor" data-safari-anchor="monkey"><em>fun begin.</em></span></h2></div><p>Little surprises for little explorers.<br>Tap, play & make a birthday wish.</p></div>
+        <div id="little-playground" class="little-playground" aria-labelledby="playground-title" hidden>
+          <div class="playground-heading"><span class="eyebrow">LITTLE HANDS. BIG DISCOVERIES.</span><h3 id="playground-title">A little birthday playground</h3><p>Big friendly buttons. A little surprise with every tap.</p></div>
+          <div class="activity-grid">
+            <article class="activity-card balloon-card" aria-labelledby="balloon-title">
+              <div class="activity-label"><span class="activity-number" aria-hidden="true">01</span><h4 id="balloon-title">Balloons & little stars</h4></div>
+              <p class="activity-instruction">Tap a balloon to make a shower of stars.</p>
+              <div class="balloon-garden">
+                <button class="balloon-button balloon-sage" type="button" aria-label="Pop green balloon"><svg class="balloon-shape" viewBox="0 0 90 155" aria-hidden="true"><ellipse cx="45" cy="45" rx="33" ry="40"/><path class="balloon-shine" d="M25 29c2-7 6-11 10-13"/><path class="balloon-knot" d="m45 85-6 7h12Z"/><path class="balloon-string" d="M45 92c-14 15 13 24 0 37s-5 12-3 21"/><path class="balloon-heart" d="M45 55 33 43c-8-10 6-17 12-7 6-10 20-3 12 7Z"/></svg><span class="balloon-reply" aria-hidden="true">✦<small>Stars!</small></span><span class="balloon-tap">Tap me</span></button>
+                <button class="balloon-button balloon-peach" type="button" aria-label="Pop peach balloon"><svg class="balloon-shape" viewBox="0 0 90 155" aria-hidden="true"><ellipse cx="45" cy="45" rx="33" ry="40"/><path class="balloon-shine" d="M25 29c2-7 6-11 10-13"/><path class="balloon-knot" d="m45 85-6 7h12Z"/><path class="balloon-string" d="M45 92c-14 15 13 24 0 37s-5 12-3 21"/><path class="balloon-heart" d="M45 55 33 43c-8-10 6-17 12-7 6-10 20-3 12 7Z"/></svg><span class="balloon-reply" aria-hidden="true">✦<small>Stars!</small></span><span class="balloon-tap">Tap me</span></button>
+                <button class="balloon-button balloon-gold" type="button" aria-label="Pop golden balloon"><svg class="balloon-shape" viewBox="0 0 90 155" aria-hidden="true"><ellipse cx="45" cy="45" rx="33" ry="40"/><path class="balloon-shine" d="M25 29c2-7 6-11 10-13"/><path class="balloon-knot" d="m45 85-6 7h12Z"/><path class="balloon-string" d="M45 92c-14 15 13 24 0 37s-5 12-3 21"/><path class="balloon-heart" d="M45 55 33 43c-8-10 6-17 12-7 6-10 20-3 12 7Z"/></svg><span class="balloon-reply" aria-hidden="true">✦<small>Stars!</small></span><span class="balloon-tap">Tap me</span></button>
+              </div>
+              <p class="activity-status" id="balloon-status" role="status">Which colour will you pick?</p>
+            </article>
+            <article class="activity-card cake-card" aria-labelledby="cake-title">
+              <div class="activity-label"><span class="activity-number" aria-hidden="true">02</span><h4 id="cake-title">Make a birthday wish</h4></div>
+              <p class="activity-instruction">Tap the candle to make a wish for Vihaan.</p>
+              <button id="birthday-candle" class="birthday-cake" type="button" aria-label="Blow out birthday candle">
+                <svg viewBox="0 0 250 200" aria-hidden="true"><ellipse class="cake-shadow" cx="125" cy="181" rx="92" ry="10"/><path class="cake-base" d="M49 102h152v69c0 16-152 16-152 0Z"/><ellipse class="cake-top" cx="125" cy="104" rx="76" ry="20"/><path class="cake-icing" d="M49 104c0 16 23 12 23 29s17 20 20 2 15-19 21-4 21 18 23-1 18-20 23-3 20 19 23-5 19-7 19-18c-21 19-130 19-152 0Z"/><path class="cake-sprinkles" d="m73 155 4-6m20 15 3-7m25 9 4-6m25 4 2-7m21-2 4-7"/><rect class="cake-candle" x="117" y="60" width="16" height="40" rx="3"/><path class="candle-stripes" d="m118 71 14-8m-14 23 14-8m-14 23 14-8"/><path class="candle-wick" d="M125 61v-8"/><path class="candle-flame" d="M125 55c-19-3-12-17 0-33 1 13 20 27 0 33Z"/><path class="candle-smoke" d="M125 53c-20-9 20-15 2-31"/><text class="cake-one" x="125" y="162" text-anchor="middle">1</text></svg>
+                <span class="cake-tap">Tap the candle ✦</span>
+              </button>
+              <div class="wish-friends" aria-hidden="true"><canvas data-play-animal="lion"></canvas><canvas data-play-animal="elephant"></canvas><canvas data-play-animal="giraffe"></canvas><canvas data-play-animal="monkey"></canvas><canvas data-play-animal="tiger"></canvas></div>
+              <p class="activity-status" id="wish-status" role="status">One little candle. One lovely wish.</p>
+              <div class="activity-controls"><button class="activity-replay" id="relight-candle" type="button" hidden>Light the candle again ↻</button></div>
+            </article>
+            <article class="activity-card feed-card" aria-labelledby="feed-title">
+              <div class="activity-label"><span class="activity-number" aria-hidden="true">03</span><h4 id="feed-title">A leaf for giraffe</h4></div>
+              <p class="activity-instruction">Pick a leaf, then tap our hungry friend.</p>
+              <div class="feeding-garden">
+                <button class="leaf-token" id="pick-leaf" type="button" aria-pressed="false"><svg viewBox="0 0 80 90" aria-hidden="true"><path class="leaf-fill" d="M17 68C1 22 34 7 67 6c6 35-3 71-43 68Z"/><path class="leaf-vein" d="M12 85 56 22M30 60l-7-20m19 3 19-6"/></svg><span>1. Pick a leaf</span></button>
+                <button class="feed-giraffe" id="feed-giraffe" type="button" disabled aria-label="Feed the giraffe"><canvas data-play-animal="giraffe" aria-hidden="true"></canvas><span>2. Feed giraffe</span><span class="giraffe-yum" aria-hidden="true">Yum!</span></button>
+              </div>
+              <p class="activity-status" id="feed-status" role="status">Giraffe would love a little leafy snack.</p>
+            </article>
+          </div>
+          <article class="activity-card seek-card" aria-labelledby="seek-title">
+            <div class="seek-heading"><div class="activity-label"><span class="activity-number" aria-hidden="true">04</span><h4 id="seek-title">Safari hide-and-seek</h4></div><button class="activity-replay" id="replay-seek" type="button" hidden>Hide them again ↻</button></div>
+            <p class="activity-instruction">Five friends are hiding in the leaves. Tap each bush to find them!</p>
+            <div class="hideandseek-grid">
+              <button class="seek-bush" data-seek="lion" type="button" aria-label="Look behind bush 1" aria-pressed="false"><canvas data-play-animal="lion" aria-hidden="true"></canvas><span class="bush-leaf bush-left" aria-hidden="true"></span><span class="bush-leaf bush-right" aria-hidden="true"></span><span class="seek-name">Tap a leaf</span></button>
+              <button class="seek-bush" data-seek="elephant" type="button" aria-label="Look behind bush 2" aria-pressed="false"><canvas data-play-animal="elephant" aria-hidden="true"></canvas><span class="bush-leaf bush-left" aria-hidden="true"></span><span class="bush-leaf bush-right" aria-hidden="true"></span><span class="seek-name">Tap a leaf</span></button>
+              <button class="seek-bush" data-seek="giraffe" type="button" aria-label="Look behind bush 3" aria-pressed="false"><canvas data-play-animal="giraffe" aria-hidden="true"></canvas><span class="bush-leaf bush-left" aria-hidden="true"></span><span class="bush-leaf bush-right" aria-hidden="true"></span><span class="seek-name">Tap a leaf</span></button>
+              <button class="seek-bush" data-seek="monkey" type="button" aria-label="Look behind bush 4" aria-pressed="false"><canvas data-play-animal="monkey" aria-hidden="true"></canvas><span class="bush-leaf bush-left" aria-hidden="true"></span><span class="bush-leaf bush-right" aria-hidden="true"></span><span class="seek-name">Tap a leaf</span></button>
+              <button class="seek-bush" data-seek="tiger" type="button" aria-label="Look behind bush 5" aria-pressed="false"><canvas data-play-animal="tiger" aria-hidden="true"></canvas><span class="bush-leaf bush-left" aria-hidden="true"></span><span class="bush-leaf bush-right" aria-hidden="true"></span><span class="seek-name">Tap a leaf</span></button>
+            </div>
+            <div class="safari-collection" aria-label="Your safari friends"><span role="img" data-sticker="lion" aria-label="Lion: not found">✦</span><span role="img" data-sticker="elephant" aria-label="Elephant: not found">✦</span><span role="img" data-sticker="giraffe" aria-label="Giraffe: not found">✦</span><span role="img" data-sticker="monkey" aria-label="Monkey: not found">✦</span><span role="img" data-sticker="tiger" aria-label="Tiger: not found">✦</span></div>
+            <p class="activity-status" id="seek-status" role="status">Found 0 of 5 safari friends.</p>
+          </article>
+        </div>
+        <div class="classic-games-heading"><h3>More little adventures</h3><p>A colourful challenge for bigger explorers, too.</p></div>
         <div class="games-grid">
           <button class="game-card reveal" data-game="taptaptap" type="button"><div class="game-preview preview-tap" aria-hidden="true"><span class="game-tag">MAKE EVERY TAP COUNT</span><div class="tap-rings"><i></i><span>tap!</span></div><span class="tap-dot"></span><span class="preview-doodle">✧</span></div><div class="game-content"><span class="game-type">TAP · REACT · REPEAT</span><h3>Tap Tap Tap <span>↗</span></h3><p>Quick fingers. Happy little victories.</p><span class="play-label">Let's play <span>→</span></span></div></button>
           <button class="game-card reveal" data-game="hextris" type="button"><div class="game-preview preview-hextris" aria-hidden="true"><span class="game-tag">A COLOURFUL LITTLE CHALLENGE</span><div class="hexagon hex-outer"><div class="hexagon hex-middle"><div class="hexagon hex-inner">✦</div></div></div><span class="hex-dot dot-one"></span><span class="hex-dot dot-two"></span></div><div class="game-content"><span class="game-type">ROTATE · MATCH · SMILE</span><h3>Hextris <span>↗</span></h3><p>A happy spin on a colourful classic.</p><span class="play-label">Let's play <span>→</span></span></div></button>
