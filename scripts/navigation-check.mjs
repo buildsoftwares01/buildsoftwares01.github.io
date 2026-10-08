@@ -16,6 +16,18 @@ try {
     const nav = page.locator('.site-header .section-nav');
     assert.equal(await nav.getByRole('link').count(), 6);
     assert.equal(await page.locator('#kids-corner .safari-friend').count(), 5);
+    for (const [section, animal] of [['.hero', 'lion'], ['#celebration', 'elephant'], ['#venue', 'giraffe'], ['#rsvp', 'tiger'], ['#games', 'monkey']]) {
+      const home = page.locator(`${section} .safari-home`);
+      assert.equal(await home.count(), 1, `${section} keeps its companion`);
+      assert.equal(await home.getAttribute('data-animal'), animal);
+      await home.locator('button').scrollIntoViewIfNeeded();
+      await page.waitForFunction(selector => document.querySelector(selector)?.dataset.painted === 'true', `${section} .safari-home`);
+      await home.locator('button').click();
+      assert.equal(await home.locator('button').getAttribute('data-gesture'), 'quiet', 'Section companions remain interactive with reduced motion');
+      const box = await home.boundingBox();
+      assert(box.width >= 44 && box.height >= 44 && box.x >= 0 && box.x + box.width <= width, 'Section animals fit and keep accessible touch targets');
+    }
+    await nav.getByRole('link', { name: 'Invitation', exact: true }).click();
     assert.equal(await page.locator('#kids-corner .activity-card').count(), 4);
     assert.equal(await page.locator('#games [data-game]').count(), 4);
 
@@ -48,7 +60,7 @@ try {
       await checkAnchor(hash);
       await checkPage();
       assert.equal(await nav.getByRole('link', { name: label, exact: true }).getAttribute('aria-current'), 'location');
-      if (hash === '#kids-corner') await page.waitForFunction(() => [...document.querySelectorAll('.safari-home')].every(home => home.dataset.painted === 'true'));
+      await page.waitForFunction(hash => [...document.querySelectorAll(`${hash} .safari-home`)].every(home => home.dataset.painted === 'true'), hash);
       if ((width === 390 || width === 1440) && ['#kids-corner', '#games'].includes(hash)) {
         await page.screenshot({ path: `test-results/navbar-${width}-${hash.slice(1)}.png` });
       }

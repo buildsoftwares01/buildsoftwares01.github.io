@@ -10,9 +10,11 @@ const cast = [
 export function setupSafariFriends() {
   const main = document.querySelector('#main');
   if (!main || main.querySelector('.safari-friends')) return;
-  // The interactive cast lives together in Kids corner and scrolls with the document.
-  const stops = cast.map(animal => {
-    const anchor = main.querySelector(`[data-safari-anchor="${animal.kind}"]`);
+  // Each section companion and Kids corner friend has its own animation state.
+  const placements = [...main.querySelectorAll('[data-safari-anchor]')].map(anchor => ({
+    anchor, animal: cast.find(animal => animal.kind === anchor.dataset.safariAnchor),
+  })).filter(({ animal }) => animal);
+  const stops = placements.map(({ anchor, animal }) => {
     const stage = document.createElement('span');
     stage.className = 'safari-friends safari-stop';
     stage.setAttribute('role', 'group');
@@ -22,7 +24,7 @@ export function setupSafariFriends() {
   });
   const still = () => document.body.classList.contains('motion-dialog') || document.body.classList.contains('motion-paused');
   let frame = 0, last = null;
-  const friends = cast.map((animal, i) => {
+  const friends = placements.map(({ animal }, i) => {
     const home = document.createElement('span');
     home.className = 'safari-home';
     home.dataset.animal = animal.kind;
@@ -100,7 +102,7 @@ export function setupSafariFriends() {
     }
     sync();
   });
-  // Decode the cast now; hidden views paint their animals when opened.
+  // Decode every companion now, and repaint when its section resizes.
   const resizeArtwork = new ResizeObserver(entries => entries.forEach(({ target }) => {
     const friend = friends.find(friend => friend.canvas === target);
     if (friend) render(friend);

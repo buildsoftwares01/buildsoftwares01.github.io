@@ -130,7 +130,7 @@
 
 @media(max-height:550px){.game-loading img{height:16dvh}.game-loading{padding:10px}.game-loading-dots{margin-top:10px}}
 
-/* Interactive animal controls share the picture-book artwork in Kids corner. */
+/* Interactive companions sit beside section headings and in Kids corner. */
 .safari-anchor{--safari-size:78px;display:inline-flex;align-items:center;gap:2px;max-width:100%;vertical-align:middle;white-space:nowrap}
 .hero .safari-anchor{--safari-size:108px}
 .rsvp-section .safari-anchor{--safari-size:88px}
