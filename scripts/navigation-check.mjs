@@ -12,8 +12,8 @@ try {
     page.on('pageerror', error => errors.push(error.message));
     await page.goto(base);
     await page.evaluate(() => document.fonts.ready);
-    const tabs = page.locator('body > .notebook-tabs');
-    assert.equal(await tabs.getByRole('link').count(), 2);
+    const tabs = page.locator('.site-header .section-nav');
+    assert.equal(await tabs.getByRole('link').count(), 6);
     assert.equal(await page.locator('#kids-corner').isVisible(), false);
     assert.equal(await page.locator('#games').isVisible(), false);
     assert.equal(await page.locator('#kids-corner .safari-friend').count(), 5);
@@ -24,11 +24,20 @@ try {
       assert(await tabs.locator('a').evaluateAll(links => links.every(link => {
         const rect = link.getBoundingClientRect();
         return rect.top >= 0 && rect.bottom <= innerHeight && rect.left >= 0 && rect.right <= innerWidth && rect.width >= 44 && rect.height >= 44 && document.elementFromPoint(rect.x + rect.width / 2, rect.y + rect.height / 2) === link;
-      })), `${width}px: both side tabs stay visible and tappable`);
+      })), `${width}px: all top links stay visible and tappable`);
       assert(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth), `${width}px: no horizontal overflow`);
     }
     await checkTabs();
-    if (width === 390) await page.screenshot({ path: 'test-results/notebook-phone-invitation.png' });
+    for (const [label, hash] of [['Celebration', '#celebration'], ['Venue', '#venue'], ['RSVP', '#rsvp']]) {
+      await tabs.getByRole('link', { name: label, exact: true }).click();
+      assert.equal(new URL(page.url()).hash, hash);
+      assert.equal(await page.evaluate(() => document.activeElement.id), hash.slice(1));
+      assert(await page.locator(hash).evaluate(el => el.getBoundingClientRect().top >= document.querySelector('.site-header').getBoundingClientRect().bottom), 'Anchors clear the sticky header');
+      await checkTabs();
+    }
+    await tabs.getByRole('link', { name: 'Invitation', exact: true }).click();
+    assert.equal(await page.evaluate(() => scrollY), 0);
+    if (width === 390) await page.screenshot({ path: 'test-results/navbar-phone-invitation.png' });
     for (const target of ['#celebration', '#venue', '#rsvp', '.site-footer']) {
       await page.locator(target).scrollIntoViewIfNeeded();
       await checkTabs();
@@ -48,7 +57,7 @@ try {
       assert.equal(await tabs.getByRole('link', { name: label, exact: true }).getAttribute('aria-current'), 'page');
       await checkTabs();
       if (view === 'kids') await page.waitForFunction(() => [...document.querySelectorAll('.safari-home')].every(home => home.dataset.painted === 'true'));
-      if (width === 390 || width === 1440) await page.screenshot({ path: `test-results/notebook-${width}-${view}.png` });
+      if (width === 390 || width === 1440) await page.screenshot({ path: `test-results/navbar-${width}-${view}.png` });
     }
     await page.locator('[data-game="taptaptap"]').click();
     assert(await page.locator('#game-dialog').isVisible());
@@ -71,6 +80,11 @@ try {
     await page.goBack();
     await page.waitForFunction(() => document.body.dataset.view === 'invitation' && !document.querySelector('#game-dialog').open && !document.querySelector('iframe'));
     await checkTabs();
+    await tabs.getByRole('link', { name: 'Kids corner', exact: true }).click();
+    await tabs.getByRole('link', { name: 'Venue', exact: true }).click();
+    assert(await page.locator('#venue').isVisible(), 'Invitation sections open from corners');
+    assert.equal(await page.locator('#kids-corner').isVisible(), false);
+    await checkTabs();
     await page.setViewportSize({ width: 844, height: 390 });
     await checkTabs();
     assert.deepEqual(errors, []);
@@ -87,12 +101,12 @@ try {
   const plain = await browser.newPage({ javaScriptEnabled: false, viewport: { width: 390, height: 844 }, reducedMotion: 'reduce' });
   await plain.goto(base);
   assert.equal(await plain.locator('#games').isVisible(), false);
-  await plain.locator('body > .notebook-tabs').getByRole('link', { name: 'Gaming', exact: true }).click();
+  await plain.locator('.site-header .section-nav').getByRole('link', { name: 'Gaming', exact: true }).click();
   assert(await plain.locator('#games').isVisible());
   assert.equal(await plain.locator('.hero').isVisible(), false);
   await plain.locator('#games .corner-back').click();
   assert(await plain.locator('.hero').isVisible());
   assert.equal(await plain.locator('#games').isVisible(), false);
   await plain.close();
-  console.log('Notebook side tabs, separate views, keyboard focus, reading position, history, direct links and game exits passed on phones, desktop and landscape.');
+  console.log('Sticky top navigation, separate views, keyboard focus, reading position, history, direct links and game exits passed on phones, desktop and landscape.');
 } finally { await browser.close(); }

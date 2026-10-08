@@ -43,7 +43,7 @@ try {
     assert.equal(await page.locator('.safari-fallback').count(), 0);
     await page.waitForFunction(() => [...document.querySelectorAll('.safari-home')].length === 5 && [...document.querySelectorAll('.safari-home')].every(home => home.dataset.renderer === '2d'));
     assert.equal(await page.locator('#kids-corner').isVisible(), false, 'Kids corner does not lengthen the invitation');
-    await page.locator('body > .notebook-tabs').getByRole('link', { name: 'Kids corner', exact: true }).click();
+    await page.locator('.site-header .section-nav').getByRole('link', { name: 'Kids corner', exact: true }).click();
     assert(await page.locator('.hero-art img').evaluate(img => img.complete && img.naturalWidth > 0));
     const friends = page.locator('.safari-friend');
     const homes = page.locator('.safari-home');
@@ -186,7 +186,7 @@ try {
       assert(await missingArt.locator('#rsvp-dialog').isVisible(), 'Invitation still works if artwork is unavailable');
       await missingArt.close();
     }
-    await page.locator('body > .notebook-tabs').getByRole('link', { name: 'Gaming', exact: true }).click();
+    await page.locator('.site-header .section-nav').getByRole('link', { name: 'Gaming', exact: true }).click();
     for (const game of ['taptaptap', 'hextris', 'ohhi', 'flappy']) {
       let releaseScript;
       const scriptGate = new Promise(resolve => { releaseScript = resolve; });

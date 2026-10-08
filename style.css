@@ -340,51 +340,62 @@ html:has(.motion-paused){scroll-behavior:auto}
   .animal-hint{font-size:12px}
 }
 
-/* Notebook bookmarks stay on the edge; each corner opens its own page view. */
-html{scroll-padding-top:20px}
-body{padding-right:56px}
-.site-header{height:104px;border-bottom:1px solid var(--line)}
-.site-header .brand{font-size:32px}
-.notebook-tabs{position:fixed;right:0;top:50%;transform:translateY(-50%);z-index:30;display:flex;flex-direction:column;gap:12px;align-items:flex-end}
-.notebook-tab{display:flex;align-items:center;justify-content:center;writing-mode:vertical-rl;width:48px;min-height:126px;padding:16px 12px;border:1px solid #a1b495;border-right:0;border-radius:12px 0 0 5px;color:#304e3e;font-size:14px;font-weight:600;letter-spacing:.4px;box-shadow:-3px 4px 0 #304e3e12;transition:width .2s,background .2s}
-.kids-tab{background:#dae5c9}
-.gaming-tab{background:#ecd0b9;border-color:#cba888;min-height:106px}
-.notebook-tab:hover,.notebook-tab[aria-current="page"]{width:54px}
-.notebook-tab[aria-current="page"]{border-left:4px solid var(--green);box-shadow:-4px 4px 0 #304e3e20}
-.notebook-tab:focus-visible{outline-offset:-5px}
+/* A compact, translucent header keeps every section within reach. */
+:root{--header-height:72px}
+html{scroll-padding-top:calc(var(--nav-offset,var(--header-height)) + 20px)}
+body{padding-top:var(--nav-offset,var(--header-height))}
+.site-header{position:fixed;top:0;left:0;right:0;z-index:40;display:block;height:auto;min-height:var(--header-height);border-bottom:1px solid #304e3e20;background:#f9f7f0e8;-webkit-backdrop-filter:blur(20px);backdrop-filter:blur(20px)}
+.header-inner{min-height:var(--header-height);display:flex;align-items:center;justify-content:space-between;gap:24px}
+.site-header .brand{flex-shrink:0;font-size:26px}
+.site-header .brand-small{font-size:8px;letter-spacing:1.3px;margin-top:6px}
+.site-header .section-nav{display:flex;align-items:center;justify-content:center;gap:20px;font-size:12px}
+.site-header .section-nav a{display:flex;align-items:center;justify-content:center;min-width:44px;min-height:44px;padding:10px 2px;white-space:nowrap;transition:color .2s}
+.site-header .section-nav a:after{bottom:5px;background:var(--orange)}
+.site-header .section-nav a:hover,.site-header .section-nav a[aria-current]{color:var(--orange)}
+.site-header .section-nav a[aria-current]:after{width:100%}
+.site-header .header-actions{flex-direction:row;gap:8px}
+.site-header .button{min-height:36px;font-size:12px;padding:8px 12px;gap:6px;border-radius:20px}
+.site-header .motion-toggle{max-width:110px;font-size:11px;line-height:1.4;text-decoration:none}
 .safari-home:not([data-painted]) .safari-friend{visibility:hidden}
 [data-page-view][hidden]{display:none!important}
 .kids-section,.games-section{display:none}
 body[data-view="kids"] #kids-corner,body[data-view="gaming"] #games{display:block}
-/* Native bookmarks still select a page when JavaScript is unavailable. */
+/* Native anchors also select a corner when JavaScript is unavailable. */
 body:not([data-view]):has(#kids-corner:target) #kids-corner,body:not([data-view]):has(#games:target) #games{display:block}
 body:not([data-view]):has(#kids-corner:target,#games:target) [data-page-view="invitation"]{display:none}
 body[data-view="kids"] .mobile-actions,body[data-view="gaming"] .mobile-actions{display:none}
 body[data-view="kids"]:has(.mobile-actions),body[data-view="gaming"]:has(.mobile-actions){padding-bottom:0}
 .corner-back{display:inline-flex;align-items:center;min-height:44px;margin-bottom:22px;font-size:13px;text-decoration:underline;text-underline-offset:4px}
-#main:focus,#kids-corner:focus,#games:focus{outline:none}
+#main:focus,[data-page-view]:focus{outline:none}
 .kids-section{background:#ecefe5}
 .games-section{background:#f5f1e7}
-#game-dialog{padding-right:56px}
-.game-tabs{position:absolute}
-@media(max-width:760px){
-  body{padding-right:50px}
-  .site-header{height:104px;gap:8px}
-  .site-header .brand{font-size:26px}
-  .site-header .button{padding-inline:8px;font-size:11px;gap:4px}
-  .brand-small{letter-spacing:.8px}
-  .notebook-tab{width:44px;font-size:13px;padding-inline:10px}
-  .notebook-tab:hover,.notebook-tab[aria-current="page"]{width:48px}
+.game-tabs{display:flex;gap:20px;padding:0 24px 10px;border-bottom:1px solid var(--line);margin-bottom:12px;flex-shrink:0}
+.game-tabs a{display:flex;align-items:center;min-height:44px;font-size:13px;text-decoration:underline;text-underline-offset:4px}
+.game-tabs a[aria-current]{color:var(--orange)}
+@media(max-width:1100px){
+  :root{--header-height:108px}
+  .header-inner{display:grid;grid-template-columns:1fr auto;gap:0 16px;padding-top:10px}
+  .site-header .section-nav{grid-column:1/-1;grid-row:2;justify-content:space-between;gap:12px}
+  .site-header .header-actions{justify-self:end}
+}
+@media(max-width:600px){
+  :root{--header-height:152px}
+  .header-inner{width:calc(100% - 32px);padding-top:12px;padding-bottom:4px}
+  .site-header .brand{font-size:24px}
+  .site-header .section-nav{display:grid;grid-template-columns:repeat(3,1fr);gap:0 8px;margin-top:8px}
+  .site-header .section-nav a{font-size:12px;padding:8px 2px}
+  .site-header .section-nav a:after{left:20%;max-width:60%}
+  .site-header .motion-toggle{max-width:100px;font-size:10px;padding-inline:4px}
   .hero-copy>.eyebrow{font-size:9px}
   .hero-name{font-size:22px}
-  .mobile-actions:not([hidden]){right:50px;grid-template-columns:1fr 1fr;padding-inline:8px}
-  .mobile-actions .button{font-size:11px;gap:4px;padding-inline:5px}
-  #game-dialog{padding-right:50px}
-  .game-toolbar{padding-inline:12px}
-  #game-help{padding-inline:12px}
-  .game-dialog-footer{padding-inline:12px}
+  .game-tabs{padding-inline:18px}
 }
-@media(max-height:550px){
-  .notebook-tabs{top:44%;gap:8px}
-  .notebook-tab,.gaming-tab{min-height:94px;padding-block:8px}
+@media(max-height:550px) and (min-width:601px){
+  :root{--header-height:64px}
+  .header-inner{display:flex;gap:16px;padding-block:6px}
+  .site-header .brand{font-size:21px}
+  .site-header .section-nav{gap:10px;font-size:11px}
+  .site-header .header-actions{gap:0}
+  .site-header .button{display:none}
+  .site-header .motion-toggle{max-width:84px;font-size:10px}
 }

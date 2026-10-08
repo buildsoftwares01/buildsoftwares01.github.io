@@ -21,14 +21,22 @@ motionPreference.addEventListener('change', syncMotionPreference);
 syncMotionPreference();
 setupSafariFriends();
 setupPlayCorner();
-// Notebook bookmarks open one view at a time and remember the reader’s place.
+// Corners remain separate views; top navigation also reaches invitation sections.
 const views = [...document.querySelectorAll('[data-page-view]')];
 const sectionLinks = [...document.querySelectorAll('[data-section-link]')];
 const viewHashes = { invitation: '#main', kids: '#kids-corner', gaming: '#games' };
+const invitationHashes = ['#main', '#celebration', '#venue', '#rsvp'];
+const navigationHashes = [...invitationHashes, '#kids-corner', '#games'];
 const viewPositions = new Map();
 let currentView;
-const viewForHash = () => location.hash === '#kids-corner' ? 'kids' : location.hash === '#games' ? 'gaming' : 'invitation';
-function showView(view, { focus = true, restore = true } = {}) {
+const viewForHash = (hash = location.hash) => hash === '#kids-corner' ? 'kids' : hash === '#games' ? 'gaming' : 'invitation';
+function markSection(hash) {
+  sectionLinks.forEach(link => {
+    if (link.hash === hash) link.setAttribute('aria-current', currentView === 'invitation' ? 'location' : 'page');
+    else link.removeAttribute('aria-current');
+  });
+}
+function showView(view, { restore = false } = {}) {
   if ($('#game-dialog').open) {
     gameTrigger = null;
     $('#game-dialog').close();
@@ -37,24 +45,51 @@ function showView(view, { focus = true, restore = true } = {}) {
   currentView = view;
   document.body.dataset.view = view;
   views.forEach(panel => { panel.hidden = panel.dataset.pageView !== view; });
-  sectionLinks.forEach(link => {
-    if (link.hash === viewHashes[view]) link.setAttribute('aria-current', 'page');
-    else link.removeAttribute('aria-current');
-  });
-  if (focus) $(viewHashes[view]).focus({ preventScroll: true });
   if (restore) window.scrollTo({ top: viewPositions.get(view) || 0, behavior: 'instant' });
+}
+function navigateToSection(hash, { focus = true, restore = false } = {}) {
+  const view = viewForHash(hash);
+  showView(view, { restore });
+  const target = $(navigationHashes.includes(hash) ? hash : viewHashes[view]);
+  if (focus) target.focus({ preventScroll: true });
+  if (!restore) {
+    if (hash === '#main' || view !== 'invitation') window.scrollTo({ top: 0, behavior: 'instant' });
+    else target.scrollIntoView({ block: 'start', behavior: motionPreference.matches || guestPausedMotion ? 'instant' : 'smooth' });
+  }
+  markSection(hash);
 }
 document.addEventListener('click', event => {
   const link = event.target.closest('a[href]');
   if (!link || event.defaultPrevented || event.button !== 0 || event.metaKey || event.ctrlKey || event.shiftKey || event.altKey) return;
   const url = new URL(link.href);
-  if (url.origin !== location.origin || url.pathname !== location.pathname || !Object.values(viewHashes).includes(url.hash)) return;
+  if (url.origin !== location.origin || url.pathname !== location.pathname || !navigationHashes.includes(url.hash)) return;
   event.preventDefault();
   if (location.hash !== url.hash) history.pushState(null, '', url.hash);
-  showView(url.hash === '#kids-corner' ? 'kids' : url.hash === '#games' ? 'gaming' : 'invitation');
+  navigateToSection(url.hash, { restore: url.hash === '#main' && !link.closest('.site-header') });
 });
-window.addEventListener('hashchange', () => showView(viewForHash()));
-showView(viewForHash(), { focus: false, restore: false });
+window.addEventListener('hashchange', () => navigateToSection(location.hash || '#main', { restore: !location.hash || location.hash === '#main' }));
+showView(viewForHash());
+markSection(location.hash || '#main');
+if (location.hash) requestAnimationFrame(() => navigateToSection(location.hash, { focus: false }));
+// Match anchor offsets to the actual header height, including wrapped phone links.
+new ResizeObserver(([entry]) => {
+  document.documentElement.style.setProperty('--nav-offset', `${entry.target.getBoundingClientRect().height}px`);
+}).observe($('.site-header'));
+let navigationFrame;
+function updateReadingSection() {
+  if (currentView !== 'invitation') return;
+  const readingLine = $('.site-header').getBoundingClientRect().bottom + 24;
+  let hash = '#main';
+  for (const sectionHash of invitationHashes.slice(1)) {
+    if ($(sectionHash).getBoundingClientRect().top <= readingLine) hash = sectionHash;
+  }
+  if (scrollY > 0 && scrollY + innerHeight >= document.documentElement.scrollHeight - 2) hash = '#rsvp';
+  markSection(hash);
+}
+window.addEventListener('scroll', () => {
+  cancelAnimationFrame(navigationFrame);
+  navigationFrame = requestAnimationFrame(updateReadingSection);
+}, { passive: true });
 const paths = { calendar: '<rect x="3" y="5" width="18" height="16" rx="2"/><path d="M16 3v4M8 3v4M3 11h18m-13 5h2m4 0h2"/>', clock: '<circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/>', pin: '<path d="M20 10c0 6-8 12-8 12S4 16 4 10a8 8 0 1 1 16 0Z"/><circle cx="12" cy="10" r="2.5"/>', phone: '<rect x="6" y="2" width="12" height="20" rx="2"/><path d="M10 18h4"/>', message: '<path d="m4 17-1 5 5-2a9 9 0 1 0-4-3Z"/><path d="M8 8c0 4 4 7 7 7l1-2-3-1-1 1-2-2 1-1-1-3Z"/>' };
 document.querySelectorAll('[data-icon]').forEach(el => { el.innerHTML = `<svg viewBox="0 0 24 24" aria-hidden="true">${paths[el.dataset.icon]}</svg>`; });
 if ('IntersectionObserver' in window) {
