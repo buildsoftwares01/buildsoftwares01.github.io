@@ -21,41 +21,25 @@ motionPreference.addEventListener('change', syncMotionPreference);
 syncMotionPreference();
 setupSafariFriends();
 setupPlayCorner();
-// Corners remain separate views; top navigation also reaches invitation sections.
-const views = [...document.querySelectorAll('[data-page-view]')];
+// Every navbar link scrolls to a section on the same page.
 const sectionLinks = [...document.querySelectorAll('[data-section-link]')];
-const viewHashes = { invitation: '#main', kids: '#kids-corner', gaming: '#games' };
-const invitationHashes = ['#main', '#celebration', '#venue', '#rsvp'];
-const navigationHashes = [...invitationHashes, '#kids-corner', '#games'];
-const viewPositions = new Map();
-let currentView;
-const viewForHash = (hash = location.hash) => hash === '#kids-corner' ? 'kids' : hash === '#games' ? 'gaming' : 'invitation';
+const navigationHashes = ['#main', '#celebration', '#venue', '#rsvp', '#kids-corner', '#games'];
 function markSection(hash) {
   sectionLinks.forEach(link => {
-    if (link.hash === hash) link.setAttribute('aria-current', currentView === 'invitation' ? 'location' : 'page');
+    if (link.hash === hash) link.setAttribute('aria-current', 'location');
     else link.removeAttribute('aria-current');
   });
 }
-function showView(view, { restore = false } = {}) {
+function navigateToSection(hash, { focus = true, smooth = true } = {}) {
+  const target = $(hash);
   if ($('#game-dialog').open) {
     gameTrigger = null;
     $('#game-dialog').close();
   }
-  if (currentView && currentView !== view) viewPositions.set(currentView, window.scrollY);
-  currentView = view;
-  document.body.dataset.view = view;
-  views.forEach(panel => { panel.hidden = panel.dataset.pageView !== view; });
-  if (restore) window.scrollTo({ top: viewPositions.get(view) || 0, behavior: 'instant' });
-}
-function navigateToSection(hash, { focus = true, restore = false } = {}) {
-  const view = viewForHash(hash);
-  showView(view, { restore });
-  const target = $(navigationHashes.includes(hash) ? hash : viewHashes[view]);
   if (focus) target.focus({ preventScroll: true });
-  if (!restore) {
-    if (hash === '#main' || view !== 'invitation') window.scrollTo({ top: 0, behavior: 'instant' });
-    else target.scrollIntoView({ block: 'start', behavior: motionPreference.matches || guestPausedMotion ? 'instant' : 'smooth' });
-  }
+  const behavior = smooth && !motionPreference.matches && !guestPausedMotion ? 'smooth' : 'instant';
+  if (hash === '#main') window.scrollTo({ top: 0, behavior });
+  else target.scrollIntoView({ block: 'start', behavior });
   markSection(hash);
 }
 document.addEventListener('click', event => {
@@ -65,25 +49,29 @@ document.addEventListener('click', event => {
   if (url.origin !== location.origin || url.pathname !== location.pathname || !navigationHashes.includes(url.hash)) return;
   event.preventDefault();
   if (location.hash !== url.hash) history.pushState(null, '', url.hash);
-  navigateToSection(url.hash, { restore: url.hash === '#main' && !link.closest('.site-header') });
+  navigateToSection(url.hash);
 });
-window.addEventListener('hashchange', () => navigateToSection(location.hash || '#main', { restore: !location.hash || location.hash === '#main' }));
-showView(viewForHash());
-markSection(location.hash || '#main');
-if (location.hash) requestAnimationFrame(() => navigateToSection(location.hash, { focus: false }));
+window.addEventListener('hashchange', () => {
+  const hash = location.hash || '#main';
+  if (navigationHashes.includes(hash)) navigateToSection(hash, { smooth: false });
+});
+markSection(navigationHashes.includes(location.hash) ? location.hash : '#main');
+if (navigationHashes.includes(location.hash)) {
+  requestAnimationFrame(() => navigateToSection(location.hash, { focus: false, smooth: false }));
+}
 // Match anchor offsets to the actual header height, including wrapped phone links.
 new ResizeObserver(([entry]) => {
   document.documentElement.style.setProperty('--nav-offset', `${entry.target.getBoundingClientRect().height}px`);
 }).observe($('.site-header'));
 let navigationFrame;
 function updateReadingSection() {
-  if (currentView !== 'invitation') return;
   const readingLine = $('.site-header').getBoundingClientRect().bottom + 24;
   let hash = '#main';
-  for (const sectionHash of invitationHashes.slice(1)) {
-    if ($(sectionHash).getBoundingClientRect().top <= readingLine) hash = sectionHash;
+  for (const sectionHash of navigationHashes.slice(1)) {
+    const section = $(sectionHash);
+    if (section && section.getBoundingClientRect().top <= readingLine) hash = sectionHash;
   }
-  if (scrollY > 0 && scrollY + innerHeight >= document.documentElement.scrollHeight - 2) hash = '#rsvp';
+  if (scrollY > 0 && scrollY + innerHeight >= document.documentElement.scrollHeight - 2) hash = '#games';
   markSection(hash);
 }
 window.addEventListener('scroll', () => {

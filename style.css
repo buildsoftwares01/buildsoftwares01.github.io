@@ -357,16 +357,7 @@ body{padding-top:var(--nav-offset,var(--header-height))}
 .site-header .button{min-height:36px;font-size:12px;padding:8px 12px;gap:6px;border-radius:20px}
 .site-header .motion-toggle{max-width:110px;font-size:11px;line-height:1.4;text-decoration:none}
 .safari-home:not([data-painted]) .safari-friend{visibility:hidden}
-[data-page-view][hidden]{display:none!important}
-.kids-section,.games-section{display:none}
-body[data-view="kids"] #kids-corner,body[data-view="gaming"] #games{display:block}
-/* Native anchors also select a corner when JavaScript is unavailable. */
-body:not([data-view]):has(#kids-corner:target) #kids-corner,body:not([data-view]):has(#games:target) #games{display:block}
-body:not([data-view]):has(#kids-corner:target,#games:target) [data-page-view="invitation"]{display:none}
-body[data-view="kids"] .mobile-actions,body[data-view="gaming"] .mobile-actions{display:none}
-body[data-view="kids"]:has(.mobile-actions),body[data-view="gaming"]:has(.mobile-actions){padding-bottom:0}
-.corner-back{display:inline-flex;align-items:center;min-height:44px;margin-bottom:22px;font-size:13px;text-decoration:underline;text-underline-offset:4px}
-#main:focus,[data-page-view]:focus{outline:none}
+#main:focus,main>section:focus{outline:none}
 .kids-section{background:#ecefe5}
 .games-section{background:#f5f1e7}
 .game-tabs{display:flex;gap:20px;padding:0 24px 10px;border-bottom:1px solid var(--line);margin-bottom:12px;flex-shrink:0}

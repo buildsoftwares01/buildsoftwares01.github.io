@@ -20,7 +20,7 @@ export function setupSafariFriends() {
     anchor.append(stage);
     return stage;
   });
-  const still = () => document.body.dataset.view !== 'kids' || document.body.classList.contains('motion-dialog') || document.body.classList.contains('motion-paused');
+  const still = () => document.body.classList.contains('motion-dialog') || document.body.classList.contains('motion-paused');
   let frame = 0, last = null;
   const friends = cast.map((animal, i) => {
     const home = document.createElement('span');
@@ -110,6 +110,6 @@ export function setupSafariFriends() {
   friends.forEach(friend => observer.observe(friend.home));
   window.addEventListener('resize', () => friends.filter(friend => friend.visible).forEach(render));
   document.addEventListener('visibilitychange', sync);
-  new MutationObserver(sync).observe(document.body, { attributes: true, attributeFilter: ['class', 'data-view'] });
+  new MutationObserver(sync).observe(document.body, { attributes: true, attributeFilter: ['class'] });
   sync();
 }
