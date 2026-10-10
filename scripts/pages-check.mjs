@@ -1,3 +1,4 @@
+import { openChapter } from './browser-helpers.mjs';
 import assert from 'node:assert/strict';
 import { createServer } from 'node:http';
 import { readFile, stat } from 'node:fs/promises';
@@ -44,7 +45,7 @@ try {
     assert.equal(await homes.count(), 5);
     assert.deepEqual(await homes.evaluateAll(homes => homes.map(home => home.dataset.state)), ['walk', 'sleep', 'eat', 'roll', 'play']);
     for (const [id, animal] of [['invitation', 'lion'], ['celebration', 'elephant'], ['venue', 'giraffe'], ['rsvp', 'tiger'], ['games', 'monkey']]) {
-      await page.locator(`.section-nav a[href="#${id}"]`).click();
+      await openChapter(page, `#${id}`);
       await page.waitForFunction(id => document.querySelector(`#${id} .safari-home`)?.dataset.painted === 'true' && document.querySelector(`#${id} .safari-home`)?.dataset.visible === 'true', id);
       const home = page.locator(`#${id} .safari-home`);
       assert.equal(await home.getAttribute('data-animal'), animal);
@@ -91,12 +92,12 @@ try {
       await missingArt.goto(base, { waitUntil: 'networkidle' });
       await missingArt.waitForFunction(() => [...document.querySelectorAll('.safari-home')].every(home => home.dataset.renderer === 'unavailable'));
       assert(await missingArt.locator('.safari-friend').evaluateAll(buttons => buttons.every(button => button.disabled && getComputedStyle(button).visibility === 'hidden')), 'Failed assets never introduce substitute faces');
-      await missingArt.locator('.section-nav a[href="#rsvp"]').click();
+      await openChapter(missingArt, '#rsvp');
       await missingArt.locator('#rsvp-button').click();
       assert(await missingArt.locator('#rsvp-dialog').isVisible(), 'Invitation still works if artwork is unavailable');
       await missingArt.close();
     }
-    await page.locator('.site-header .section-nav').getByRole('link', { name: 'Gaming', exact: true }).click();
+    await page.locator('.gaming-shortcut').click();
     for (const game of ['taptaptap', 'hextris', 'ohhi', 'flappy']) {
       let releaseScript;
       const scriptGate = new Promise(resolve => { releaseScript = resolve; });
@@ -133,7 +134,8 @@ try {
       await page.locator('#close-game').click();
       await page.waitForFunction(() => !document.querySelector('iframe'));
     }
-    await page.locator('a[href="./credits.html"]').click();
+    await page.locator('#page-menu summary').click();
+    await page.locator('.menu-credits').click();
     await page.waitForLoadState('networkidle');
     assert.equal(page.url(), `${base}credits.html`);
     const links = await page.locator('a').evaluateAll(links => links.map(link => link.href));

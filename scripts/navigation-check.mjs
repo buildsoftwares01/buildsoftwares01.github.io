@@ -1,3 +1,4 @@
+import { openChapter } from './browser-helpers.mjs';
 import assert from 'node:assert/strict';
 import { mkdir } from 'node:fs/promises';
 import { chromium } from 'playwright';
@@ -22,19 +23,26 @@ try {
       assert.equal(await nav.locator('a[aria-current]').getAttribute('href'), hash);
       assert.equal(await page.locator('#page-counter').textContent(), index === 5 ? 'PLAY' : `0${index + 1} / 05`);
       assert(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth && document.documentElement.scrollHeight <= innerHeight), `${width}×${height}: the document does not scroll`);
-      assert(await nav.locator('a').evaluateAll(links => links.every(link => {
-        const box = link.getBoundingClientRect();
+      assert(await page.locator('.header-actions > .gaming-shortcut, #page-menu summary, #motion-toggle').evaluateAll(controls => controls.every(control => {
+        const box = control.getBoundingClientRect();
         return box.top >= 0 && box.bottom <= innerHeight && box.left >= 0 && box.right <= innerWidth && box.width >= 44 && box.height >= 44;
-      })), 'All chapter links fit and keep touch targets');
+      })), 'Header controls stay visible with accessible touch targets');
       const active = page.locator(`#${id}`);
-      if (id !== 'welcome') assert(await active.evaluate(el => el.scrollWidth <= el.clientWidth), `${width}px: ${id} has no horizontal overflow`);
-      if (height >= 740 && id !== 'welcome') assert(await active.evaluate(el => el.scrollHeight <= el.clientHeight + 1), `${width}px: ${id} fits without scrolling`);
+      assert(await active.evaluate(el => el.scrollWidth <= el.clientWidth), `${width}px: ${id} has no horizontal overflow`);
+      if (height >= 740) assert(await active.evaluate(el => el.scrollHeight <= el.clientHeight + 1), `${width}px: ${id} fits without scrolling`);
       assert(await page.locator('#page-next').evaluate(el => {
         const box = el.getBoundingClientRect();
         return box.top >= 0 && box.bottom <= innerHeight && el.contains(document.elementFromPoint(box.x + box.width / 2, box.y + box.height / 2));
       }), 'Next is always visible and clickable');
     }
     await checkChapter(0);
+    assert(await page.locator('.hero-description, .detail p, .venue-address, #rsvp > p, .game-content p').evaluateAll(elements => elements.every(el => parseFloat(getComputedStyle(el).fontSize) >= 15)), 'Invitation reading text remains comfortably sized');
+    assert(await page.locator('#page-next, .gaming-shortcut').evaluateAll(elements => elements.every(el => parseFloat(getComputedStyle(el).fontSize) >= 15)), 'Primary controls have readable labels');
+    await page.locator('#page-menu summary').click();
+    assert(await nav.isVisible());
+    assert(await nav.locator('a').evaluateAll(links => links.every(link => parseFloat(getComputedStyle(link).fontSize) >= 14)), 'The menu uses readable text');
+    await page.keyboard.press('Escape');
+    assert.equal(await page.locator('#page-menu').evaluate(el => el.open), false);
     assert(await page.locator('#page-back').isDisabled());
     for (let index = 1; index < 5; index++) {
       await page.locator('#page-next').click();
@@ -86,7 +94,7 @@ try {
     await checkChapter(5);
     await page.locator('#page-next').click();
     await checkChapter(0);
-    await page.locator('.section-nav a[href="#venue"]').click();
+    await openChapter(page, '#venue');
     await page.locator('.gaming-shortcut').click();
     await checkChapter(5);
     await page.locator('#page-back').click();
@@ -121,7 +129,7 @@ try {
   const plain = await browser.newPage({ javaScriptEnabled: false, viewport: { width: 390, height: 844 } });
   await plain.goto(base);
   assert.equal(await plain.locator('#main > section:visible').count(), 6, 'Without JavaScript every chapter is readable');
-  await plain.locator('.section-nav a[href="#venue"]').click();
+  await openChapter(plain, '#venue');
   assert.equal(new URL(plain.url()).hash, '#venue');
   await plain.close();
   console.log('Sequential invitation pages, optional games at the end, immediate Gaming shortcuts, return to the launching page, responsive layouts, focus, history, keyboard, swipe and no-JS fallback passed.');

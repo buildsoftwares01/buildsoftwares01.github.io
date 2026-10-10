@@ -9,42 +9,41 @@ export function setupInvitationPages() {
   const previous = document.querySelector('#page-back');
   const next = document.querySelector('#page-next');
   const welcome = pages[0];
-  const tip = welcome.querySelector('.writing-tip');
   const strokes = [...welcome.querySelectorAll('.name-stroke')];
+  // Lengths in SVG units avoid normalization artifacts. Unstarted strokes are
+  // fully transparent, so their round caps cannot appear as isolated dots.
+  const writingOrder = [...strokes.filter(path => !path.classList.contains('stroke-dot') && !path.classList.contains('stroke-flourish')), welcome.querySelector('.stroke-dot'), welcome.querySelector('.stroke-flourish')];
   let current = -1;
-  let writingFrame = 0;
-
+  let writingAnimations = [];
   function finishWriting() {
-    cancelAnimationFrame(writingFrame);
+    writingAnimations.forEach(animation => animation.cancel());
+    writingAnimations = [];
+    strokes.forEach(path => { path.style.strokeDasharray = 'none'; path.style.strokeDashoffset = '0'; path.style.opacity = '1'; });
     welcome.classList.remove('is-writing');
-    tip.classList.remove('is-visible');
   }
   function playWriting() {
     finishWriting();
     if (document.body.classList.contains('motion-paused') || current !== 0) return;
-    // Restart both the ink and the light at the same moment, including on replay.
-    void welcome.offsetWidth;
     welcome.classList.add('is-writing');
-    const started = performance.now();
-    const timing = strokes.map(path => {
-      const css = getComputedStyle(path);
-      return { path, delay: parseFloat(css.animationDelay) * 1000, duration: parseFloat(css.animationDuration) * 1000, length: path.getTotalLength() };
-    });
-    function draw(now) {
-      const elapsed = now - started;
-      const stroke = timing.find(stroke => elapsed >= stroke.delay && elapsed < stroke.delay + stroke.duration);
-      tip.classList.toggle('is-visible', !!stroke);
-      if (stroke) {
-        const point = stroke.path.getPointAtLength(stroke.length * (elapsed - stroke.delay) / stroke.duration);
-        tip.setAttribute('cx', point.x);
-        tip.setAttribute('cy', point.y);
-      }
-      if (elapsed < 5400 && current === 0) writingFrame = requestAnimationFrame(draw);
-      else tip.classList.remove('is-visible');
+    let delay = 100;
+    for (const path of writingOrder) {
+      const length = path.getTotalLength();
+      const duration = Math.max(80, length / 0.65);
+      const hiddenOffset = length + Math.min(6, length * 0.05);
+      path.style.strokeDasharray = `${length} ${length + 12}`;
+      path.style.strokeDashoffset = String(hiddenOffset);
+      path.style.opacity = '0';
+      writingAnimations.push(path.animate([
+        { strokeDashoffset: hiddenOffset, opacity: 0 },
+        { strokeDashoffset: hiddenOffset, opacity: 1, offset: 0.001 },
+        { strokeDashoffset: 0, opacity: 1 },
+      ], { duration, delay, easing: 'linear', fill: 'both' }));
+      delay += duration;
     }
-    writingFrame = requestAnimationFrame(draw);
   }
+  const pageMenu = document.querySelector('#page-menu');
   function showPage(index, { focus = true } = {}) {
+    pageMenu.open = false;
     document.querySelectorAll('dialog[open]').forEach(dialog => {
       dialog.dataset.navigationClose = 'true';
       dialog.close();
@@ -86,6 +85,7 @@ export function setupInvitationPages() {
     showPage(index);
   }
   document.addEventListener('click', event => {
+    if (!pageMenu.contains(event.target)) pageMenu.open = false;
     const link = event.target.closest('a[href]');
     if (!link || event.defaultPrevented || event.button !== 0 || event.metaKey || event.ctrlKey || event.shiftKey || event.altKey) return;
     const url = new URL(link.href);
@@ -103,6 +103,11 @@ export function setupInvitationPages() {
   next.addEventListener('click', () => go(current === gamesIndex ? gamesReturnPage : (current + 1) % invitationCount));
   document.querySelector('#replay-writing').addEventListener('click', playWriting);
   document.addEventListener('keydown', event => {
+    if (event.key === 'Escape' && pageMenu.open) {
+      pageMenu.open = false;
+      pageMenu.querySelector('summary').focus();
+      return;
+    }
     if (event.defaultPrevented || event.altKey || event.ctrlKey || event.metaKey || event.shiftKey || event.target.closest('input, textarea, select, [contenteditable], dialog')) return;
     let index;
     if (event.key === 'ArrowRight' || event.key === 'PageDown') index = current < invitationCount - 1 ? current + 1 : undefined;

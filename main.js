@@ -10,8 +10,10 @@ function syncMotionPreference() {
   const paused = guestPausedMotion || motionPreference.matches;
   document.body.classList.toggle('motion-paused', paused);
   motionToggle.disabled = motionPreference.matches;
-  motionToggle.textContent = motionPreference.matches ? 'Reduced motion enabled' : paused ? 'Resume animations' : 'Pause animations';
-  motionToggle.title = motionPreference.matches ? 'Animations follow your device’s reduced-motion setting.' : '';
+  const label = motionPreference.matches ? 'Reduced motion enabled' : paused ? 'Resume animations' : 'Pause animations';
+  motionToggle.textContent = paused ? '▶' : 'Ⅱ';
+  motionToggle.setAttribute('aria-label', label);
+  motionToggle.title = label;
 }
 motionToggle.addEventListener('click', () => {
   guestPausedMotion = !guestPausedMotion;
@@ -195,4 +197,4 @@ if (event.date) {
   }
 }
 // Do not imply that a missing photograph is a photograph of the venue.
-$('#venue-photo').addEventListener('error', () => { $('#venue-photo').hidden = true; $('.photo-caption').textContent = 'Paps Restaurant · Vacoas-Phoenix'; $('.photo-credit').hidden = true; });
+$('#venue-photo').addEventListener('error', () => { $('#venue-photo').hidden = true; $('.photo-caption').textContent = 'Paps Restaurant · Vacoas-Phoenix'; $('.photo-credit')?.setAttribute('hidden', ''); });
