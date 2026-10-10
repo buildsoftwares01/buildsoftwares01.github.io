@@ -10,16 +10,15 @@ try {
   await page.waitForFunction(() => [...document.querySelectorAll('.safari-home')].every(home => home.dataset.renderer === '2d'));
   assert.equal(await page.locator('h1 em,.word-accent').evaluateAll(words => words.filter(word => word.hasAttribute('role') || word.tabIndex >= 0).length), 0, 'Reading text stays out of the tab order');
   assert.equal(await page.locator('h1 em,.one>span,.word-accent').evaluateAll(words => words.filter(word => getComputedStyle(word).animationName !== 'none').length), 0, 'Reading text stays still');
-  await page.locator('.site-header .section-nav').getByRole('link', {name:'Kids corner', exact:true}).click();
-  await page.locator('#kids-corner').getByRole('button', {name:'Wave with lion cub', exact:true}).focus();
+  await page.locator('.hero').getByRole('button', {name:'Wave with lion cub', exact:true}).focus();
   await page.keyboard.press('Enter');
-  assert.equal(await page.locator('#kids-corner .safari-friend').first().getAttribute('data-gesture'), 'hello', 'Animal greeting works by keyboard');
+  assert.equal(await page.locator('.hero .safari-friend').first().getAttribute('data-gesture'), 'hello', 'Animal greeting works by keyboard');
   assert.equal(await page.locator('.accent-comic-burst').count(), 0, 'No comic burst covers reading text');
   await page.getByRole('button', {name:'Pause animations', exact:true}).click();
   assert(await page.locator('body').evaluate(body => body.classList.contains('motion-paused')));
-  const pausedPose = await page.locator('#kids-corner .safari-canvas').first().evaluate(canvas => canvas.toDataURL());
+  const pausedPose = await page.locator('.hero .safari-canvas').first().evaluate(canvas => canvas.toDataURL());
   await page.waitForTimeout(200);
-  assert.equal(await page.locator('#kids-corner .safari-canvas').first().evaluate(canvas => canvas.toDataURL()), pausedPose, 'Canvas movement stops while paused');
+  assert.equal(await page.locator('.hero .safari-canvas').first().evaluate(canvas => canvas.toDataURL()), pausedPose, 'Canvas movement stops while paused');
   assert.equal(await page.locator('.ticker-track').evaluate(el => getComputedStyle(el).animationName), 'none');
   await page.getByRole('button', {name:'Resume animations', exact:true}).click();
   await page.locator('.safari-friend[data-gesture]').waitFor({state:'detached'});
@@ -57,9 +56,9 @@ try {
   await page.waitForFunction(() => document.body.classList.contains('motion-paused'));
   assert.equal(await page.locator('.ticker-track').evaluate(el => getComputedStyle(el).animationName), 'none', 'Reduced motion stops the ribbon');
   assert(await page.locator('#motion-toggle').isDisabled());
-  const stillPose = await page.locator('#kids-corner .safari-canvas').first().evaluate(canvas => canvas.toDataURL());
+  const stillPose = await page.locator('.hero .safari-canvas').first().evaluate(canvas => canvas.toDataURL());
   await page.waitForTimeout(200);
-  assert.equal(await page.locator('#kids-corner .safari-canvas').first().evaluate(canvas => canvas.toDataURL()), stillPose, 'Reduced motion stops canvas loops');
+  assert.equal(await page.locator('.hero .safari-canvas').first().evaluate(canvas => canvas.toDataURL()), stillPose, 'Reduced motion stops canvas loops');
   for (const width of [320, 390, 768, 1440]) {
     await page.setViewportSize({width,height:900});
     assert(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth), `${width}px: paused ribbon has no overflow`);

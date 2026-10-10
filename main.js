@@ -1,7 +1,6 @@
 import { event } from './event-config.js';
 import { getEventDate } from './event-details.js';
 import { setupSafariFriends } from './safari-friends.js';
-import { setupPlayCorner } from './play-corner.js';
 const $ = (s) => document.querySelector(s);
 const motionPreference = window.matchMedia('(prefers-reduced-motion: reduce)');
 const motionToggle = $('#motion-toggle');
@@ -20,10 +19,9 @@ motionToggle.addEventListener('click', () => {
 motionPreference.addEventListener('change', syncMotionPreference);
 syncMotionPreference();
 setupSafariFriends();
-setupPlayCorner();
 // Every navbar link scrolls to a section on the same page.
 const sectionLinks = [...document.querySelectorAll('[data-section-link]')];
-const navigationHashes = ['#main', '#celebration', '#venue', '#rsvp', '#kids-corner', '#games'];
+const navigationHashes = ['#main', '#celebration', '#venue', '#rsvp', '#games'];
 function markSection(hash) {
   sectionLinks.forEach(link => {
     if (link.hash === hash) link.setAttribute('aria-current', 'location');

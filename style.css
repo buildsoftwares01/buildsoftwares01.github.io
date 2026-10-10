@@ -130,7 +130,7 @@
 
 @media(max-height:550px){.game-loading img{height:16dvh}.game-loading{padding:10px}.game-loading-dots{margin-top:10px}}
 
-/* Interactive companions sit beside section headings and in Kids corner. */
+/* Interactive companions sit beside section headings. */
 .safari-anchor{--safari-size:78px;display:inline-flex;align-items:center;gap:2px;max-width:100%;vertical-align:middle;white-space:nowrap}
 .hero .safari-anchor{--safari-size:108px}
 .rsvp-section .safari-anchor{--safari-size:88px}
@@ -358,7 +358,6 @@ body{padding-top:var(--nav-offset,var(--header-height))}
 .site-header .motion-toggle{max-width:110px;font-size:11px;line-height:1.4;text-decoration:none}
 .safari-home:not([data-painted]) .safari-friend{visibility:hidden}
 #main:focus,main>section:focus{outline:none}
-.kids-section{background:#ecefe5}
 .games-section{background:#f5f1e7}
 .game-tabs{display:flex;gap:20px;padding:0 24px 10px;border-bottom:1px solid var(--line);margin-bottom:12px;flex-shrink:0}
 .game-tabs a{display:flex;align-items:center;min-height:44px;font-size:13px;text-decoration:underline;text-underline-offset:4px}
@@ -390,3 +389,12 @@ body{padding-top:var(--nav-offset,var(--header-height))}
   .site-header .button{display:none}
   .site-header .motion-toggle{max-width:84px;font-size:10px}
 }
+
+/* The elephant companion keeps its splash reaction. */
+.elephant-splash{position:absolute;inset:0;pointer-events:none;display:none;overflow:hidden}
+.safari-home[data-animal="elephant"] .safari-friend[data-gesture] .elephant-splash{display:block}
+.elephant-splash i{position:absolute;left:65%;top:40%;width:5px;height:7px;background:#7fa5aa;border-radius:60% 60% 70% 70%;animation:elephant-sprinkle 1.2s ease-out both}
+.elephant-splash i:nth-child(2){left:78%;top:25%;animation-delay:.05s}.elephant-splash i:nth-child(3){left:86%;top:43%;animation-delay:.1s}
+.elephant-splash i:nth-child(4){left:72%;top:56%;animation-delay:.15s}.elephant-splash i:nth-child(5){left:91%;top:63%;animation-delay:.05s}
+.elephant-splash i:nth-child(6){left:62%;top:18%;animation-delay:.1s}
+@keyframes elephant-sprinkle{0%{transform:translate(-10px,8px) scale(.5);opacity:0}25%{opacity:1}100%{transform:translate(4px,12px) scale(.8);opacity:0}}

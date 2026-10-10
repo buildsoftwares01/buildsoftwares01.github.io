@@ -10,7 +10,7 @@ const cast = [
 export function setupSafariFriends() {
   const main = document.querySelector('#main');
   if (!main || main.querySelector('.safari-friends')) return;
-  // Each section companion and Kids corner friend has its own animation state.
+  // Each section companion has its own animation state.
   const placements = [...main.querySelectorAll('[data-safari-anchor]')].map(anchor => ({
     anchor, animal: cast.find(animal => animal.kind === anchor.dataset.safariAnchor),
   })).filter(({ animal }) => animal);

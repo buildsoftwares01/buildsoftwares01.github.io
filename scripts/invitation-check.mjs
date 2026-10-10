@@ -30,7 +30,7 @@ try {
   });
   await page.goto(base);
   assert.equal(await page.locator('#mobile-actions').isVisible(), false);
-  assert.deepEqual(await page.locator('#main > section').evaluateAll(sections => sections.map(s => s.id || 'hero')), ['hero', 'celebration', 'venue', 'rsvp', 'kids-corner', 'games']);
+  assert.deepEqual(await page.locator('#main > section').evaluateAll(sections => sections.map(s => s.id || 'hero')), ['hero', 'celebration', 'venue', 'rsvp', 'games']);
   for (const trigger of await page.locator('[data-rsvp]:not(.mobile-actions button)').all()) {
    await trigger.tap();
    assert(await page.locator('#rsvp-dialog').isVisible());
