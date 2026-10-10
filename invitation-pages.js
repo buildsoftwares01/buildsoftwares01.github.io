@@ -1,3 +1,4 @@
+import { setupNameWriting } from './name-writing.js';
 // One invitation chapter at a time. Native anchors remain a readable fallback.
 export function setupInvitationPages() {
   const pages = [...document.querySelectorAll('#main > [data-page]')];
@@ -9,38 +10,8 @@ export function setupInvitationPages() {
   const previous = document.querySelector('#page-back');
   const next = document.querySelector('#page-next');
   const welcome = pages[0];
-  const strokes = [...welcome.querySelectorAll('.name-stroke')];
-  // Lengths in SVG units avoid normalization artifacts. Unstarted strokes are
-  // fully transparent, so their round caps cannot appear as isolated dots.
-  const writingOrder = [...strokes.filter(path => !path.classList.contains('stroke-dot') && !path.classList.contains('stroke-flourish')), welcome.querySelector('.stroke-dot'), welcome.querySelector('.stroke-flourish')];
   let current = -1;
-  let writingAnimations = [];
-  function finishWriting() {
-    writingAnimations.forEach(animation => animation.cancel());
-    writingAnimations = [];
-    strokes.forEach(path => { path.style.strokeDasharray = 'none'; path.style.strokeDashoffset = '0'; path.style.opacity = '1'; });
-    welcome.classList.remove('is-writing');
-  }
-  function playWriting() {
-    finishWriting();
-    if (document.body.classList.contains('motion-paused') || current !== 0) return;
-    welcome.classList.add('is-writing');
-    let delay = 100;
-    for (const path of writingOrder) {
-      const length = path.getTotalLength();
-      const duration = Math.max(80, length / 0.65);
-      const hiddenOffset = length + Math.min(6, length * 0.05);
-      path.style.strokeDasharray = `${length} ${length + 12}`;
-      path.style.strokeDashoffset = String(hiddenOffset);
-      path.style.opacity = '0';
-      writingAnimations.push(path.animate([
-        { strokeDashoffset: hiddenOffset, opacity: 0 },
-        { strokeDashoffset: hiddenOffset, opacity: 1, offset: 0.001 },
-        { strokeDashoffset: 0, opacity: 1 },
-      ], { duration, delay, easing: 'linear', fill: 'both' }));
-      delay += duration;
-    }
-  }
+  const { finish: finishWriting, play: playWriting } = setupNameWriting(welcome, () => current === 0);
   const pageMenu = document.querySelector('#page-menu');
   function showPage(index, { focus = true } = {}) {
     pageMenu.open = false;
@@ -68,6 +39,7 @@ export function setupInvitationPages() {
       else link.removeAttribute('aria-current');
     });
     previous.disabled = index === 0;
+    next.hidden = index === 0;
     const isGames = index === gamesIndex;
     const isEnding = index === invitationCount - 1;
     next.querySelector('span').textContent = isGames ? 'Back to invitation' : isEnding ? 'Read again' : 'Next';

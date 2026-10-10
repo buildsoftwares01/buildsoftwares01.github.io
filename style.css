@@ -302,8 +302,6 @@ input,select,textarea{border-radius:8px}
 
 /* Keep reading steady, and give guests control over decorative movement. */
 .header-actions{display:flex;flex-direction:column;align-items:center;flex-shrink:0}
-.motion-toggle{min-height:44px;padding:8px 10px;background:transparent;border:0;border-radius:6px;color:var(--muted);font-size:12px;text-decoration:underline;text-underline-offset:4px}
-.motion-toggle:disabled{color:var(--muted);text-decoration:none}
 .site-header{height:120px}
 .hero-copy h1 em,.one>span,.one:after,.section-heading h2 em,.games-heading h2 em,.rsvp-section h2 em,.word-accent,.accent-shimmer:after,.detail-icon,.safari-frame,.party-shape{animation:none}
 .accent-shimmer:after{transform:none;opacity:.65}
@@ -332,7 +330,6 @@ html:has(.motion-paused){scroll-behavior:auto}
 }
 @media(max-width:760px){
   .site-header{height:112px}
-  .motion-toggle{font-size:11px;padding-inline:4px}
   .hero-description,.section-heading p,.venue-copy>p,.rsvp-section p{font-size:16px}
   .hero-details{font-size:16px}
   .hero-actions{margin-bottom:10px}
@@ -355,7 +352,6 @@ body{padding-top:var(--nav-offset,var(--header-height))}
 .site-header .section-nav a[aria-current]:after{width:100%}
 .site-header .header-actions{flex-direction:row;gap:8px}
 .site-header .button{min-height:36px;font-size:12px;padding:8px 12px;gap:6px;border-radius:20px}
-.site-header .motion-toggle{max-width:110px;font-size:11px;line-height:1.4;text-decoration:none}
 .safari-home:not([data-painted]) .safari-friend{visibility:hidden}
 #main:focus,main>section:focus{outline:none}
 .games-section{background:#f5f1e7}
@@ -375,7 +371,6 @@ body{padding-top:var(--nav-offset,var(--header-height))}
   .site-header .section-nav{display:grid;grid-template-columns:repeat(3,1fr);gap:0 8px;margin-top:8px}
   .site-header .section-nav a{font-size:12px;padding:8px 2px}
   .site-header .section-nav a:after{left:20%;max-width:60%}
-  .site-header .motion-toggle{max-width:100px;font-size:10px;padding-inline:4px}
   .hero-copy>.eyebrow{font-size:9px}
   .hero-name{font-size:22px}
   .game-tabs{padding-inline:18px}
@@ -387,7 +382,6 @@ body{padding-top:var(--nav-offset,var(--header-height))}
   .site-header .section-nav{gap:10px;font-size:11px}
   .site-header .header-actions{gap:0}
   .site-header .button{display:none}
-  .site-header .motion-toggle{max-width:84px;font-size:10px}
 }
 
 /* The elephant companion keeps its splash reaction. */

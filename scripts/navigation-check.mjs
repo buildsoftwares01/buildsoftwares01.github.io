@@ -23,19 +23,21 @@ try {
       assert.equal(await nav.locator('a[aria-current]').getAttribute('href'), hash);
       assert.equal(await page.locator('#page-counter').textContent(), index === 5 ? 'PLAY' : `0${index + 1} / 05`);
       assert(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth && document.documentElement.scrollHeight <= innerHeight), `${width}×${height}: the document does not scroll`);
-      assert(await page.locator('.header-actions > .gaming-shortcut, #page-menu summary, #motion-toggle').evaluateAll(controls => controls.every(control => {
+      assert(await page.locator('.header-actions > .gaming-shortcut, #page-menu summary').evaluateAll(controls => controls.every(control => {
         const box = control.getBoundingClientRect();
         return box.top >= 0 && box.bottom <= innerHeight && box.left >= 0 && box.right <= innerWidth && box.width >= 44 && box.height >= 44;
       })), 'Header controls stay visible with accessible touch targets');
       const active = page.locator(`#${id}`);
       assert(await active.evaluate(el => el.scrollWidth <= el.clientWidth), `${width}px: ${id} has no horizontal overflow`);
       if (height >= 740) assert(await active.evaluate(el => el.scrollHeight <= el.clientHeight + 1), `${width}px: ${id} fits without scrolling`);
-      assert(await page.locator('#page-next').evaluate(el => {
+      if (index === 0) assert(await page.locator('#page-next').isHidden(), 'Opening has only Open invitation');
+      else assert(await page.locator('#page-next').evaluate(el => {
         const box = el.getBoundingClientRect();
         return box.top >= 0 && box.bottom <= innerHeight && el.contains(document.elementFromPoint(box.x + box.width / 2, box.y + box.height / 2));
-      }), 'Next is always visible and clickable');
+      }), 'Next stays visible and clickable on information pages');
     }
     await checkChapter(0);
+    assert.equal(await page.locator('#motion-toggle').count(), 0, 'No top pause control');
     assert(await page.locator('.hero-description, .detail p, .venue-address, #rsvp > p, .game-content p').evaluateAll(elements => elements.every(el => parseFloat(getComputedStyle(el).fontSize) >= 15)), 'Invitation reading text remains comfortably sized');
     assert(await page.locator('#page-next, .gaming-shortcut').evaluateAll(elements => elements.every(el => parseFloat(getComputedStyle(el).fontSize) >= 15)), 'Primary controls have readable labels');
     await page.locator('#page-menu summary').click();
@@ -45,7 +47,7 @@ try {
     assert.equal(await page.locator('#page-menu').evaluate(el => el.open), false);
     assert(await page.locator('#page-back').isDisabled());
     for (let index = 1; index < 5; index++) {
-      await page.locator('#page-next').click();
+      await page.locator(index === 1 ? '.opening-button' : '#page-next').click();
       await checkChapter(index);
       assert.equal(await page.evaluate(() => document.activeElement.id), chapters[index][2], 'Focus follows the new page');
       await page.waitForFunction(id => document.querySelector(`#${id} .safari-home`)?.dataset.painted === 'true', chapters[index][2]);

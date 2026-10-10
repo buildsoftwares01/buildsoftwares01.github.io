@@ -64,7 +64,7 @@ try {
     const stillPose = await page.locator('#games canvas').evaluate(canvas => canvas.toDataURL());
     await page.waitForTimeout(200);
     assert.equal(await page.locator('#games canvas').evaluate(canvas => canvas.toDataURL()), stillPose, 'Reduced motion stops canvas loops');
-    assert(await page.locator('#motion-toggle').isDisabled());
+    assert.equal(await page.locator('#motion-toggle').count(), 0);
     await page.screenshot({ path: `test-results/story-production-${prefix === '/' ? 'desktop' : 'mobile'}.png` });
     if (prefix === '/') {
       const cold = await browser.newPage({ viewport: { width: 390, height: 844 } });

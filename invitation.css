@@ -22,8 +22,6 @@ body.invitation-ready{height:100dvh;padding:0;overflow:hidden;--story-header:88p
 .invitation-ready .site-header .section-nav .menu-credits{font-size:14px;border-top:1px solid var(--line);border-radius:0;margin-top:6px}
 .gaming-shortcut{display:inline-flex;align-items:center;justify-content:center;gap:10px;min-height:48px;padding:0 20px;border:1px solid #284f3c60;border-radius:100px;font-size:16px;font-weight:500;background:#eaf0e270}
 .gaming-shortcut:hover,.gaming-shortcut[aria-current]{color:white;background:var(--ink)}
-.invitation-ready .site-header .motion-toggle{display:grid;place-items:center;width:48px;min-width:48px;height:48px;padding:0;max-width:none;border:1px solid #284f3c25;border-radius:50%;font-size:21px;line-height:1;text-decoration:none;color:var(--ink)}
-.invitation-ready .site-header .motion-toggle:disabled{opacity:.6}
 .invitation-ready #main{position:absolute;inset:var(--story-header) 0 var(--story-footer);overflow:hidden}
 .invitation-ready .invitation-page{height:100%;min-height:0;max-width:none;margin:0;width:100%;padding:32px max(5vw,28px);overflow-x:hidden;overflow-y:auto;overscroll-behavior:contain;scrollbar-width:thin;scrollbar-color:#aaba9f transparent;animation:chapter-enter .4s ease both}
 .invitation-ready .invitation-page:focus{outline:none}
@@ -38,33 +36,44 @@ body.invitation-ready{height:100dvh;padding:0;overflow:hidden;--story-header:88p
 .invitation-ready .button{min-height:54px;font-size:17px;padding:14px 24px;border-radius:100px;gap:12px}
 .invitation-ready .text-link{min-height:48px;font-size:16px;padding:10px 0;gap:10px}
 
-/* The cover uses the same green ink and sage palette as the invitation. */
-.opening-page{position:relative;isolation:isolate;min-height:720px;background:var(--sage);color:var(--ink);overflow:hidden;display:grid;place-items:center;text-align:center}
+/* Gold engraved lettering, traced by a spark on a deep forest cover. */
+.opening-page{position:relative;isolation:isolate;min-height:720px;background:#153e30;color:#f6edcc;overflow:hidden;display:grid;place-items:center;text-align:center}
 .opening-decoration{position:absolute;inset:0;overflow:hidden;z-index:-1;pointer-events:none}
-.opening-aura{position:absolute;inset:0;z-index:-1;background:radial-gradient(ellipse at 50% 45%,#fffff880,transparent 65%)}
-.opening-orbit{position:absolute;z-index:-1;left:50%;top:46%;width:min(80vw,950px);aspect-ratio:1.5;border:1px solid #59775016;border-radius:50%;transform:translate(-50%,-50%) rotate(-15deg);pointer-events:none}
+.opening-aura{position:absolute;inset:0;z-index:-1;background:radial-gradient(ellipse at 50% 45%,#71976128,transparent 65%)}
+.opening-orbit{position:absolute;z-index:-1;left:50%;top:46%;width:min(80vw,950px);aspect-ratio:1.5;border:1px solid #ead28618;border-radius:50%;transform:translate(-50%,-50%) rotate(-15deg);pointer-events:none}
 .orbit-two{width:min(70vw,840px);transform:translate(-50%,-50%) rotate(15deg)}
 .invitation-ready .opening-page{display:flex;flex-direction:column;justify-content:safe center;align-items:center;padding:26px 24px;animation:none;overflow-y:auto}
 .opening-content{position:relative;width:min(900px,100%)}
-.invitation-ready .opening-kicker{font-size:14px;letter-spacing:2px;color:#4a694f;margin:0 0 8px}
-.opening-title{margin:0;line-height:1;letter-spacing:0}
+.invitation-ready .opening-kicker{font-size:14px;letter-spacing:2px;color:#e6d5a2;margin:0 0 8px}
+.opening-title{position:relative;margin:0;line-height:1;letter-spacing:0}
 .name-writing{display:block;width:100%;height:auto;max-height:31dvh;margin:0 auto;overflow:visible;fill:none;stroke:none}
-.name-ink{fill:none;stroke:var(--ink);stroke-width:5;stroke-linecap:round;stroke-linejoin:round}
-.stroke-v{stroke-width:6}.stroke-flourish{stroke-width:1.8}
+.name-ink{fill:none;stroke:url(#engraved-gold);filter:url(#gold-depth);stroke-width:6;stroke-linecap:round;stroke-linejoin:round}
+.stroke-v{stroke-width:7}.stroke-flourish{stroke-width:1.8}
+.writing-fireworks{position:absolute;inset:0;width:100%;height:100%;pointer-events:none}
 .opening-afterword{display:block}
-.invitation-ready .opening-afterword p{font:400 clamp(28px,3vw,40px)/1.3 var(--serif);color:var(--ink)}
-.opening-afterword em{color:var(--ink)}
+.invitation-ready .opening-afterword p{font:400 clamp(28px,3vw,40px)/1.3 var(--serif);color:#f6edcc}
+.opening-afterword em{color:#f2d27a}
 .opening-rule{display:none}
-.invitation-ready .opening-note{font-size:20px;color:#4f6552;margin:12px 0 26px}
-.opening-button{display:inline-flex;align-items:center;justify-content:center;gap:24px;min-height:56px;padding:14px 28px;border:1px solid var(--ink);border-radius:100px;background:var(--ink);color:#fffdf4;font-size:18px;font-weight:500;transition:background .2s,transform .2s}
-.opening-button:hover{background:#3d674b;transform:translateY(-2px)}
+.invitation-ready .opening-note{font-size:20px;color:#dfdfc5;margin:12px 0 26px}
+.opening-button{display:inline-flex;align-items:center;justify-content:center;gap:24px;min-height:56px;padding:14px 28px;border:1px solid #f2d27a;border-radius:100px;background:#f2d27a;color:#153e30;font-size:18px;font-weight:500;transition:background .2s,transform .2s}
+.opening-button:hover{background:#ffe7a0;transform:translateY(-2px)}
 .opening-button span{font-size:24px}
-.replay-writing{display:block;margin:9px auto 0;min-height:44px;padding:10px 14px;font-size:15px;color:#4f6552;background:transparent;border:0}
+.replay-writing{display:block;margin:9px auto 0;min-height:44px;padding:10px 14px;font-size:15px;color:#dfdfc5;background:transparent;border:0}
 .replay-writing span{margin-left:8px}.replay-writing:disabled{opacity:.55;cursor:default}
-.invitation-ready .opening-dedication{position:static;font-size:15px;color:#4f6552;margin:24px 0 0;letter-spacing:0}
+.invitation-ready .opening-dedication{position:static;font-size:15px;color:#dfdfc5;margin:24px 0 0;letter-spacing:0}
 .is-writing .opening-afterword,.is-writing .opening-note{animation:opening-arrive .65s 2.6s both}
 @keyframes opening-arrive{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
-.invitation-ready[data-page="welcome"],.invitation-ready[data-page="welcome"] .site-header,.invitation-ready[data-page="welcome"] .invitation-controls{background:var(--sage)}
+.invitation-ready[data-page="welcome"],.invitation-ready[data-page="welcome"] .site-header,.invitation-ready[data-page="welcome"] .invitation-controls{background:#153e30;color:#f6edcc}
+.invitation-ready[data-page="welcome"] .site-header{color:#f6edcc}
+.invitation-ready[data-page="welcome"] .brand{color:#f6edcc}
+.invitation-ready[data-page="welcome"] .brand-small{color:#dfdfc5}
+.invitation-ready[data-page="welcome"] .header-inner{border-color:#ead28630}
+.invitation-ready[data-page="welcome"] .gaming-shortcut{border-color:#e6d5a260;color:#f6edcc;background:#ffffff06}
+.invitation-ready[data-page="welcome"] .gaming-shortcut:hover{background:#f2d27a;color:#153e30}
+.invitation-ready[data-page="welcome"] .invitation-controls:before{background:#ead28630}
+.invitation-ready[data-page="welcome"] .page-progress-track{background:#ead28625}
+.invitation-ready[data-page="welcome"] .page-progress-track i{background:#e5bd58}
+.page-next[hidden]{display:none!important}
 
 /* Large navigation stays within thumb's reach. */
 .invitation-controls{position:fixed;z-index:35;bottom:0;left:0;width:100%;height:var(--story-footer);display:grid;grid-template-columns:1fr 160px 1fr;align-items:center;gap:24px;padding:14px 40px max(14px,env(safe-area-inset-bottom));background:var(--paper);color:var(--ink)}
@@ -161,7 +170,6 @@ body.invitation-ready{height:100dvh;padding:0;overflow:hidden;--story-header:88p
   .page-menu summary>span{display:none}
   .gaming-shortcut{min-height:44px;padding:0 13px;font-size:15px;gap:6px}
   .gaming-shortcut>span{display:none}
-  .invitation-ready .site-header .motion-toggle{width:44px;min-width:44px;height:44px;font-size:19px}
   .invitation-ready .site-header .section-nav{right:-125px;width:260px;top:calc(100% + 14px)}
   .invitation-ready .invitation-page{padding:22px 24px}
   .invitation-ready p{font-size:18px;line-height:1.5}

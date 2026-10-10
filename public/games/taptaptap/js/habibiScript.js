@@ -1,665 +1,182 @@
-// Invitation adaptation, September 2026: local-only assets, telemetry removed, silent play, touch and responsive layout fixes. Original gameplay retained.
-document.addEventListener('DOMContentLoaded', function() {
-  // Do after the document fully loaded
-});
-
-
-// ===============================================================
-// ================== SHOW/HIDE PAGES - ADMIN ====================
-// ===============================================================
-var adminCPItems = document.querySelector('.admin-cp-items');
-var adminCPBtn = document.querySelector('.admin-cp-button');
-adminCPBtn.addEventListener('click', function(){ adminCPItems.classList.toggle('hidden'); }, false);
-
-
-
-// ---------------------- Pages ---------------------- //
-
-// Splash Page
-var pageSplash = document.querySelector('#pageSplash');
-// --
-var splashScreenTxt = document.querySelector('#splashScreenTxt');
-var splashScreenLogo = document.querySelector('#splashScreenLogo');
-
-
-// Play Delay Page
-var pagePlayDelay = document.querySelector('#pagePlayDelay');
-// --
-var palyDelayCont = document.querySelector('#palyDelayCont');
-var playDelayNum = document.querySelector('#playDelayNum');
-
-
-// Play Area Page
-var pagePlayArea = document.querySelector('#pagePlayArea');
-// --
-var gmStatsTimeProgress = document.querySelector('#gmStatsTimeProgress');
-var gmStatsPauseBtn = document.querySelector('#gmStatsPauseBtn');
-var gmStatsScore = document.querySelector('#gmStatsScore');
-var gmStatsLvlNumb = document.querySelector('#gmStatsLvlNumb');
-var gameSpace = document.querySelector('#gameSpace');
-var gmStatsCurrentTapCount = document.querySelector('#gmStatsCurrentTapCount');
-var gmStatsTotalTapCount = document.querySelector('#gmStatsTotalTapCount');
-
-// Game Menu Page
-var pageGameMenu = document.querySelector('#pageGameMenu');
-// --
-var newGameBtn = document.querySelector('#newGameBtn');
-var highScoresBtn = document.querySelector('#highScoresBtn');
-var aboutBtn = document.querySelector('#aboutBtn');
-
-// Tutorial Page
-var pageTutorial = document.querySelector('#pageTutorial');
-// --
-var tutPgStartGameBtn = document.querySelector('#tutPgStartGameBtn');
-
-
-// Pause Menu Page
-var pagePauseMenu = document.querySelector('#pagePauseMenu');
-// --
-var lvlPausedScore = document.querySelector('#lvlPausedScore');
-var pmRstrtLvlBtn = document.querySelector('#pmRstrtLvlBtn');
-var pmCntnuGmBtn = document.querySelector('#pmCntnuGmBtn');
-
-
-// Level passed page
-var pageLevelPassed = document.querySelector('#pageLevelPassed');
-// --
-var lvlPssdTitle = document.querySelector('#lvlPssdTtl');
-var lvlPssdScore = document.querySelector('#lvlPssdScore');
-var lvlPssdBonusScore = document.querySelector('#lvlPssdBonusScore');
-var lvlPssdContinueNextLvlBtn = document.querySelector('#lvlPssdContinueNextLvlBtn');
-
-
-// You lost page
-var pageYouLost = document.querySelector('#pageYouLost');
-// --
-var lvlLostScore = document.querySelector('#lvlLostScore');
-var lvlLostBestScore = document.querySelector('#lvlLostBestScore');
-var lvlLostTtl = document.querySelector('#lvlLostTtl');
-var lvlLostTryAgainBtn = document.querySelector('#lvlLostTryAgainBtn');
-var lvlLostIcon = document.querySelector('#lvlLostIcon');
-
-
-// High Score Page
-var pageHighScore = document.querySelector('#pageHighScore');
-// --
-var lvlLostNewHighScore = document.querySelector('#lvlLostNewHighScore');
-
-
-// About Page
-var pageAbout = document.querySelector('#pageAbout');
-// --
-var abtPageBackBtn = document.querySelector('#abtPageBackBtn');
-
-
-// ------- Show Hide Pages Control Panel ------- //
-var playDelayPageToggle = document.getElementById('playDelayPageToggle');
-var playAreaPageToggle = document.getElementById('playAreaPageToggle');
-var gameMenuPageToggle = document.getElementById('gameMenuPageToggle');
-var tutorialPageToggle = document.getElementById('tutorialPageToggle');
-var pauseMenuPageToggle = document.getElementById('pauseMenuPageToggle');
-var levelPassedPageToggle = document.getElementById('levelPassedPageToggle');
-var youLostPageToggle = document.getElementById('youLostPageToggle');
-var highScorePageToggle = document.getElementById('highScorePageToggle');
-var aboutPageToggle = document.getElementById('aboutPageToggle');
-var splashPageToggle = document.getElementById('splashPageToggle');
-
-var pagesTogglesArray = [
-  playAreaPageToggle, gameMenuPageToggle, tutorialPageToggle, playDelayPageToggle,
-  pauseMenuPageToggle, levelPassedPageToggle,
-  youLostPageToggle, highScorePageToggle, aboutPageToggle, splashPageToggle
-]
-var pagesArray = [
-  pagePlayArea, pageGameMenu, pageTutorial, pagePlayDelay,
-  pagePauseMenu, pageLevelPassed,
-  pageYouLost, pageHighScore, pageAbout, pageSplash
-]
-
-// show/hide pages if the checkbox is checked
-togglePage = function(pageToggle, page) {
-  if (pageToggle.checked) {
-    toolsBox.showPage(page);
+/* Birthday challenge adaptation of Tap Tap Tap by Mahdi Al-Farra (MIT).
+   Eight designed rounds, fair non-overlapping targets, hearts, streaks and bonuses.
+   All progress lives in memory and disappears when the frame is closed. */
+'use strict';
+const $ = id => document.getElementById(id);
+const levels = [
+  { name: 'Find your rhythm', goal: 12, time: 30, reds: 1 },
+  { name: 'Double the fun', goal: 16, time: 30, reds: 2 },
+  { name: 'Follow the sparkle', goal: 20, time: 30, reds: 2 },
+  { name: 'On a roll', goal: 24, time: 32, reds: 3 },
+  { name: 'Quick fingers', goal: 28, time: 32, reds: 3 },
+  { name: 'Keep your cool', goal: 32, time: 34, reds: 4 },
+  { name: 'Almost there', goal: 36, time: 34, reds: 4 },
+  { name: 'The grand finale', goal: 42, time: 38, reds: 5 },
+];
+const gameEngine = { score: 0, levelNum: 1, tapNum: 0, tapsGoal: 12, lives: 3, streak: 0, state: 'menu', timeLeft: 30 };
+let tick = 0, countdown = 0, previousTime = 0, roundScore = 0, pendingStar = false, best = 0, resumeState = 'playing';
+function show(id) {
+  document.querySelectorAll('.page-cont').forEach(page => { page.hidden = page.id !== id; page.inert = page.hidden; });
+}
+function stopClock() { cancelAnimationFrame(tick); tick = 0; clearTimeout(countdown); }
+function updateStats() {
+  const level = levels[gameEngine.levelNum - 1];
+  $('gmStatsLvlNumb').textContent = `LEVEL ${gameEngine.levelNum} OF ${levels.length}`;
+  $('levelName').textContent = level.name;
+  $('gmStatsScore').textContent = gameEngine.score;
+  $('gmStatsCurrentTapCount').textContent = gameEngine.tapNum;
+  $('gmStatsTotalTapCount').textContent = `/${level.goal}`;
+  $('timeLeft').textContent = `${Math.ceil(gameEngine.timeLeft)}s`;
+  $('gmStatsTimeProgress').style.width = `${Math.min(100, Math.max(0, gameEngine.timeLeft / level.time * 100))}%`;
+  $('hearts').textContent = '♥'.repeat(gameEngine.lives) + '♡'.repeat(3 - gameEngine.lives);
+  $('hearts').setAttribute('aria-label', `${gameEngine.lives} hearts remaining`);
+  const multiplier = Math.min(3, 1 + Math.floor(gameEngine.streak / 5));
+  $('combo').textContent = gameEngine.streak ? `${gameEngine.streak} streak · ${multiplier}× points` : 'Find your rhythm';
+  $('levelProgress').textContent = `${gameEngine.levelNum} / ${levels.length}`;
+}
+function clock(now) {
+  if (gameEngine.state !== 'playing') return;
+  gameEngine.timeLeft = Math.max(0, gameEngine.timeLeft - (now - previousTime) / 1000);
+  previousTime = now;
+  updateStats();
+  if (gameEngine.timeLeft <= 0) lose('Time’s up.');
+  else tick = requestAnimationFrame(clock);
+}
+function runClock() { previousTime = performance.now(); tick = requestAnimationFrame(clock); }
+function announce(text) { $('feedback').textContent = text; }
+function targets() {
+  const space = $('gameSpace');
+  space.replaceChildren();
+  const level = levels[gameEngine.levelNum - 1];
+  // A grid guarantees that targets never overlap, even on a small phone.
+  const columns = Math.max(2, Math.floor(space.clientWidth / 88));
+  const rows = Math.max(1, Math.floor(space.clientHeight / 88));
+  const cells = Array.from({ length: columns * rows }, (_, i) => i);
+  for (let i = cells.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1)); [cells[i], cells[j]] = [cells[j], cells[i]];
+  }
+  const blues = Math.min(2, cells.length - (pendingStar ? 1 : 0));
+  const types = [...Array(blues).fill('good'), ...(pendingStar ? ['bonus'] : []), ...Array(Math.min(level.reds, cells.length - blues - (pendingStar ? 1 : 0))).fill('evil')];
+  const cellWidth = space.clientWidth / columns, cellHeight = space.clientHeight / rows;
+  const size = Math.min(gameEngine.levelNum > 5 ? 62 : 70, cellWidth - 12, cellHeight - 12);
+  types.forEach((type, index) => {
+    const cell = cells[index], button = document.createElement('button');
+    button.className = `tpbl-circle ${type}-circle ${type === 'good' ? 'blue' : type === 'evil' ? 'red' : 'gold'}`;
+    button.textContent = type === 'good' ? '+' : type === 'evil' ? '×' : '★';
+    button.setAttribute('aria-label', type === 'good' ? 'Blue target' : type === 'evil' ? 'Red hazard' : 'Gold bonus star');
+    button.style.setProperty('--target-size', `${size}px`);
+    const jitterX = Math.random() * Math.max(0, cellWidth - size - 12), jitterY = Math.random() * Math.max(0, cellHeight - size - 12);
+    button.style.left = `${(cell % columns) * cellWidth + 6 + jitterX}px`;
+    button.style.top = `${Math.floor(cell / columns) * cellHeight + 6 + jitterY}px`;
+    button.addEventListener('click', () => tap(type));
+    space.append(button);
+  });
+}
+function tap(type) {
+  if (gameEngine.state !== 'playing') return;
+  if (type === 'evil') {
+    gameEngine.lives--;
+    gameEngine.streak = 0;
+    gameEngine.timeLeft = Math.max(0, gameEngine.timeLeft - 3);
+    announce('Red caught you! −1 heart · −3 seconds');
+    updateStats();
+    if (!gameEngine.lives || !gameEngine.timeLeft) { lose(gameEngine.lives ? 'Time’s up.' : 'Out of hearts.'); return; }
+  } else if (type === 'bonus') {
+    pendingStar = false;
+    gameEngine.timeLeft += 3;
+    gameEngine.score += 50;
+    announce('Golden catch! +3 seconds · +50 points');
   } else {
-    toolsBox.hidePage(page);
+    gameEngine.tapNum++;
+    gameEngine.streak++;
+    gameEngine.score += 10 * Math.min(3, 1 + Math.floor(gameEngine.streak / 5));
+    if (gameEngine.tapNum >= gameEngine.tapsGoal) { pass(); return; }
+    if (gameEngine.tapNum % 5 === 0) { pendingStar = true; announce('A gold star appeared! Catch it for extra time.'); }
+    else announce(gameEngine.streak >= 5 ? 'Keep that streak going!' : 'Nice tap. Keep going!');
   }
+  updateStats(); targets();
 }
-
-// on click event to all toggles on the page to show/hide pages
-for (var i = 0; i < pagesTogglesArray.length; i++) {
-  pagesTogglesArray[i].addEventListener('click', function(){
-    for (var i = 0; i < pagesTogglesArray.length; i++) {
-      togglePage(pagesTogglesArray[i], pagesArray[i]);
+function beginRound() {
+  stopClock();
+  const level = levels[gameEngine.levelNum - 1];
+  roundScore = gameEngine.score;
+  gameEngine.tapNum = 0; gameEngine.tapsGoal = level.goal; gameEngine.timeLeft = level.time;
+  pendingStar = false;
+  gameEngine.state = 'countdown';
+  $('countdownLevel').textContent = `LEVEL ${gameEngine.levelNum} OF ${levels.length}`;
+  $('countdownName').textContent = level.name;
+  $('countdownGoal').textContent = `${level.goal} blue taps · ${level.time} seconds`;
+  show('pagePlayDelay');
+  let number = 3;
+  function step() {
+    if (gameEngine.state !== 'countdown') return;
+    if (!number) {
+      gameEngine.state = 'playing'; show('pagePlayArea');
+      updateStats(); targets(); announce('Tap blue + · Avoid red × · Catch gold ★'); runClock(); return;
     }
-  }, false);
-}
-// ===============================================================
-// ===============================================================
-
-
-// ------------- GENERAL FUNCTIONS ------------- //
-toolsBox = {
-  delay: function(fun, delayTime) {
-    var delayAction = setTimeout(fun, delayTime);
-  },
-  gnrtRndmNum: function(minNumb, maxNumb) { // generate random number in range
-    return Math.floor(Math.random() * (maxNumb - minNumb + 1)) + minNumb;
-  },
-  showPage: function(page) {
-    page.style.display = "block";
-  },
-  hidePage: function(page) {
-    page.style.display = "none";
-  },
-  hideSplashScreen: function() {
-    splashScreenTxt.classList.add('fadeOut-animation');
-    splashScreenLogo.classList.add('fadeOut-animation');
-    toolsBox.delay(function() {
-      toolsBox.showPage(pageGameMenu);
-      toolsBox.hidePage(pageSplash);
-      window.invitationGameReady();
-    }, 1500); // Show after 1.5s because the fadeOut-animation takes 0.5s and has 1s delay
-  },
-  onClickNTouchstart: function(element, fun) { // add click and touchstart event listeners
-    element.addEventListener('pointerdown', function(event) { event.preventDefault(); fun(event); }, false);
-  },
-  toggleAnimation: function(element, animationClass) { // add animation class and remove it when it's done (to enable repeating it)
-    element.classList.add(animationClass);
-    element.addEventListener('animationend', function() {
-      element.classList.remove(animationClass);
-    }, false);
-  },
-  windowSize: { // get the size of the page
-    width: window.innerWidth || document.body.clientWidth,
-    height: window.innerHeight || document.body.clientHeight
-  },
-  pagePlayDelay: {
-    updateNumber: function() {
-      toolsBox.toggleAnimation(playDelayNum, 'grow-animation');
-      playDelayNum.innerHTML = parseInt(playDelayNum.innerHTML, 10) - 1;
-    },
-    start: function() { // start counting down
-      toolsBox.toggleAnimation(playDelayNum, 'grow-animation');
-      var timer = setInterval(function(){
-        if (playDelayNum.innerHTML > 1) {
-          toolsBox.pagePlayDelay.updateNumber();
-        } else {
-          clearInterval(timer);
-          toolsBox.hidePage(pagePlayDelay);
-          playDelayNum.innerHTML = 3;
-        }
-      },500);
-    }
-  },
-  pageAbout: {
-    creditsAnimation:'',
-    creditsCont: document.querySelector('.credits-cont'),
-    moveCredits: function() {
-      var creditsCont = toolsBox.pageAbout.creditsCont;
-      toolsBox.pageAbout.creditsAnimation = window.setInterval(function() {
-        creditsCont.scrollTop += 2;
-        if (creditsCont.scrollTop === creditsCont.scrollHeight-creditsCont.offsetHeight) {
-          clearInterval(toolsBox.pageAbout.creditsAnimation);
-          creditsCont.scrollTop = 0;
-          toolsBox.pageAbout.moveCredits();
-        }
-      }, 40)
-    },
-    stopMovingCredits: function() {
-      clearInterval(toolsBox.pageAbout.creditsAnimation);
-    }
+    $('playDelayNum').textContent = number--;
+    countdown = setTimeout(step, 400);
   }
+  step();
 }
-
-
-// ===============================================================
-
-
-
-
-// ------------------------------------------------------ //
-
-var timeEngine = {
-  progressTimer: '',
-  timeLeft: 0,
-  levelTime: 0,
-  progressValue: 100,
-  endingSound: false,
-  start: function(time) { // play time in seconds
-    timeEngine.timeLeft = time;
-    // Every 0.1 of a second
-    timeEngine.progressTimer = setInterval(function(){timeEngine.updateTimeProgress(time)}, 100);
-  },
-  stop: function() {
-    clearInterval(timeEngine.progressTimer);
-    gmStatsTimeProgress.classList.remove('switchColors-animation'); // remove the animation red/blue on the bar
-    if (timeEngine.endingSound) {
-      timeEngine.endingSound = false; // stop playing the ending sound
-    }
-  },
-  resume: function() { // continue from where it stopped
-    timeEngine.start(timeEngine.timeLeft);
-  },
-  reset: function() {
-    timeEngine.stop();
-    timeEngine.timeLeft = 0;
-    timeEngine.progressValue = 100;
-    timeEngine.progressValue = timeEngine.progressValue; // Progress bar value
-    gmStatsTimeProgress.style.width = timeEngine.progressValue + "%";
-  },
-  updateTimeProgress: function(time) {
-    // Subtract (100 / total game play time / 10)
-    // 10 to make it smaller, and the time is 0.1 of a second (100ms)
-    // 100ms is the time in the Start function
-    timeEngine.timeLeft = timeEngine.timeLeft - (1/10); // update time left
-    timeEngine.progressValue = timeEngine.timeLeft * 100 / gameEngine.levelTime; // update the value for the progress bar
-    gmStatsTimeProgress.style.width = timeEngine.progressValue + "%";
-    timeEngine.checkTime(); // Check if game's time is 0
-  },
-  checkTime: function() {
-    if (timeEngine.timeLeft <= 0) {
-      timeEngine.stop();
-      gameEngine.timesUp();
-      timeEngine.endingSound = false; // stop playing the ending sound
-    }
-    if (timeEngine.timeLeft < 4 && timeEngine.timeLeft > 0) { // if there are smaller than 4 and greater than 0 seconds left
-      gmStatsTimeProgress.classList.add('switchColors-animation'); // animate the bar to red/blue
-      if (!timeEngine.endingSound) {
-        timeEngine.endingSound = true;
-      }
-    }
-  }
+function newRun() {
+  stopClock();
+  Object.assign(gameEngine, { score: 0, levelNum: 1, lives: 3, streak: 0, state: 'tutorial' });
+  show('pageTutorial');
 }
-
-
-// ----------------------------------------------------------------- //
-// -------------------- Tappable Circle Object -------------------- //
-
-var circlesEngine = {
-  create: function(typeOfCircle, numOfCircles) {
-    var element = document.createElement('div');
-
-    switch (typeOfCircle.toLowerCase()) {
-      case ".evil-circle":
-        element.setAttribute('class', 'tpbl-circle c-red evil-circle');
-        gameSpace.appendChild(element);
-        toolsBox.onClickNTouchstart(element, function(){ // on click & touch start function
-          circlesEngine.evilCircleTap();
-        });
-        return element;
-        break;
-
-      case ".good-circle":
-        element.setAttribute('class', 'tpbl-circle c-blue good-circle');
-        gameSpace.appendChild(element);
-        toolsBox.onClickNTouchstart(element, function(){ // on click & touch start function
-          circlesEngine.goodCircleTap(typeOfCircle, numOfCircles);
-        });
-        return element;
-        break;
-
-      default:
-    }
-  },
-  destroy: function(circle){ // destroy all the circles of a specific type
-    // Convert the Node List into in Array and delete all the items in it
-    Array.from(circle).forEach(function(element){
-      element.parentNode.removeChild(element);
-    });
-  },
-  randomPosition: function(circle){ // random x,y position in the gameSpace
-    gameSpcWidth = gameSpace.offsetWidth;
-    gmSpcHeight = gameSpace.offsetHeight;
-    tpblCircleWidth = circle.offsetWidth;
-    tpblCircleHeight = circle.offsetHeight;
-
-    circle.style.left = toolsBox.gnrtRndmNum(8, Math.max(8, gameSpcWidth - tpblCircleWidth - 8)) + "px";
-    circle.style.top = toolsBox.gnrtRndmNum(8, Math.max(8, gmSpcHeight - tpblCircleHeight - 8)) + "px";
-  },
-  add: function(typeOfCircle, numOfCircles) { // Add circles to the game space
-    // Chcek if that kind of circle exists & delete them
-    if (document.querySelectorAll(typeOfCircle).length > 0) {
-      circle = document.querySelectorAll(typeOfCircle);
-      circlesEngine.destroy(circle);
-    }
-    if (numOfCircles) { // check if there's a number of circles, else create 1 only
-      for (var i = 0; i < numOfCircles; i++) { // create and throw in random positions
-        circle = circlesEngine.create(typeOfCircle, numOfCircles);
-        circlesEngine.randomPosition(circle);
-        circlesEngine.addWithDelay(i, circle, typeOfCircle); // add CSS animation class with delay
-      }
-    } else { // if only type of circle, add 1 circle only
-      circle = circlesEngine.create(typeOfCircle, numOfCircles);
-      circlesEngine.randomPosition(circle);
-    }
-  },
-  addWithDelay: function(i, circle, typeOfCircle) { // add CSS class with delay
-    setTimeout(function() {
-      circle.classList.add('grow-animation');
-    }, i*50); // delay each using the index (i) * 50ms
-  },
-  goodCircleTap: function(typeOfCircle, numOfCircles){
-    gameEngine.goodCircleTap(); // do actions in game engine
-    circlesEngine.add(typeOfCircle, numOfCircles); // re-generate good circles
-
-    evilCircles = document.querySelectorAll('.evil-circle');
-    if (evilCircles.length > 0) { // recreate evil circles if there are any in the game space
-      circlesEngine.add('.evil-circle', evilCircles.length);
-    }
-  },
-  evilCircleTap: function(){
-    gameEngine.evilCircleTap();
-  },
-  goodCirclesTapCount: 0,
-  redCirclesTapCount: 0
+function pass() {
+  stopClock(); gameEngine.state = 'between';
+  const bonus = Math.ceil(gameEngine.timeLeft) * 5;
+  gameEngine.score += bonus;
+  best = Math.max(best, gameEngine.score);
+  const finished = gameEngine.levelNum === levels.length;
+  $('lvlPssdTtl').textContent = `LEVEL ${gameEngine.levelNum} COMPLETE`;
+  $('passedHeading').textContent = finished ? 'You lit up the party!' : 'Beautifully done.';
+  $('levelSummary').textContent = finished ? `Eight levels cleared · Session best: ${best}` : `Next: ${levels[gameEngine.levelNum].name} · ${levels[gameEngine.levelNum].goal} taps`;
+  $('lvlPssdScore').textContent = gameEngine.score;
+  $('lvlPssdBonusScore').textContent = `Time bonus +${bonus} · ${gameEngine.lives} heart${gameEngine.lives === 1 ? '' : 's'} left`;
+  $('completedJourney').replaceChildren(...levels.map((_, index) => {
+    const dot = document.createElement('i'); dot.classList.toggle('done', index < gameEngine.levelNum); return dot;
+  }));
+  $('completedJourney').setAttribute('aria-label', `${gameEngine.levelNum} of ${levels.length} levels completed`);
+  $('lvlPssdContinueNextLvlBtn').hidden = finished;
+  $('playAgainBtn').hidden = !finished;
+  show('pageLevelPassed');
 }
-
-// ----------------------------------------------------------------- //
-// ---------------- End of / Tappable Circle Object ---------------- //
-// ----------------------------------------------------------------- //
-
-
-
-// ---------------------- Game Engine Object ---------------------- //
-var gameEngine = { 
-  // Current level settings
-  levelNum:1, // current level number
-  levelTime: 10, // Time in seconds for the current level
-  tapNum: 0, // how many times it was tapped so far
-  tapsGoal: 10, // Number of taps required to finish the level
-  tapValue: 13, // How much does the tap add to the score
-  score: 0, // current score <- should be carried from a level to another
-  goodCirclesCount: 1, // number of good circles in game space
-  evilCirclesCount: 4,
-  highestScore: 0,
-  bonusScore: 0,
-  updateScore: function(amount) { //add amount to score
-    gameEngine.score = amount;
-    gmStatsScore.innerHTML = gameEngine.score;
-  },
-  updateLevel: function(levelNum) { // Update the level number in the game space and add to engine
-    gameEngine.levelNum = levelNum;
-    gmStatsLvlNumb.innerHTML = "Level " + gameEngine.levelNum;
-  },
-  updateTapCount: function(tapNum, tapsGoal) { // Update tabs count in the game space & add to engine
-    gameEngine.tapNum = tapNum;
-    gmStatsCurrentTapCount.innerHTML = gameEngine.tapNum;
-    gameEngine.tapsGoal = tapsGoal;
-    gmStatsTotalTapCount.innerHTML = "/" + gameEngine.tapsGoal;
-  },
-  updateLevelTime: function(time) {
-    gameEngine.levelTime = time;
-  },
-  updateBonusScore: function(bonus) {
-    gameEngine.bonusScore = bonus;
-  },
-  reset: function() { // reset the level values from the levels engine to start a new game
-    levelsEngine.resetLevels();
-    gameEngine.updateScore(0);
-    gameEngine.updateLevel(levelsEngine.levels[0].levelNum);
-    gameEngine.updateLevelTime(levelsEngine.levels[0].time);
-    gameEngine.updateTapCount(0, levelsEngine.levels[0].tapsGoal);
-    gameEngine.tapValue = levelsEngine.levels[0].tapValue;
-    gameEngine.goodCirclesCount = levelsEngine.levels[0].goodCirclesCount;
-    gameEngine.evilCirclesCount = levelsEngine.levels[0].evilCirclesCount;
-  },
-  start: function(score, level, time, tapsGoal, tapValue, goodCirclesCount, evilCirclesCount) {
-    // Inatial level setup & adding data to the game engine
-    gameEngine.updateScore(score);
-    gameEngine.updateLevel(level);
-    gameEngine.updateLevelTime(time);
-    gameEngine.updateTapCount(0, tapsGoal);
-    gameEngine.tapValue = tapValue;
-    gameEngine.goodCirclesCount = goodCirclesCount;
-    gameEngine.evilCirclesCount = evilCirclesCount;
-
-    // adding circles to the game space
-    circlesEngine.add('.good-circle', goodCirclesCount);
-    circlesEngine.add('.evil-circle', evilCirclesCount);
-
-    // reset the time and start it
-    timeEngine.reset();
-    timeEngine.start(time);
-
-    console.log('Game Started! 🏁');
-  },
-  startLevel: function() { // start level using the current level value in the game engine
-    gameEngine.start(
-      gameEngine.score, //score
-      levelsEngine.levels[gameEngine.levelNum-1].levelNum, // level
-      levelsEngine.levels[gameEngine.levelNum-1].time, // time
-      levelsEngine.levels[gameEngine.levelNum-1].tapsGoal, // taps goal
-      levelsEngine.levels[gameEngine.levelNum-1].tapValue, // tap value
-      levelsEngine.levels[gameEngine.levelNum-1].goodCirclesCount, // good circles count
-      levelsEngine.levels[gameEngine.levelNum-1].evilCirclesCount // evil cirlcs count
-    );
-  },
-  checkTapsCount: function() {
-    if (gameEngine.tapNum >= gameEngine.tapsGoal) {
-      if (timeEngine.timeLeft > 0) { // if the there was some time left, add to the score * 10 (example: 2second * 10 = 20 added)
-        gameEngine.showBonusScore();
-      }
-      gameEngine.levelPassed();
-    }
-  },
-  goodCircleTap: function() {
-    gameEngine.tapNum = gameEngine.tapNum + 1;
-    gameEngine.updateScore(gameEngine.score + gameEngine.tapValue);
-    gameEngine.updateTapCount(gameEngine.tapNum, gameEngine.tapsGoal);
-    gameEngine.checkTapsCount(); // check if taps finished
-    toolsBox.toggleAnimation(gmStatsCurrentTapCount, 'burst-animation');
-    // ga('send', 'event', 'Circle_Tap', 'Good'); // Google analytics events
-  },
-  evilCircleTap: function() {
-    gameEngine.deadlyTap();
-    // ga('send', 'event', 'Circle_Tap', 'Evil'); // Google analytics events
-  },
-  pause: function() {
-    timeEngine.stop();
-  },
-  resume: function() {
-    timeEngine.resume();
-  },
-  stop: function() { // stop the game and reset level values
-    timeEngine.stop();
-    console.log('game STOPPED!');
-    gameEngine.reset();
-  },
-  gameLost: function() {
-    lvlLostScore.innerHTML = gameEngine.score;
-    toolsBox.hidePage(pagePlayArea);
-    toolsBox.showPage(pageYouLost);
-    gameEngine.stop();
-
-  },
-  deadlyTap: function() { // tapping a red circle
-    console.log('You lost! 🐜');
-    lvlLostTtl.innerHTML = "You Lost";
-    if (lvlLostIcon.classList.contains('times-up-icon')) {
-      lvlLostIcon.classList.remove('times-up-icon');
-      lvlLostIcon.classList.add('you-lost-icon');
-    }
-    gameEngine.gameLost();
-  },
-  timesUp: function() {
-    console.log('time is up! ⏱');
-    lvlLostTtl.innerHTML = "Time's Up";
-    if (lvlLostIcon.classList.contains('you-lost-icon')) {
-      lvlLostIcon.classList.remove('you-lost-icon');
-      lvlLostIcon.classList.add('times-up-icon');
-    }
-    gameEngine.gameLost();
-  },
-  levelPassed: function() {
-    console.log('Level passed! 💃');
-    timeEngine.stop(); // stop the count down
-
-    // update level passed page info
-    lvlPssdTtl.innerHTML = "Level " + gameEngine.levelNum;
-    if (gameEngine.bonusScore > 0) { // if there is a bonus, display score without bonus
-      lvlPssdScore.innerHTML = gameEngine.score - gameEngine.bonusScore;
-    } else {
-      lvlPssdScore.innerHTML = gameEngine.score;
-    }
-
-    gameEngine.updateLevel(gameEngine.levelNum + 1); // Update level number in the game engine
-
-    // Add new level
-    levelsEngine.addNewLevel( // add new level to the levels engine
-      gameEngine.levelNum,
-      gameEngine.levelTime + 1,
-      gameEngine.tapValue + 2,
-      gameEngine.tapsGoal + 1,
-      1, // good circles count
-      gameEngine.evilCirclesCount + 1
-    );
-
-    toolsBox.hidePage(pagePlayArea);
-    toolsBox.showPage(pageLevelPassed);
-  },
-  showBonusScore: function() {
-    console.log('You got '
-    + Math.round(timeEngine.timeLeft) * 10
-    + " extra score because you finished "
-    + timeEngine.timeLeft
-    + " seconds before the time!" );
-    gameEngine.updateBonusScore(Math.round(timeEngine.timeLeft, 10) * 10);
-    if (gameEngine.bonusScore > 0) { // if theere is some bonus score show it on level passed page
-      lvlPssdBonusScore.innerHTML = "Bonus +" + gameEngine.bonusScore;
-    }
-    gameEngine.score += gameEngine.bonusScore; // add the bonus score to the game score
-  }
+function lose(reason) {
+  stopClock(); gameEngine.state = 'lost';
+  best = Math.max(best, gameEngine.score);
+  $('lvlLostTtl').textContent = reason;
+  $('lostSummary').textContent = `Level ${gameEngine.levelNum} · ${gameEngine.tapNum}/${gameEngine.tapsGoal} taps. Your earlier points are safe.`;
+  $('lvlLostScore').textContent = gameEngine.score;
+  show('pageYouLost');
 }
-
-//////////////////////////////////////////////////////////
-//////////////////////////////////////////////////////////
-
-// -------------------------------------------------------------- //
-// ---------------- End of / Game Engine Object ---------------- //
-
-// -------------------- Levels Engine -------------------- //
-levelsEngine = {
-  levels : [
-    {
-      levelNum: 1,
-      time: 7, // Time in seconds for the current level
-      tapValue: 3,
-      tapsGoal: 5,
-      goodCirclesCount: 1,
-      evilCirclesCount: 4
-    }
-  ],
-  addNewLevel: function(lN, t, tV, tG, gC, eC) {
-    levelsEngine.levels.push({
-      levelNum: lN,
-      time: t,
-      tapValue: tV,
-      tapsGoal: tG,
-      goodCirclesCount: gC,
-      evilCirclesCount: eC
-    });
-  },
-  resetLevels: function() { // TODO
-    levelsEngine.levels = [];
-    levelsEngine.addNewLevel(1, 7, 3, 5, 1, 4);
-  }
+function pause() {
+  if (!['playing', 'countdown'].includes(gameEngine.state)) return;
+  resumeState = gameEngine.state;
+  stopClock(); gameEngine.state = 'paused';
+  $('lvlPausedScore').textContent = gameEngine.score; show('pagePauseMenu');
 }
-
-
-// -------------------------------------------- //
-// ---------------- Audio Pool --------------- //
-
-// Silent invitation edition: no audio assets or autoplay.
-
-
-// ------------------ Buttons ------------------ //
-// Stop the rubber effect on iOS
-document.addEventListener('touchmove', function(e) {
-  e.preventDefault();
-}, {passive: false});
-
-
-// Tutorial Page Buttons
-// -- Start game Button
-toolsBox.onClickNTouchstart(tutPgStartGameBtn, function(){
-  gameEngine.stop(); // Reset the levels and time
-
-  toolsBox.hidePage(pageTutorial);
-  toolsBox.showPage(pagePlayDelay); // Show the 1.5 seconds delay page
-  toolsBox.pagePlayDelay.start(); // Start the count down
-
-  toolsBox.delay( function() {
-    toolsBox.showPage(pagePlayArea)
-  }, 1500);
-  toolsBox.delay(gameEngine.startLevel, 1500); // Delay starting the level until the countdown is finished
+$('newGameBtn').addEventListener('click', newRun);
+$('tutPgStartGameBtn').addEventListener('click', beginRound);
+$('gmStatsPauseBtn').addEventListener('click', pause);
+$('pmCntnuGmBtn').addEventListener('click', () => {
+  if (gameEngine.state !== 'paused') return;
+  if (resumeState === 'countdown') { beginRound(); return; }
+  gameEngine.state = 'playing'; show('pagePlayArea'); runClock();
 });
-
-// Level Passed Page Buttons
-// -- Start next level button
-toolsBox.onClickNTouchstart(lvlPssdContinueNextLvlBtn, function() {
-  toolsBox.hidePage(pageLevelPassed);
-  toolsBox.showPage(pagePlayDelay); // Show the 1.5 seconds delay page
-  toolsBox.pagePlayDelay.start(); // Start the count down
-
-  toolsBox.delay( function() {
-    toolsBox.showPage(pagePlayArea)
-  }, 1500);
-  toolsBox.delay(gameEngine.startLevel, 1500); // Delay starting the level until the countdown is finished
+$('pmRstrtLvlBtn').addEventListener('click', newRun);
+$('lvlPssdContinueNextLvlBtn').addEventListener('click', () => {
+  if (gameEngine.state !== 'between' || gameEngine.levelNum >= levels.length) return;
+  gameEngine.levelNum++; beginRound();
 });
-
-// Lost Page Buttons
-// -- Try again button
-lvlLostTryAgainBtn.addEventListener('click', function() {
-  toolsBox.hidePage(pageYouLost);
-  toolsBox.showPage(pageGameMenu);
-  gameEngine.stop();
-}, false);
-
-// Play Area Buttons
-// -- Pause game button
-toolsBox.onClickNTouchstart(gmStatsPauseBtn, function() {
-  gameEngine.pause();
-  toolsBox.showPage(pagePauseMenu);
-  toolsBox.hidePage(pagePlayArea);
-  lvlPausedScore.innerHTML = gameEngine.score;
+$('playAgainBtn').addEventListener('click', newRun);
+$('lvlLostTryAgainBtn').addEventListener('click', newRun);
+$('retryLevelBtn').addEventListener('click', () => {
+  if (gameEngine.state !== 'lost') return;
+  gameEngine.score = roundScore; gameEngine.lives = 3; gameEngine.streak = 0; beginRound();
 });
-
-// Pause Menue Buttons
-// -- Restart button
-toolsBox.onClickNTouchstart(pmRstrtLvlBtn, function() {
-  toolsBox.showPage(pageGameMenu);
-  toolsBox.hidePage(pagePauseMenu);
-  gameEngine.stop();
-});
-// -- Continue button
-toolsBox.onClickNTouchstart(pmCntnuGmBtn, function() {
-  toolsBox.showPage(pagePlayArea);
-  toolsBox.hidePage(pagePauseMenu);
-  gameEngine.resume();
-});
-
-// About Page Buttons
-// -- Back Button
-abtPageBackBtn.addEventListener('click', function() {
-  toolsBox.showPage(pageGameMenu);
-  toolsBox.hidePage(pageAbout);
-  toolsBox.pageAbout.stopMovingCredits(); // stop animating the credits in the about page
-}, false);
-
-// Game Menu Buttons
-// -- New Game Button
-newGameBtn.addEventListener('click', function() {
-  toolsBox.showPage(pageTutorial);
-  toolsBox.hidePage(pageGameMenu);
-}, false);
-// -- About Button
-aboutBtn.addEventListener('click', function() {
-  toolsBox.showPage(pageAbout);
-  toolsBox.hidePage(pageGameMenu);
-  toolsBox.pageAbout.moveCredits(); // animate the credits in the about page
-}, false);
-
-
-
-
-// Hide Splash Screen when everything is loaded
-toolsBox.hideSplashScreen();
+document.addEventListener('visibilitychange', () => { if (document.hidden) pause(); });
+window.addEventListener('resize', () => { if (gameEngine.state === 'playing') targets(); });
+show('pageGameMenu');
+window.invitationGameReady?.();

@@ -44,7 +44,6 @@
           </nav>
         </details>
         <a class="gaming-shortcut" href="#games" data-section-link>Play games <span aria-hidden="true">↗</span></a>
-        <button class="motion-toggle" id="motion-toggle" type="button" aria-label="Pause animations" title="Pause animations">Ⅱ</button>
       </div>
     </div>
   </header>
@@ -55,17 +54,18 @@
         <p class="opening-kicker">A LITTLE BOY. A BIG CELEBRATION.</p>
         <h1 id="opening-title" class="opening-title"><span class="visually-hidden">Vihaan</span>
           <svg class="name-writing" viewBox="60 60 640 280" aria-hidden="true">
+            <defs>
+              <linearGradient id="engraved-gold" x1="0" y1="0" x2="0.2" y2="1"><stop stop-color="#fff1b5"/><stop offset=".4" stop-color="#e5bd58"/><stop offset=".65" stop-color="#b98327"/><stop offset="1" stop-color="#f4d77c"/></linearGradient>
+              <filter id="gold-depth" x="-20%" y="-30%" width="140%" height="160%"><feDropShadow dx="0" dy="2" stdDeviation="1" flood-color="#061e17" flood-opacity=".9"/><feDropShadow dx="0" dy="-1" stdDeviation=".4" flood-color="#fff3ba" flood-opacity=".4"/></filter>
+            </defs>
             <g class="name-ink">
               <path class="name-stroke stroke-v" d="M100 143 C128 87 183 70 175 105 C169 135 148 196 147 245 C145 267 154 280 164 270 C204 231 242 128 273 94"/>
-              <path class="name-stroke stroke-i" d="M263 211 C253 238 244 263 257 266 C273 271 294 243 305 224"/>
+              <path class="name-stroke stroke-script" d="M263 211 C253 238 244 263 257 266 C273 271 294 243 305 224 C323 204 361 127 349 111 C333 91 309 158 300 200 L276 265 C295 222 327 197 340 208 C354 220 325 259 337 267 C350 274 368 244 382 227 C398 210 419 206 428 225 C420 204 389 214 375 240 C362 265 378 278 399 260 L427 221 C414 248 408 266 421 269 C435 273 448 250 462 234 C478 208 505 204 515 225 C507 204 476 214 462 240 C449 265 465 278 486 260 L514 221 C501 248 495 266 508 269 C522 273 535 250 549 228 L532 268 C554 235 579 205 592 213 C610 224 578 259 592 270 C614 284 639 243 656 230"/>
               <path class="name-stroke stroke-dot" d="M274 181 L275 179"/>
-              <path class="name-stroke stroke-h" d="M300 242 C323 204 361 127 349 111 C333 91 309 158 300 200 L276 265 C295 222 327 197 340 208 C354 220 325 259 337 267 C350 274 368 244 382 227"/>
-              <path class="name-stroke stroke-a-one" d="M428 225 C420 204 389 214 375 240 C362 265 378 278 399 260 L427 221 C414 248 408 266 421 269 C435 273 448 250 462 234"/>
-              <path class="name-stroke stroke-a-two" d="M515 225 C507 204 476 214 462 240 C449 265 465 278 486 260 L514 221 C501 248 495 266 508 269 C522 273 535 250 549 228"/>
-              <path class="name-stroke stroke-n" d="M549 228 L532 268 C554 235 579 205 592 213 C610 224 578 259 592 270 C614 284 639 243 656 230"/>
               <path class="name-stroke stroke-flourish" d="M216 302 C330 282 478 286 582 297 C616 301 631 311 600 317"/>
             </g>
           </svg>
+          <canvas class="writing-fireworks" aria-hidden="true"></canvas>
         </h1>
         <div class="opening-afterword"><span class="opening-rule" aria-hidden="true"></span><p>is turning <em>one.</em></p><span class="opening-rule" aria-hidden="true"></span></div>
         <p class="opening-note">And you're invited.</p>
@@ -109,7 +109,7 @@
       <div class="wrap">
         <div class="games-heading reveal"><div><div class="eyebrow">JUST FOR FUN</div><h2 id="gaming-title">A little <span class="safari-anchor" data-safari-anchor="monkey"><em>playtime.</em></span></h2></div><p>Pick a game. Have a little fun.</p></div>
         <div class="games-grid">
-          <button class="game-card reveal" data-game="taptaptap" type="button"><div class="game-preview preview-tap" aria-hidden="true"><span class="game-tag">MAKE EVERY TAP COUNT</span><div class="tap-rings"><i></i><span>tap!</span></div><span class="tap-dot"></span><span class="preview-doodle">✧</span></div><div class="game-content"><span class="game-type">TAP · REACT · REPEAT</span><h3>Tap Tap Tap <span>↗</span></h3><p>Tap fast. Beat the clock.</p><span class="play-label">Let's play <span>→</span></span></div></button>
+          <button class="game-card reveal" data-game="taptaptap" type="button"><div class="game-preview preview-tap" aria-hidden="true"><span class="game-tag">MAKE EVERY TAP COUNT</span><div class="tap-rings"><i></i><span>tap!</span></div><span class="tap-dot"></span><span class="preview-doodle">✧</span></div><div class="game-content"><span class="game-type">TAP · REACT · REPEAT</span><h3>Tap Tap Tap <span>↗</span></h3><p>Eight levels to beat.</p><span class="play-label">Let's play <span>→</span></span></div></button>
           <button class="game-card reveal" data-game="hextris" type="button"><div class="game-preview preview-hextris" aria-hidden="true"><span class="game-tag">A COLOURFUL LITTLE CHALLENGE</span><div class="hexagon hex-outer"><div class="hexagon hex-middle"><div class="hexagon hex-inner">✦</div></div></div><span class="hex-dot dot-one"></span><span class="hex-dot dot-two"></span></div><div class="game-content"><span class="game-type">ROTATE · MATCH · SMILE</span><h3>Hextris <span>↗</span></h3><p>Rotate. Match the colours.</p><span class="play-label">Let's play <span>→</span></span></div></button>
           <button class="game-card reveal" data-game="ohhi" type="button"><div class="game-preview preview-ohhi" aria-hidden="true"><span class="game-tag">SMALL TILES. BIG BRAINWAVES.</span><div class="ohhi-grid"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div><span class="preview-doodle">✧</span></div><div class="game-content"><span class="game-type">TAP · THINK · DISCOVER</span><h3>0h h1 <span>↗</span></h3><p>A colourful logic puzzle.</p><span class="play-label">Let's play <span>→</span></span></div></button>
           <button class="game-card reveal" data-game="flappy" type="button"><div class="game-preview preview-flappy" aria-hidden="true"><span class="game-tag">A LITTLE BIRD. A BIG ADVENTURE.</span><div class="preview-branch branch-top"></div><div class="preview-bird"><i></i></div><div class="preview-branch branch-bottom"></div><span class="bird-cloud"></span></div><div class="game-content"><span class="game-type">FLAP · FLY · TRY AGAIN</span><h3>Safari Flyer <span>↗</span></h3><p>Flap through the jungle.</p><span class="play-label">Let's play <span>→</span></span></div></button>

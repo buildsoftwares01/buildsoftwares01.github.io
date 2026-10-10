@@ -4,21 +4,9 @@ import { setupSafariFriends } from './safari-friends.js';
 import { setupInvitationPages } from './invitation-pages.js';
 const $ = (s) => document.querySelector(s);
 const motionPreference = window.matchMedia('(prefers-reduced-motion: reduce)');
-const motionToggle = $('#motion-toggle');
-let guestPausedMotion = false;
 function syncMotionPreference() {
-  const paused = guestPausedMotion || motionPreference.matches;
-  document.body.classList.toggle('motion-paused', paused);
-  motionToggle.disabled = motionPreference.matches;
-  const label = motionPreference.matches ? 'Reduced motion enabled' : paused ? 'Resume animations' : 'Pause animations';
-  motionToggle.textContent = paused ? '▶' : 'Ⅱ';
-  motionToggle.setAttribute('aria-label', label);
-  motionToggle.title = label;
+  document.body.classList.toggle('motion-paused', motionPreference.matches);
 }
-motionToggle.addEventListener('click', () => {
-  guestPausedMotion = !guestPausedMotion;
-  syncMotionPreference();
-});
 motionPreference.addEventListener('change', syncMotionPreference);
 syncMotionPreference();
 setupInvitationPages();
@@ -37,7 +25,7 @@ function syncDialogMotion() {
 }
 new MutationObserver(syncDialogMotion).observe(document.body, { subtree: true, attributes: true, attributeFilter: ['open'] });
 const games = {
-  taptaptap: { name: 'Tap Tap Tap', help: 'Tap the blue circles before time runs out. Avoid red circles. Start with New Game.' },
+  taptaptap: { name: 'Tap Tap Tap', help: 'Eight levels, gold bonus stars and a final challenge. Tap blue circles; avoid red ones.' },
   flappy: { name: 'Safari Flyer', help: 'Tap to flap through the green branches. On a computer, click or press Space.' },
   hextris: { name: 'Hextris', help: 'Tap the left or right side to rotate. Match three colours. Keyboard: ← →.' },
   ohhi: { name: '0h h1', help: 'Tap tiles to change colour. Start with “How to play” for a friendly tutorial.' },
