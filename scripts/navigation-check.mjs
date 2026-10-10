@@ -4,109 +4,99 @@ import { chromium } from 'playwright';
 
 const base = process.env.TEST_URL || 'http://127.0.0.1:4173';
 const browser = await chromium.launch({ executablePath: process.env.CHROME_PATH || '/Applications/Google Chrome.app/Contents/MacOS/Google Chrome', headless: true });
-const sections = [['Invitation', '#main'], ['Celebration', '#celebration'], ['Venue', '#venue'], ['RSVP', '#rsvp'], ['Gaming', '#games']];
+const chapters = [['Opening', '#main', 'welcome'], ['Invitation', '#invitation', 'invitation'], ['Celebration', '#celebration', 'celebration'], ['Venue', '#venue', 'venue'], ['RSVP', '#rsvp', 'rsvp'], ['Gaming', '#games', 'games']];
 await mkdir('test-results', { recursive: true });
 try {
-  for (const width of [320, 390, 768, 1440]) {
-    const page = await browser.newPage({ viewport: { width, height: 844 }, reducedMotion: 'reduce' });
+  for (const [width, height] of [[320, 740], [390, 844], [768, 844], [1440, 900], [844, 390]]) {
+    const page = await browser.newPage({ viewport: { width, height }, reducedMotion: 'reduce', hasTouch: true });
     const errors = [];
     page.on('pageerror', error => errors.push(error.message));
     await page.goto(base);
     await page.evaluate(() => document.fonts.ready);
     const nav = page.locator('.site-header .section-nav');
-    assert.equal(await nav.getByRole('link').count(), 5);
-    assert.equal(await page.locator('#kids-corner, a[href="#kids-corner"], .activity-card').count(), 0, 'Kids Corner and its links are removed');
-    for (const [section, animal] of [['.hero', 'lion'], ['#celebration', 'elephant'], ['#venue', 'giraffe'], ['#rsvp', 'tiger'], ['#games', 'monkey']]) {
-      const home = page.locator(`${section} .safari-home`);
-      assert.equal(await home.count(), 1, `${section} keeps its companion`);
-      assert.equal(await home.getAttribute('data-animal'), animal);
-      await home.locator('button').scrollIntoViewIfNeeded();
-      await page.waitForFunction(selector => document.querySelector(selector)?.dataset.painted === 'true', `${section} .safari-home`);
-      await home.locator('button').click();
-      assert.equal(await home.locator('button').getAttribute('data-gesture'), 'quiet', 'Section companions remain interactive with reduced motion');
-      const box = await home.boundingBox();
-      assert(box.width >= 44 && box.height >= 44 && box.x >= 0 && box.x + box.width <= width, 'Section animals fit and keep accessible touch targets');
-    }
-    await nav.getByRole('link', { name: 'Invitation', exact: true }).click();
-    assert.equal(await page.locator('#games [data-game]').count(), 4);
-
-    async function checkPage() {
+    async function checkChapter(index) {
+      const [, hash, id] = chapters[index];
+      assert.equal(await page.locator('#main > section:visible').count(), 1, 'Only the selected invitation page is visible');
+      assert.equal(await page.locator('#main > section:visible').getAttribute('id'), id);
+      assert(await page.locator('#main > section').evaluateAll(pages => pages.every(page => page.hidden === page.inert)), 'Inactive chapters are outside the focus order');
+      assert.equal(await nav.locator('a[aria-current]').getAttribute('href'), hash);
+      assert.equal(await page.locator('#page-counter').textContent(), `0${index + 1} / 06`);
+      assert(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth && document.documentElement.scrollHeight <= innerHeight), `${width}×${height}: the document does not scroll`);
       assert(await nav.locator('a').evaluateAll(links => links.every(link => {
-        const rect = link.getBoundingClientRect();
-        return rect.top >= 0 && rect.bottom <= innerHeight && rect.left >= 0 && rect.right <= innerWidth && rect.width >= 44 && rect.height >= 44 && document.elementFromPoint(rect.x + rect.width / 2, rect.y + rect.height / 2) === link;
-      })), `${width}px: all top links stay visible and tappable`);
-      assert(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth), `${width}px: no horizontal overflow`);
-      assert(await page.locator('#main > section').evaluateAll(elements => elements.length === 5 && elements.every((el, i) => {
-        const rect = el.getBoundingClientRect();
-        return !el.hidden && rect.height > 0 && (i === 0 || rect.top >= elements[i - 1].getBoundingClientRect().bottom);
-      })), 'Every section stays in the same continuous document');
+        const box = link.getBoundingClientRect();
+        return box.top >= 0 && box.bottom <= innerHeight && box.left >= 0 && box.right <= innerWidth && box.width >= 44 && box.height >= 44;
+      })), 'All chapter links fit and keep touch targets');
+      const active = page.locator(`#${id}`);
+      if (id !== 'welcome') assert(await active.evaluate(el => el.scrollWidth <= el.clientWidth), `${width}px: ${id} has no horizontal overflow`);
+      if (height >= 740 && id !== 'welcome') assert(await active.evaluate(el => el.scrollHeight <= el.clientHeight + 1), `${width}px: ${id} fits without scrolling`);
+      assert(await page.locator('#page-next').evaluate(el => {
+        const box = el.getBoundingClientRect();
+        return box.top >= 0 && box.bottom <= innerHeight && el.contains(document.elementFromPoint(box.x + box.width / 2, box.y + box.height / 2));
+      }), 'Next is always visible and clickable');
     }
-    async function checkAnchor(hash) {
-      await page.waitForFunction(hash => {
-        const target = document.querySelector(hash).getBoundingClientRect();
-        const header = document.querySelector('.site-header').getBoundingClientRect();
-        return target.top >= header.bottom - 1 && target.top <= header.bottom + 24;
-      }, hash);
-      await page.waitForFunction(hash => document.querySelector('.section-nav a[aria-current]')?.hash === hash, hash);
+    await checkChapter(0);
+    assert(await page.locator('#page-back').isDisabled());
+    for (let index = 1; index < chapters.length; index++) {
+      await page.locator('#page-next').click();
+      await checkChapter(index);
+      assert.equal(await page.evaluate(() => document.activeElement.id), chapters[index][2], 'Focus follows the new page');
+      await page.waitForFunction(id => document.querySelector(`#${id} .safari-home`)?.dataset.painted === 'true', chapters[index][2]);
+      if (width === 390 || width === 1440) await page.screenshot({ path: `test-results/sequence-${width}-${chapters[index][2]}.png` });
     }
-    await checkPage();
-    if (width === 390) await page.screenshot({ path: 'test-results/navbar-phone-invitation.png' });
-    for (const [label, hash] of sections.slice(1)) {
-      await nav.getByRole('link', { name: label, exact: true }).focus();
-      await page.keyboard.press('Enter');
-      assert.equal(new URL(page.url()).hash, hash);
-      assert.equal(await page.evaluate(() => document.activeElement.id), hash.slice(1));
-      await checkAnchor(hash);
-      await checkPage();
-      assert.equal(await nav.getByRole('link', { name: label, exact: true }).getAttribute('aria-current'), 'location');
-      await page.waitForFunction(hash => [...document.querySelectorAll(`${hash} .safari-home`)].every(home => home.dataset.painted === 'true'), hash);
-      if ((width === 390 || width === 1440) && hash === '#games') {
-        await page.screenshot({ path: `test-results/navbar-${width}-${hash.slice(1)}.png` });
-      }
-    }
-    const pageHeight = await page.evaluate(() => document.documentElement.scrollHeight);
     await page.goBack();
-    await checkAnchor('#rsvp');
+    await checkChapter(4);
     await page.goForward();
-    await checkAnchor('#games');
+    await checkChapter(5);
+    await page.locator('[data-game="taptaptap"]').click();
+    await page.locator('.game-tabs a[href="#games"]').click();
+    await page.waitForFunction(() => !document.querySelector('#game-dialog').open && !document.querySelector('iframe'));
+    await checkChapter(5);
+    assert.equal(await page.evaluate(() => document.activeElement.id), 'games', 'Returning to the current chapter closes the game and focuses its page');
     await page.locator('[data-game="taptaptap"]').click();
     assert(await page.locator('#game-dialog').isVisible());
-    await page.locator('.game-tabs').getByRole('link', { name: 'RSVP', exact: true }).click();
-    await page.waitForFunction(() => !document.querySelector('#game-dialog').open && !document.querySelector('#game-frame-container iframe'));
-    await checkAnchor('#rsvp');
+    await page.locator('.game-tabs a[href="#rsvp"]').click();
+    await page.waitForFunction(() => !document.querySelector('#game-dialog').open && !document.querySelector('iframe'));
+    await checkChapter(4);
     assert.equal(await page.evaluate(() => document.activeElement.id), 'rsvp');
-    assert.equal(await page.evaluate(() => document.documentElement.scrollHeight), pageHeight, 'Section navigation never changes page length');
-
-    // Ordinary scrolling updates the navbar without selecting or hiding a page.
-    for (const hash of ['#venue', '#rsvp', '#games']) {
-      await page.locator(hash).evaluate(el => el.scrollIntoView({ block: 'start', behavior: 'instant' }));
-      await checkAnchor(hash);
-      await checkPage();
-    }
-    await nav.getByRole('link', { name: 'Invitation', exact: true }).click();
-    assert.equal(await page.evaluate(() => scrollY), 0);
-    await page.waitForFunction(() => document.querySelector('#mobile-actions').hidden);
-    await page.setViewportSize({ width: 844, height: 390 });
-    await checkPage();
+    await page.locator('#page-back').click();
+    await checkChapter(3);
+    await page.keyboard.press('ArrowLeft');
+    await checkChapter(2);
+    await page.keyboard.press('ArrowRight');
+    await checkChapter(3);
+    await page.keyboard.press('Home');
+    await checkChapter(0);
+    await page.keyboard.press('End');
+    await checkChapter(5);
+    await page.locator('#page-next').click();
+    await checkChapter(0);
+    // Horizontal swipes change chapter; vertical reading gestures do not.
+    await page.locator('#main').evaluate(el => {
+      el.dispatchEvent(new TouchEvent('touchstart', { bubbles: true, touches: [new Touch({ identifier: 1, target: el, clientX: 240, clientY: 250 })] }));
+      el.dispatchEvent(new TouchEvent('touchend', { bubbles: true, changedTouches: [new Touch({ identifier: 1, target: el, clientX: 80, clientY: 260 })] }));
+    });
+    await checkChapter(1);
+    await page.locator('#main').evaluate(el => {
+      el.dispatchEvent(new TouchEvent('touchstart', { bubbles: true, touches: [new Touch({ identifier: 2, target: el, clientX: 180, clientY: 200 })] }));
+      el.dispatchEvent(new TouchEvent('touchend', { bubbles: true, changedTouches: [new Touch({ identifier: 2, target: el, clientX: 170, clientY: 400 })] }));
+    });
+    await checkChapter(1);
     assert.deepEqual(errors, []);
     await page.close();
   }
-  for (const hash of ['#venue', '#rsvp', '#games']) {
+  for (const [, hash, id] of chapters) {
     const page = await browser.newPage({ viewport: { width: 390, height: 844 }, reducedMotion: 'reduce' });
     await page.goto(base + hash);
-    await page.waitForFunction(hash => {
-      const rect = document.querySelector(hash).getBoundingClientRect();
-      return rect.top >= document.querySelector('.site-header').getBoundingClientRect().bottom - 1 && rect.top < innerHeight;
-    }, hash);
-    assert(await page.locator('#main > section').evaluateAll(elements => elements.every(el => !el.hidden && el.getBoundingClientRect().height > 0)), 'Direct links retain all sections');
+    assert.equal(await page.locator('#main > section:visible').getAttribute('id'), id, 'Direct links open their chapter');
+    await page.reload();
+    assert.equal(await page.locator('#main > section:visible').getAttribute('id'), id, 'Reload retains the selected chapter');
     await page.close();
   }
-  const plain = await browser.newPage({ javaScriptEnabled: false, viewport: { width: 390, height: 844 }, reducedMotion: 'reduce' });
+  const plain = await browser.newPage({ javaScriptEnabled: false, viewport: { width: 390, height: 844 } });
   await plain.goto(base);
-  for (const label of ['RSVP', 'Gaming', 'Invitation']) {
-    await plain.locator('.site-header .section-nav').getByRole('link', { name: label, exact: true }).click();
-    assert(await plain.locator('#main > section').evaluateAll(elements => elements.every(el => !el.hidden && el.getBoundingClientRect().height > 0)), 'Native navigation keeps all sections visible without JavaScript');
-  }
+  assert.equal(await plain.locator('#main > section:visible').count(), 6, 'Without JavaScript every chapter is readable');
+  await plain.locator('.section-nav a[href="#venue"]').click();
+  assert.equal(new URL(plain.url()).hash, '#venue');
   await plain.close();
-  console.log('Single-page sections, sticky navbar, anchor offsets, keyboard focus, scroll tracking, history, direct links and game exits passed on phones, desktop and landscape.');
+  console.log('Sequential pages, viewport layouts, hidden-page focus, Next/Back, keyboard, swipe, history, direct links, game exits and no-JS fallback passed.');
 } finally { await browser.close(); }

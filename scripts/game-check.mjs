@@ -19,6 +19,7 @@ for (const game of ['taptaptap', 'hextris', 'ohhi', 'flappy']) {
   await page.locator(`[data-game="${game}"]`).tap();
   const frame = await loaded;
   await frame.waitForLoadState('load');
+  await page.locator('.game-loading').waitFor({ state: 'detached' });
   assert(frame, `${game}: iframe loaded`);
   assert.equal(await page.locator('iframe').getAttribute('sandbox'), 'allow-scripts');
   assert.equal(await frame.evaluate(() => { try { void parent.document.body; return false; } catch { return true; } }), true, `${game}: cannot read parent document`);

@@ -1,6 +1,6 @@
 # Vihaan’s Little Explorer invitation
 
-A responsive static invitation for Vihaan’s first birthday, with locally hosted safari artwork, fonts, five animated animal companions and four sandboxed games. No backend, database, analytics, guest accounts or remote API is required.
+A responsive, six-page storybook invitation for Vihaan’s first birthday, with a handwritten animated opening, locally hosted safari artwork and fonts, five animated animal companions and four sandboxed games. No backend, database, analytics, guest accounts or remote API is required.
 
 ## Preview and build
 
@@ -19,17 +19,19 @@ Publish only `dist/` to a static HTTPS host. GitHub Pages, Netlify and Vercel co
 
 Edit `event-config.js`. The configured celebration is Sunday 6 December 2026 at 11:00 am Mauritius time, at Paps Restaurant. Run `npm run check:ready` before sharing.
 
-The hero shows the full date, Mauritius time and venue. Every RSVP button opens the same form directly. On phones, RSVP and Directions remain available in a bottom action bar after the hero scrolls away. An Apple-inspired translucent top navigation stays visible while scrolling and links to Invitation, Celebration, Venue, RSVP and Gaming. All five links remain visible on phones. Gaming follows RSVP on the same scrolling page. The current section is marked as guests scroll, and keyboard focus follows section links. Browser Back/Forward and direct section links work. Section links inside games close the game and scroll to the chosen section. Native anchors also work without JavaScript. The header reads “Vihaan” with a “First birthday” subtitle.
+The invitation opens on a deep green cover with “Vihaan” drawn in gold from left to right. A glowing pen tip follows the custom SVG strokes, then the birthday line and invitation button appear. Replay restarts the writing. The six chapters are Opening, Invitation, Celebration, Venue, RSVP and Gaming. Only the current chapter is visible and focusable. Next/Back buttons, horizontal swipes, arrow keys and the top chapter links move through the invitation; Home/End jump to the opening or games. Browser Back/Forward, reloads and direct chapter links retain the selected screen. Game navigation closes and unloads the game before changing chapters.
+
+Standard phone and desktop layouts fit each chapter into the viewport. Short windows or enlarged content can scroll within the active chapter while navigation remains visible. Without JavaScript all chapters remain readable through native anchors. The celebration chapter shows the date, Mauritius time, venue and countdown. The RSVP chapter opens the existing WhatsApp form directly; directions are available in the venue chapter.
 
 Guests enter a name and choose whether they can attend. Acceptances request a total headcount including the person replying and children, with an exact count for parties of six or more. Declines omit the headcount. Guests review and send the prepared message themselves in WhatsApp; the website does not send messages or claim attendance is confirmed. A copy-message fallback works when WhatsApp does not open, with manual selection if clipboard access is unavailable. Names and RSVP details are not stored. Calendar downloads use the Mauritius time zone and do not invent an event end time. Missing settings are labelled as pending.
 
 ## Artwork, motion and games
 
-The cream, sage and terracotta palette, visibly labelled venue illustration and picture-book safari animals are retained. Reading text stays still. The header offers a Pause/Resume animations button, and the operating system’s reduced-motion preference pauses all page decorations and canvas loops. Paused ribbon phrases wrap so every message remains readable. Motion choices stay in memory for the current page. All five sprite sheets and the tiger’s rolling pose preload at page open and decode in parallel, including animals below the fold. Artwork paints when it is ready and resizes with its section. Each animal appears only after its real artwork is painted; no emoji face or static placeholder flashes first.
+The opening uses deep forest green and gold; the following chapters retain cream, sage and terracotta, the visibly labelled venue illustration and picture-book safari animals. Reading text stays still. The header offers a Pause/Resume animations button, and the operating system’s reduced-motion preference pauses all page decorations and canvas loops. Pausing or enabling reduced motion displays the entire handwritten name immediately and disables replay. Motion choices stay in memory for the current page. All five sprite sheets and the tiger’s rolling pose preload at page open and decode in parallel, including animals in inactive chapters. Artwork paints when it is ready and resizes with its section. Each animal appears only after its real artwork is painted; no emoji face or static placeholder flashes first.
 
 Continuous in-between frames add head and neck movement, body bends, breathing, a smoother walking turn, springy monkey hops and a crouch-roll-bounce sequence for the tiger. Existing artwork stays local. Offscreen animals and page decorations behind open dialogs stop moving to avoid unnecessary work. Tapping the companions makes the lion wave, elephant splash, giraffe munch a leaf, monkey somersault or tiger roll. Paused motion shows a still response. Ordinary words have no surprise effects or extra keyboard stops.
 
-Each main section keeps its animated companion: lion in Invitation, elephant in Celebration, giraffe in Venue, tiger in RSVP and monkey in Gaming.
+Each chapter after the opening keeps its animated companion: lion in Invitation, elephant in Celebration, giraffe in Venue, tiger in RSVP and monkey in Gaming.
 
 Gaming contains Tap Tap Tap, Hextris, 0h h1 and Safari Flyer. Phone cards use compact illustrated previews. Scores remain inside the isolated game session and disappear when it is closed. Games never report scores, ask for nicknames or contact a service.
 
@@ -53,10 +55,10 @@ The venue card is an original SVG illustration. Google Maps provides real visito
 
 Browser checks require installed Chrome on macOS, or `CHROME_PATH` pointing to Chrome elsewhere:
 
-- `npm run build && npm run test:pages`: domain-root and repository-subpath loading, animal activities, smooth animation frames, eager loading without placeholder faces, missing artwork, game loading, credits and source downloads.
-- With `npm run dev` running: `node scripts/invitation-check.mjs` checks direct RSVP entry points, acceptance/decline replies, exact larger-party counts, mobile quick actions, WhatsApp URL encoding, clipboard/manual fallback, pending event settings and calendar timezone. WhatsApp is mocked; no messages are sent.
-- With `npm run dev` running: `node scripts/motion-check.mjs` checks responsive layouts, readable ribbon phrases, stable reading text, keyboard greetings, pause/resume, reduced-motion preferences and dialog motion.
-- With `npm run preview -- --port 4173` running: `npm run test:navigation` checks sticky top navigation and section anchor offsets at 320, 390, 768 and 1440px and in landscape; all sections in one continuous document; keyboard focus; active sections while scrolling; browser history; direct links; painted artwork; exiting games to sections; and navigation without JavaScript.
+- `npm run build && npm run test:pages`: domain-root and repository-subpath loading, animal activities, visible animation, eager loading without placeholder faces, missing artwork, game loading, credits and source downloads.
+- With `npm run dev` running: `node scripts/invitation-check.mjs` checks direct RSVP entry points, acceptance/decline replies, exact larger-party counts, WhatsApp URL encoding, clipboard/manual fallback, pending event settings and calendar timezone. WhatsApp is mocked; no messages are sent.
+- With `npm run dev` running: `node scripts/motion-check.mjs` checks the left-to-right writing timeline, replay, complete lettering when paused, stable reading text, keyboard greetings, reduced-motion preferences and dialog motion.
+- With `npm run preview -- --port 4173` running: `npm run test:navigation` checks viewport layouts at 320, 390, 768 and 1440px and in landscape; one visible chapter at a time; hidden-page focus exclusion; Next/Back, keyboard and swipe navigation; browser history; direct links and reloads; painted artwork; exiting games to chapters; and readable navigation without JavaScript.
 - With `npm run preview -- --port 4173` running: `node scripts/game-check.mjs` exercises touch gameplay, replay, restart, closing, frame isolation and absence of external requests at phone and desktop widths.
 
 These checks use browser-emulated devices, not physical-device certification.

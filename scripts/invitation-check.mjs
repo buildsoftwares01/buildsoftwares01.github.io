@@ -29,17 +29,17 @@ try {
    Object.defineProperty(navigator,'clipboard',{value:{writeText:async text=>{window.testCopiedText=text}},configurable:true});
   });
   await page.goto(base);
-  assert.equal(await page.locator('#mobile-actions').isVisible(), false);
-  assert.deepEqual(await page.locator('#main > section').evaluateAll(sections => sections.map(s => s.id || 'hero')), ['hero', 'celebration', 'venue', 'rsvp', 'games']);
-  for (const trigger of await page.locator('[data-rsvp]:not(.mobile-actions button)').all()) {
+  assert.deepEqual(await page.locator('#main > section').evaluateAll(sections => sections.map(s => s.id || 'hero')), ['welcome', 'invitation', 'celebration', 'venue', 'rsvp', 'games']);
+  for (const trigger of await page.locator('#main [data-rsvp]').all()) {
+   await page.locator(`.section-nav a[href="#${await trigger.evaluate(el => el.closest('[data-page]').id)}"]`).tap();
+   if (!(await trigger.isVisible())) continue;
    await trigger.tap();
    assert(await page.locator('#rsvp-dialog').isVisible());
    await page.locator('#close-rsvp').tap();
    assert(await trigger.evaluate(el => document.activeElement === el));
   }
-  await page.locator('#rsvp').scrollIntoViewIfNeeded();
-  await page.locator('#mobile-actions').waitFor({state:'visible'});
-  await page.locator('#mobile-actions [data-rsvp]').tap();
+  await page.locator('.section-nav a[href="#rsvp"]').tap();
+  await page.locator('#rsvp-button').tap();
   assert(await page.locator('#rsvp-dialog').isVisible());
   if (!test.event.whatsappNumber) {
    assert(await page.locator('#rsvp-unavailable').isVisible());
@@ -103,6 +103,8 @@ try {
   await page.locator('#close-rsvp').tap();
   if(test.event.date) {
    for (const button of await page.locator('[data-calendar]').all()) {
+    await page.locator(`.section-nav a[href="#${await button.evaluate(el => el.closest('[data-page]').id)}"]`).tap();
+    if (!(await button.isVisible())) continue;
     const downloadPromise=page.waitForEvent('download');
     await button.tap();
     const download=await downloadPromise;

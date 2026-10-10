@@ -1,84 +1,63 @@
 import assert from 'node:assert/strict';
 import { chromium } from 'playwright';
 const browser = await chromium.launch({ executablePath: process.env.CHROME_PATH || '/Applications/Google Chrome.app/Contents/MacOS/Google Chrome', headless: true });
+const base = process.env.TEST_URL || 'http://127.0.0.1:5173';
 try {
-  const page = await browser.newPage();
+  const page = await browser.newPage({ viewport: { width: 390, height: 844 } });
   const errors = [];
   page.on('pageerror', error => errors.push(error.message));
-  await page.goto(process.env.TEST_URL || 'http://127.0.0.1:5173');
-  await page.evaluate(() => document.fonts.ready);
-  await page.waitForFunction(() => [...document.querySelectorAll('.safari-home')].every(home => home.dataset.renderer === '2d'));
-  assert.equal(await page.locator('h1 em,.word-accent').evaluateAll(words => words.filter(word => word.hasAttribute('role') || word.tabIndex >= 0).length), 0, 'Reading text stays out of the tab order');
-  assert.equal(await page.locator('h1 em,.one>span,.word-accent').evaluateAll(words => words.filter(word => getComputedStyle(word).animationName !== 'none').length), 0, 'Reading text stays still');
-  await page.locator('.hero').getByRole('button', {name:'Wave with lion cub', exact:true}).focus();
+  await page.goto(base);
+  // Sample the actual CSS timeline to verify left-to-right writing, not just its final appearance.
+  const samples = await page.locator('.name-stroke').evaluateAll(paths => {
+    const animations = paths.map(path => path.getAnimations()[0]);
+    animations.forEach(animation => animation.pause());
+    const result = [];
+    for (const time of [0, 1500, 2900, 3600, 4700, 5300]) {
+      animations.forEach(animation => { animation.currentTime = time; });
+      result.push(paths.map(path => parseFloat(getComputedStyle(path).strokeDashoffset)));
+    }
+    animations.forEach(animation => animation.finish());
+    return result;
+  });
+  assert(samples[0].every(offset => offset === 1), 'Opening starts with unwritten lettering');
+  assert.equal(samples[1][0], 0, 'V finishes before the following letters');
+  assert(samples[1].slice(3).every(offset => offset === 1), 'Later letters wait for their turn');
+  assert(samples[2][3] === 0 && samples[2][4] > 0 && samples[2][5] === 1, 'First a follows h');
+  assert(samples[3][4] === 0 && samples[3][5] > 0 && samples[3][6] === 1, 'Second a follows the first a');
+  assert(samples[4][6] === 0 && samples[4][7] > 0, 'Flourish follows the whole name');
+  assert(samples[5].every(offset => offset === 0), 'Completed name remains readable');
+  await page.locator('#replay-writing').click({ force: true });
+  assert(parseFloat(await page.locator('.stroke-n').evaluate(el => getComputedStyle(el).strokeDashoffset)) > .99, 'Replay restarts the lettering');
+  await page.getByRole('button', { name: 'Pause animations', exact: true }).click();
+  assert(await page.locator('.name-stroke').evaluateAll(paths => paths.every(path => parseFloat(getComputedStyle(path).strokeDashoffset) === 0)), 'Pausing shows the complete name');
+  assert(await page.locator('#replay-writing').isDisabled());
+  assert(await page.locator('.opening-button').isVisible());
+  await page.getByRole('button', { name: 'Resume animations', exact: true }).click();
+  await page.locator('.opening-button').click();
+  await page.waitForFunction(() => document.querySelector('.hero .safari-home')?.dataset.painted === 'true');
+  assert.equal(await page.locator('#hero-title em,.word-accent').evaluateAll(words => words.filter(word => getComputedStyle(word).animationName !== 'none').length), 0, 'Reading text stays still');
+  const friend = page.locator('.hero .safari-friend');
+  await friend.focus();
   await page.keyboard.press('Enter');
-  assert.equal(await page.locator('.hero .safari-friend').first().getAttribute('data-gesture'), 'hello', 'Animal greeting works by keyboard');
-  assert.equal(await page.locator('.accent-comic-burst').count(), 0, 'No comic burst covers reading text');
-  await page.getByRole('button', {name:'Pause animations', exact:true}).click();
-  assert(await page.locator('body').evaluate(body => body.classList.contains('motion-paused')));
-  const pausedPose = await page.locator('.hero .safari-canvas').first().evaluate(canvas => canvas.toDataURL());
+  assert.equal(await friend.getAttribute('data-gesture'), 'hello', 'Animal greeting works by keyboard');
+  await page.getByRole('button', { name: 'Pause animations', exact: true }).click();
+  const pausedPose = await friend.locator('canvas').evaluate(canvas => canvas.toDataURL());
   await page.waitForTimeout(200);
-  assert.equal(await page.locator('.hero .safari-canvas').first().evaluate(canvas => canvas.toDataURL()), pausedPose, 'Canvas movement stops while paused');
-  assert.equal(await page.locator('.ticker-track').evaluate(el => getComputedStyle(el).animationName), 'none');
-  await page.getByRole('button', {name:'Resume animations', exact:true}).click();
-  await page.locator('.safari-friend[data-gesture]').waitFor({state:'detached'});
-  await page.locator('.site-header [data-rsvp]').click();
+  assert.equal(await friend.locator('canvas').evaluate(canvas => canvas.toDataURL()), pausedPose, 'Canvas movement stops while paused');
+  await page.getByRole('button', { name: 'Resume animations', exact: true }).click();
+  await page.locator('.section-nav a[href="#rsvp"]').click();
+  await page.locator('#rsvp-button').click();
   await page.waitForFunction(() => document.body.classList.contains('motion-dialog'));
-  assert.equal(await page.locator('.safari-stop').first().getAttribute('data-paused'), 'true', 'Dialog pauses animal movement');
+  assert.equal(await page.locator('#rsvp .safari-stop').getAttribute('data-paused'), 'true', 'Dialog pauses animal movement');
   await page.locator('#close-rsvp').click();
   await page.waitForFunction(() => !document.body.classList.contains('motion-dialog'));
-  await page.locator('.brand').first().click();
-  for (const width of [320, 390, 768, 1440]) {
-    await page.setViewportSize({ width, height: 900 });
-    assert(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth), `${width}px: no horizontal overflow`);
-    // Sample the entire loop: every phrase must be fully visible at some point.
-    const phrasesSeen = await page.locator('.ticker-track').evaluate(track => {
-      const animation = track.getAnimations()[0];
-      animation.pause();
-      const windowRect = track.parentElement.getBoundingClientRect();
-      const phrases = [...track.firstElementChild.querySelectorAll('span')];
-      const seen = new Set();
-      for (let time = 0; time < 34000; time += 100) {
-        animation.currentTime = time;
-        phrases.forEach((phrase, index) => {
-          const rect = phrase.getBoundingClientRect();
-          if (rect.left >= windowRect.left && rect.right <= windowRect.right) seen.add(index);
-        });
-      }
-      animation.currentTime = 0;
-      animation.play();
-      return seen.size;
-    });
-    assert.equal(phrasesSeen, 4, `${width}px: every ribbon phrase scrolls into view`);
-  }
-  await page.setViewportSize({ width: 390, height: 844 });
   await page.emulateMedia({ reducedMotion: 'reduce' });
   await page.waitForFunction(() => document.body.classList.contains('motion-paused'));
-  assert.equal(await page.locator('.ticker-track').evaluate(el => getComputedStyle(el).animationName), 'none', 'Reduced motion stops the ribbon');
+  await page.locator('.section-nav a[href="#main"]').click();
+  assert(await page.locator('.name-stroke').evaluateAll(paths => paths.every(path => parseFloat(getComputedStyle(path).strokeDashoffset) === 0)), 'Reduced motion shows the entire name immediately');
   assert(await page.locator('#motion-toggle').isDisabled());
-  const stillPose = await page.locator('.hero .safari-canvas').first().evaluate(canvas => canvas.toDataURL());
-  await page.waitForTimeout(200);
-  assert.equal(await page.locator('.hero .safari-canvas').first().evaluate(canvas => canvas.toDataURL()), stillPose, 'Reduced motion stops canvas loops');
-  for (const width of [320, 390, 768, 1440]) {
-    await page.setViewportSize({width,height:900});
-    assert(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth), `${width}px: paused ribbon has no overflow`);
-    assert(await page.locator('.ticker-group').first().locator('span').evaluateAll(phrases => phrases.every(phrase => {
-      const box = phrase.getBoundingClientRect();
-      return box.left >= 0 && box.right <= innerWidth;
-    })), `${width}px: every paused phrase is readable`);
-  }
-  await page.emulateMedia({reducedMotion:'no-preference'});
+  await page.emulateMedia({ reducedMotion: 'no-preference' });
   await page.waitForFunction(() => !document.body.classList.contains('motion-paused'));
-  assert.equal(await page.locator('.ticker-track').evaluate(el => getComputedStyle(el).animationName), 'ribbon-scroll', 'Changing device preference resumes decorations');
-  for (const [name, width, height] of [['mobile', 390, 844], ['desktop', 1440, 1000]]) {
-    const preview = await browser.newPage({ viewport: { width, height }, reducedMotion: 'reduce' });
-    await preview.goto(process.env.TEST_URL || 'http://127.0.0.1:5173');
-    await preview.evaluate(() => document.fonts.ready);
-    await preview.waitForFunction(() => [...document.querySelectorAll('.safari-home')].every(home => home.dataset.renderer === '2d'));
-    await preview.screenshot({ path: `test-results/${name}.png`, fullPage: true });
-    await preview.screenshot({ path: `test-results/${name}-hero.png` });
-    await preview.close();
-  }
   assert.deepEqual(errors, []);
-  console.log('Responsive layouts, steady reading text, keyboard greetings, pause/resume, reduced motion and dialog motion passed.');
+  console.log('Left-to-right handwriting, replay, complete paused lettering, stable reading text, keyboard greetings, reduced motion and dialog motion passed.');
 } finally { await browser.close(); }

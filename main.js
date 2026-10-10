@@ -1,6 +1,7 @@
 import { event } from './event-config.js';
 import { getEventDate } from './event-details.js';
 import { setupSafariFriends } from './safari-friends.js';
+import { setupInvitationPages } from './invitation-pages.js';
 const $ = (s) => document.querySelector(s);
 const motionPreference = window.matchMedia('(prefers-reduced-motion: reduce)');
 const motionToggle = $('#motion-toggle');
@@ -18,64 +19,8 @@ motionToggle.addEventListener('click', () => {
 });
 motionPreference.addEventListener('change', syncMotionPreference);
 syncMotionPreference();
+setupInvitationPages();
 setupSafariFriends();
-// Every navbar link scrolls to a section on the same page.
-const sectionLinks = [...document.querySelectorAll('[data-section-link]')];
-const navigationHashes = ['#main', '#celebration', '#venue', '#rsvp', '#games'];
-function markSection(hash) {
-  sectionLinks.forEach(link => {
-    if (link.hash === hash) link.setAttribute('aria-current', 'location');
-    else link.removeAttribute('aria-current');
-  });
-}
-function navigateToSection(hash, { focus = true, smooth = true } = {}) {
-  const target = $(hash);
-  if ($('#game-dialog').open) {
-    gameTrigger = null;
-    $('#game-dialog').close();
-  }
-  if (focus) target.focus({ preventScroll: true });
-  const behavior = smooth && !motionPreference.matches && !guestPausedMotion ? 'smooth' : 'instant';
-  if (hash === '#main') window.scrollTo({ top: 0, behavior });
-  else target.scrollIntoView({ block: 'start', behavior });
-  markSection(hash);
-}
-document.addEventListener('click', event => {
-  const link = event.target.closest('a[href]');
-  if (!link || event.defaultPrevented || event.button !== 0 || event.metaKey || event.ctrlKey || event.shiftKey || event.altKey) return;
-  const url = new URL(link.href);
-  if (url.origin !== location.origin || url.pathname !== location.pathname || !navigationHashes.includes(url.hash)) return;
-  event.preventDefault();
-  if (location.hash !== url.hash) history.pushState(null, '', url.hash);
-  navigateToSection(url.hash);
-});
-window.addEventListener('hashchange', () => {
-  const hash = location.hash || '#main';
-  if (navigationHashes.includes(hash)) navigateToSection(hash, { smooth: false });
-});
-markSection(navigationHashes.includes(location.hash) ? location.hash : '#main');
-if (navigationHashes.includes(location.hash)) {
-  requestAnimationFrame(() => navigateToSection(location.hash, { focus: false, smooth: false }));
-}
-// Match anchor offsets to the actual header height, including wrapped phone links.
-new ResizeObserver(([entry]) => {
-  document.documentElement.style.setProperty('--nav-offset', `${entry.target.getBoundingClientRect().height}px`);
-}).observe($('.site-header'));
-let navigationFrame;
-function updateReadingSection() {
-  const readingLine = $('.site-header').getBoundingClientRect().bottom + 24;
-  let hash = '#main';
-  for (const sectionHash of navigationHashes.slice(1)) {
-    const section = $(sectionHash);
-    if (section && section.getBoundingClientRect().top <= readingLine) hash = sectionHash;
-  }
-  if (scrollY > 0 && scrollY + innerHeight >= document.documentElement.scrollHeight - 2) hash = '#games';
-  markSection(hash);
-}
-window.addEventListener('scroll', () => {
-  cancelAnimationFrame(navigationFrame);
-  navigationFrame = requestAnimationFrame(updateReadingSection);
-}, { passive: true });
 const paths = { calendar: '<rect x="3" y="5" width="18" height="16" rx="2"/><path d="M16 3v4M8 3v4M3 11h18m-13 5h2m4 0h2"/>', clock: '<circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/>', pin: '<path d="M20 10c0 6-8 12-8 12S4 16 4 10a8 8 0 1 1 16 0Z"/><circle cx="12" cy="10" r="2.5"/>', phone: '<rect x="6" y="2" width="12" height="20" rx="2"/><path d="M10 18h4"/>', message: '<path d="m4 17-1 5 5-2a9 9 0 1 0-4-3Z"/><path d="M8 8c0 4 4 7 7 7l1-2-3-1-1 1-2-2 1-1-1-3Z"/>' };
 document.querySelectorAll('[data-icon]').forEach(el => { el.innerHTML = `<svg viewBox="0 0 24 24" aria-hidden="true">${paths[el.dataset.icon]}</svg>`; });
 if ('IntersectionObserver' in window) {
@@ -89,12 +34,6 @@ function syncDialogMotion() {
   document.body.classList.toggle('motion-dialog', open);
 }
 new MutationObserver(syncDialogMotion).observe(document.body, { subtree: true, attributes: true, attributeFilter: ['open'] });
-const mobileActions = $('#mobile-actions');
-if ('IntersectionObserver' in window) {
-  new IntersectionObserver(([entry]) => {
-    mobileActions.hidden = entry.isIntersecting || entry.boundingClientRect.top >= 0;
-  }).observe($('.hero'));
-}
 const games = {
   taptaptap: { name: 'Tap Tap Tap', help: 'Tap the blue circles before time runs out. Avoid red circles. Start with New Game.' },
   flappy: { name: 'Safari Flyer', help: 'Tap to flap through the green branches. On a computer, click or press Space.' },
@@ -148,7 +87,12 @@ document.querySelectorAll('[data-game]').forEach(button => button.addEventListen
 }));
 $('#close-game').addEventListener('click', () => gameDialog.close());
 $('#restart-game').addEventListener('click', loadGame);
-gameDialog.addEventListener('close', () => { clearGameLoading(); $('#game-frame-container').replaceChildren(); gameTrigger?.focus(); });
+gameDialog.addEventListener('close', () => {
+  clearGameLoading();
+  gameContainer.replaceChildren();
+  if (!gameDialog.dataset.navigationClose && gameTrigger?.closest('[data-page]')?.hidden === false) gameTrigger.focus({ preventScroll: true });
+  delete gameDialog.dataset.navigationClose;
+});
 const rsvpDialog = $('#rsvp-dialog');
 const rsvpReady = /^[1-9]\d{7,14}$/.test(event.whatsappNumber);
 const guestAttendance = $('#guest-attendance');
@@ -177,7 +121,10 @@ document.querySelectorAll('[data-rsvp]').forEach(button => button.addEventListen
 }));
 if (!rsvpReady) $('#rsvp-note').textContent = 'WhatsApp RSVP details coming soon';
 $('#close-rsvp').addEventListener('click', () => rsvpDialog.close());
-rsvpDialog.addEventListener('close', () => rsvpTrigger?.focus({ preventScroll: true }));
+rsvpDialog.addEventListener('close', () => {
+  if (!rsvpDialog.dataset.navigationClose) rsvpTrigger?.focus({ preventScroll: true });
+  delete rsvpDialog.dataset.navigationClose;
+});
 $('#rsvp-form').addEventListener('submit', e => {
   e.preventDefault();
   if (!rsvpReady) return;
