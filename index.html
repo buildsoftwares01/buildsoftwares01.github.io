@@ -30,13 +30,13 @@
   <header class="site-header">
     <div class="header-inner wrap">
       <a class="brand" href="#main" aria-label="Vihaan's first birthday, home"><span>Vihaan<span class="brand-small">FIRST BIRTHDAY</span></span></a>
-      <nav class="section-nav" aria-label="All sections">
+      <nav class="section-nav" aria-label="Invitation pages and games">
         <a href="#main" data-section-link aria-current="location">Opening</a>
         <a href="#invitation" data-section-link>Invitation</a>
         <a href="#celebration" data-section-link>Celebration</a>
         <a href="#venue" data-section-link>Venue</a>
         <a href="#rsvp" data-section-link>RSVP</a>
-        <a href="#games" data-section-link>Gaming</a>
+        <a class="gaming-shortcut" href="#games" data-section-link><span aria-hidden="true">▷</span> Gaming</a>
       </nav>
       <div class="header-actions"><button class="button button-small" data-rsvp type="button">RSVP <span aria-hidden="true">↗</span></button><button class="motion-toggle" id="motion-toggle" type="button">Pause animations</button></div>
     </div>
@@ -96,7 +96,7 @@
       <div class="venue-visual reveal"><img id="venue-photo" src="./assets/venue-garden.svg" alt="Restaurant illustration with a Paps sign, striped awning, and outdoor dining tables" width="1000" height="940" loading="lazy"><div class="photo-caption"><span data-icon="pin"></span> An illustration for our celebration</div><a class="photo-credit" href="https://maps.app.goo.gl/bnpBMfxSez6iZjbZA" target="_blank" rel="noopener noreferrer">See the venue & photos on Google Maps ↗</a></div>
       <div class="venue-copy reveal"><div class="eyebrow">OUR LITTLE CORNER OF THE JUNGLE</div><h2><span class="safari-anchor" data-safari-anchor="giraffe"><span>Good food.</span></span><br>Great company.<br><em>Happy little moments.</em></h2><p>Join us at Paps for a celebration filled with <span class="word-accent accent-wiggle">laughter,</span> love, and a little safari magic.</p><div class="venue-address"><strong>Paps Bar, Lounge & Restaurant</strong><span>Caleechurn Lane, Carreau Laliane<br>Vacoas-Phoenix, Mauritius</span></div><a class="button button-outline" href="https://maps.app.goo.gl/bnpBMfxSez6iZjbZA" target="_blank" rel="noopener noreferrer"><span data-icon="pin"></span> Get directions <span aria-hidden="true">↗</span></a></div>
     </section>
-    <section data-page="rsvp" id="rsvp" tabindex="-1" class="rsvp-section wrap section-space invitation-page"><span class="rsvp-spark" aria-hidden="true">✳</span><span class="rsvp-heart" aria-hidden="true">♡</span><div class="eyebrow">OUR FAVOURITE PEOPLE. OUR FAVOURITE DAY.</div><h2>It wouldn't be the same<br><span class="safari-anchor" data-safari-anchor="tiger"><em>without you.</em></span></h2><p>Come for the cake. Stay for the <span class="word-accent accent-bounce">fun.</span><br>Let us know if you'll be part of Vihaan's big little day.</p><button class="button" id="rsvp-button" data-rsvp type="button"><span data-icon="message"></span> RSVP on WhatsApp <span aria-hidden="true">↗</span></button><div class="rsvp-calendar"><button class="text-link" data-calendar type="button" hidden><span data-icon="calendar"></span> Add to calendar ↗</button></div><span class="rsvp-note" id="rsvp-note">A little message to Madhav & Urvashee</span><div class="signature">With love, always.<br><strong>Madhav, Urvashee & little Vihaan</strong><span>♡</span></div></section>
+    <section data-page="rsvp" id="rsvp" tabindex="-1" class="rsvp-section wrap section-space invitation-page"><span class="rsvp-spark" aria-hidden="true">✳</span><span class="rsvp-heart" aria-hidden="true">♡</span><div class="eyebrow">OUR FAVOURITE PEOPLE. OUR FAVOURITE DAY.</div><h2>It wouldn't be the same<br><span class="safari-anchor" data-safari-anchor="tiger"><em>without you.</em></span></h2><p>Come for the cake. Stay for the <span class="word-accent accent-bounce">fun.</span><br>Let us know if you'll be part of Vihaan's big little day.</p><button class="button" id="rsvp-button" data-rsvp type="button"><span data-icon="message"></span> RSVP on WhatsApp <span aria-hidden="true">↗</span></button><div class="rsvp-calendar"><button class="text-link" data-calendar type="button" hidden><span data-icon="calendar"></span> Add to calendar ↗</button></div><span class="rsvp-note" id="rsvp-note">A little message to Madhav & Urvashee</span><div class="signature">With love, always.<br><strong>Madhav, Urvashee & little Vihaan</strong><span>♡</span></div><div class="ending-games"><p>Fancy a little playtime?</p><a class="text-link" href="#games">Play games <span aria-hidden="true">→</span></a></div></section>
     <section data-page="games" id="games" class="games-section section-space invitation-page" aria-labelledby="gaming-title" tabindex="-1">
       <div class="wrap">
         <div class="games-heading reveal"><div><div class="eyebrow">GAMING</div><h2 id="gaming-title">Choose your next <span class="safari-anchor" data-safari-anchor="monkey"><em>adventure.</em></span></h2></div><p>A colourful challenge for bigger explorers, too.<br>Pick a game to play right here.</p></div>
@@ -112,8 +112,8 @@
   </main>
   <footer class="invitation-controls" id="invitation-controls" hidden>
     <button class="page-back" id="page-back" type="button" aria-label="Previous invitation page">← <span>Back</span></button>
-    <div class="page-progress"><span id="page-counter">01 / 06</span><span class="page-progress-track" aria-hidden="true"><i id="page-progress-fill"></i></span><p id="page-status" role="status" aria-live="polite" aria-atomic="true">The opening</p></div>
-    <button class="page-next" id="page-next" type="button"><span>Open invitation</span> →</button>
+    <div class="page-progress"><span id="page-counter">01 / 05</span><span class="page-progress-track" aria-hidden="true"><i id="page-progress-fill"></i></span><p id="page-status" role="status" aria-live="polite" aria-atomic="true">The opening</p></div>
+    <button class="page-next" id="page-next" type="button"><span>Next</span> →</button>
     <a class="invitation-credit" href="./credits.html">Credits & privacy</a>
   </footer>
   <noscript><footer class="site-footer wrap"><p>One little boy. A whole world of love.</p><a class="footer-link" href="./credits.html">Credits & privacy</a></footer></noscript>

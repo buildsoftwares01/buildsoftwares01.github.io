@@ -1,6 +1,6 @@
 # Vihaan’s Little Explorer invitation
 
-A responsive, six-page storybook invitation for Vihaan’s first birthday, with a handwritten animated opening, locally hosted safari artwork and fonts, five animated animal companions and four sandboxed games. No backend, database, analytics, guest accounts or remote API is required.
+A responsive, five-page storybook invitation with an optional games screen for Vihaan’s first birthday, with a handwritten animated opening, locally hosted safari artwork and fonts, five animated animal companions and four sandboxed games. No backend, database, analytics, guest accounts or remote API is required.
 
 ## Preview and build
 
@@ -19,7 +19,7 @@ Publish only `dist/` to a static HTTPS host. GitHub Pages, Netlify and Vercel co
 
 Edit `event-config.js`. The configured celebration is Sunday 6 December 2026 at 11:00 am Mauritius time, at Paps Restaurant. Run `npm run check:ready` before sharing.
 
-The invitation opens on a deep green cover with “Vihaan” drawn in gold from left to right. A glowing pen tip follows the custom SVG strokes, then the birthday line and invitation button appear. Replay restarts the writing. The six chapters are Opening, Invitation, Celebration, Venue, RSVP and Gaming. Only the current chapter is visible and focusable. Next/Back buttons, horizontal swipes, arrow keys and the top chapter links move through the invitation; Home/End jump to the opening or games. Browser Back/Forward, reloads and direct chapter links retain the selected screen. Game navigation closes and unloads the game before changing chapters.
+The invitation opens on a deep green cover with “Vihaan” drawn in gold from left to right. A glowing pen tip follows the custom SVG strokes, then the birthday line and invitation button appear. Replay restarts the writing. The five invitation chapters are Opening, Invitation, Celebration, Venue and RSVP. Next reveals each chapter in order and the final chapter offers an optional Play games link. Games sit outside the five-page progress count. A prominent Gaming shortcut stays visible in the header, allowing immediate access from any chapter. Back to invitation returns to the chapter from which games were opened; direct game links return to the opening. Only the current chapter is visible and focusable. Next/Back buttons, horizontal swipes, arrow keys and the top chapter links move through the invitation; Home/End jump to the opening or the final invitation chapter. Arrow keys and swipes stop at the final chapter instead of entering games. Browser Back/Forward, reloads and direct chapter links retain the selected screen. Game navigation closes and unloads the game before changing chapters.
 
 Standard phone and desktop layouts fit each chapter into the viewport. Short windows or enlarged content can scroll within the active chapter while navigation remains visible. Without JavaScript all chapters remain readable through native anchors. The celebration chapter shows the date, Mauritius time, venue and countdown. The RSVP chapter opens the existing WhatsApp form directly; directions are available in the venue chapter.
 

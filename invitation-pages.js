@@ -3,7 +3,9 @@ export function setupInvitationPages() {
   const pages = [...document.querySelectorAll('#main > [data-page]')];
   const hashes = ['#main', '#invitation', '#celebration', '#venue', '#rsvp', '#games'];
   const titles = ['The opening', 'One big adventure', 'The celebration', 'The place', 'With love, you’re invited', 'A little playtime'];
-  const nextLabels = ['Open invitation', 'The celebration', 'Find the party', 'You’re invited', 'A little playtime', 'Read again'];
+  const invitationCount = 5;
+  const gamesIndex = invitationCount;
+  let gamesReturnPage = 0;
   const previous = document.querySelector('#page-back');
   const next = document.querySelector('#page-next');
   const welcome = pages[0];
@@ -53,6 +55,7 @@ export function setupInvitationPages() {
     }
     const direction = index < current ? 'backward' : 'forward';
     finishWriting();
+    if (index === gamesIndex && current >= 0 && current < invitationCount) gamesReturnPage = current;
     current = index;
     pages.forEach((page, i) => {
       page.hidden = i !== index;
@@ -66,9 +69,12 @@ export function setupInvitationPages() {
       else link.removeAttribute('aria-current');
     });
     previous.disabled = index === 0;
-    next.querySelector('span').textContent = nextLabels[index];
-    document.querySelector('#page-counter').textContent = `${String(index + 1).padStart(2, '0')} / 06`;
-    document.querySelector('#page-progress-fill').style.width = `${(index + 1) / pages.length * 100}%`;
+    const isGames = index === gamesIndex;
+    const isEnding = index === invitationCount - 1;
+    next.querySelector('span').textContent = isGames ? 'Back to invitation' : isEnding ? 'Read again' : 'Next';
+    next.setAttribute('aria-label', isGames ? 'Back to invitation' : isEnding ? 'Read invitation again' : `Next: ${titles[index + 1]}`);
+    document.querySelector('#page-counter').textContent = isGames ? 'PLAY' : `${String(index + 1).padStart(2, '0')} / 05`;
+    document.querySelector('#page-progress-fill').style.width = `${Math.min(index + 1, invitationCount) / invitationCount * 100}%`;
     document.querySelector('#page-status').textContent = titles[index];
     window.scrollTo({ top: 0, behavior: 'instant' });
     if (focus) pages[index].focus({ preventScroll: true });
@@ -92,16 +98,17 @@ export function setupInvitationPages() {
   const followHistory = () => showPage(Math.max(0, hashes.indexOf(location.hash || '#main')));
   window.addEventListener('popstate', followHistory);
   window.addEventListener('hashchange', followHistory);
-  previous.addEventListener('click', () => go(current - 1));
-  next.addEventListener('click', () => go((current + 1) % pages.length));
+  const previousPage = () => current === gamesIndex ? gamesReturnPage : current - 1;
+  previous.addEventListener('click', () => go(previousPage()));
+  next.addEventListener('click', () => go(current === gamesIndex ? gamesReturnPage : (current + 1) % invitationCount));
   document.querySelector('#replay-writing').addEventListener('click', playWriting);
   document.addEventListener('keydown', event => {
     if (event.defaultPrevented || event.altKey || event.ctrlKey || event.metaKey || event.shiftKey || event.target.closest('input, textarea, select, [contenteditable], dialog')) return;
     let index;
-    if (event.key === 'ArrowRight' || event.key === 'PageDown') index = current + 1;
-    if (event.key === 'ArrowLeft' || event.key === 'PageUp') index = current - 1;
+    if (event.key === 'ArrowRight' || event.key === 'PageDown') index = current < invitationCount - 1 ? current + 1 : undefined;
+    if (event.key === 'ArrowLeft' || event.key === 'PageUp') index = previousPage();
     if (event.key === 'Home') index = 0;
-    if (event.key === 'End') index = pages.length - 1;
+    if (event.key === 'End') index = invitationCount - 1;
     if (index !== undefined) { event.preventDefault(); go(index); }
   });
   let touch;
@@ -114,7 +121,10 @@ export function setupInvitationPages() {
     if (!touch || event.changedTouches.length !== 1) return;
     const dx = event.changedTouches[0].clientX - touch.x;
     const dy = event.changedTouches[0].clientY - touch.y;
-    if (Math.abs(dx) > 70 && Math.abs(dx) > Math.abs(dy) * 1.5) go(current + (dx < 0 ? 1 : -1));
+    if (Math.abs(dx) > 70 && Math.abs(dx) > Math.abs(dy) * 1.5) {
+      if (dx > 0) go(previousPage());
+      else if (current < invitationCount - 1) go(current + 1);
+    }
     touch = null;
   }, { passive: true });
   main.addEventListener('touchcancel', () => { touch = null; }, { passive: true });

@@ -20,7 +20,7 @@ try {
       assert.equal(await page.locator('#main > section:visible').getAttribute('id'), id);
       assert(await page.locator('#main > section').evaluateAll(pages => pages.every(page => page.hidden === page.inert)), 'Inactive chapters are outside the focus order');
       assert.equal(await nav.locator('a[aria-current]').getAttribute('href'), hash);
-      assert.equal(await page.locator('#page-counter').textContent(), `0${index + 1} / 06`);
+      assert.equal(await page.locator('#page-counter').textContent(), index === 5 ? 'PLAY' : `0${index + 1} / 05`);
       assert(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth && document.documentElement.scrollHeight <= innerHeight), `${width}×${height}: the document does not scroll`);
       assert(await nav.locator('a').evaluateAll(links => links.every(link => {
         const box = link.getBoundingClientRect();
@@ -36,13 +36,24 @@ try {
     }
     await checkChapter(0);
     assert(await page.locator('#page-back').isDisabled());
-    for (let index = 1; index < chapters.length; index++) {
+    for (let index = 1; index < 5; index++) {
       await page.locator('#page-next').click();
       await checkChapter(index);
       assert.equal(await page.evaluate(() => document.activeElement.id), chapters[index][2], 'Focus follows the new page');
       await page.waitForFunction(id => document.querySelector(`#${id} .safari-home`)?.dataset.painted === 'true', chapters[index][2]);
       if (width === 390 || width === 1440) await page.screenshot({ path: `test-results/sequence-${width}-${chapters[index][2]}.png` });
     }
+    assert.equal(await page.locator('#page-next span').textContent(), 'Read again', 'The invitation ends without requiring games');
+    await page.keyboard.press('ArrowRight');
+    await page.keyboard.press('PageDown');
+    await checkChapter(4);
+    await page.locator('#main').evaluate(el => {
+      el.dispatchEvent(new TouchEvent('touchstart', { bubbles: true, touches: [new Touch({ identifier: 3, target: el, clientX: 240, clientY: 250 })] }));
+      el.dispatchEvent(new TouchEvent('touchend', { bubbles: true, changedTouches: [new Touch({ identifier: 3, target: el, clientX: 80, clientY: 260 })] }));
+    });
+    await checkChapter(4);
+    await page.locator('.ending-games a').click();
+    await checkChapter(5);
     await page.goBack();
     await checkChapter(4);
     await page.goForward();
@@ -67,9 +78,20 @@ try {
     await page.keyboard.press('Home');
     await checkChapter(0);
     await page.keyboard.press('End');
+    await checkChapter(4);
+    await page.locator('#page-next').click();
+    await checkChapter(0);
+    // The Gaming shortcut works immediately; returning resumes the same invitation page.
+    await page.locator('.gaming-shortcut').click();
     await checkChapter(5);
     await page.locator('#page-next').click();
     await checkChapter(0);
+    await page.locator('.section-nav a[href="#venue"]').click();
+    await page.locator('.gaming-shortcut').click();
+    await checkChapter(5);
+    await page.locator('#page-back').click();
+    await checkChapter(3);
+    await page.keyboard.press('Home');
     // Horizontal swipes change chapter; vertical reading gestures do not.
     await page.locator('#main').evaluate(el => {
       el.dispatchEvent(new TouchEvent('touchstart', { bubbles: true, touches: [new Touch({ identifier: 1, target: el, clientX: 240, clientY: 250 })] }));
@@ -90,6 +112,10 @@ try {
     assert.equal(await page.locator('#main > section:visible').getAttribute('id'), id, 'Direct links open their chapter');
     await page.reload();
     assert.equal(await page.locator('#main > section:visible').getAttribute('id'), id, 'Reload retains the selected chapter');
+    if (id === 'games') {
+      await page.locator('#page-next').click();
+      assert(await page.locator('#welcome').isVisible(), 'A direct games link returns to the opening');
+    }
     await page.close();
   }
   const plain = await browser.newPage({ javaScriptEnabled: false, viewport: { width: 390, height: 844 } });
@@ -98,5 +124,5 @@ try {
   await plain.locator('.section-nav a[href="#venue"]').click();
   assert.equal(new URL(plain.url()).hash, '#venue');
   await plain.close();
-  console.log('Sequential pages, viewport layouts, hidden-page focus, Next/Back, keyboard, swipe, history, direct links, game exits and no-JS fallback passed.');
+  console.log('Sequential invitation pages, optional games at the end, immediate Gaming shortcuts, return to the launching page, responsive layouts, focus, history, keyboard, swipe and no-JS fallback passed.');
 } finally { await browser.close(); }
